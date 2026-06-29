@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>34a Training | Zertifizierung</title>
+    <style>
+      a:link,
+a:visited,
+a:hover,
+a:active {
+    color: #57BFFC;
+}
+      .nav-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.nav-buttons button{
+    background:white;
+    border:1px solid var(--dba-blue);
+    color:var(--dba-blue);
+    padding:10px 20px;
+    cursor:pointer;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.nav-buttons button:hover{
+    background:var(--dba-blue);
+    color:white;
+}
+        :root { --dba-blue: #104E8B; --dba-dark: #222222; --dba-border: #cccccc; --bg-color: #f4f4f4; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; color: var(--dba-dark); }
+        h2 { font-weight: 300; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; }
+        
+        /* Dynamischer Container mit abgerundeten Ecken */
+        #card-container { width: 100%; max-width: 500px; height: 320px; perspective: 1000px; cursor: pointer; margin-bottom: 20px; }
+        #card-inner { width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.3, 1); transform-style: preserve-3d; position: relative; }
+        #card-inner.flipped { transform: rotateY(180deg); }
+        
+        /* Abgerundete Kartenflächen */
+        .card-face { width: 100%; height: 100%; position: absolute; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; text-align: center; border: 1px solid var(--dba-border); background: white; font-size: 1.1rem; border-radius: 20px; }
+        .card-back { background-color: var(--dba-blue); color: white; border: none; transform: rotateY(180deg); border-radius: 20px; }
+        
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .toggle-btn { padding: 10px 15px; cursor: pointer; border: 1px solid var(--dba-border); background: white; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; border-radius: 8px; }
+        .toggle-btn.active { background: var(--dba-blue); color: white; border-color: var(--dba-blue); }
+        button#start-btn { margin-top: 20px; background: white; border: 1px solid var(--dba-blue); color: var(--dba-blue); padding: 10px 30px; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; }
+        button#start-btn:hover { background: var(--dba-blue); color: white; }
+        #counter { margin-top: 10px; font-size: 0.9rem; color: #666; }
+    </style>
+</head>
+<body>
+
+    <h2>Sachkunde § 34a - Prüfungsvorbereitung</h2>
+    <div id="card-container" onclick="flipCard()">
+        <div id="card-inner">
+            <div class="card-face card-front" id="textF">Wählen Sie Themen aus und starte.</div>
+            <div class="card-face card-back" id="textA"></div>
+        </div>
+
+    </div>
+    <div class="controls">
+        <div class="toggle-btn" onclick="toggleTheme(this, 'StGB')">Strafrecht</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'BGB')">Zivilrecht</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'Öffentliche Sicherheit')">Öffentl. Sicherheit</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'Umgang mit Menschen')">Umgang mit Menschen</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'Mündlich')">Mündliche Fragen</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'STGB/BGB')">Zivilrecht oder Strafrecht</div>
+        <div class="toggle-btn" onclick="toggleTheme(this, 'Definition')">Definitionen</div>
+       <div class="toggle-btn" onclick="toggleTheme(this, 'gewerbe')">Gewerberecht</div>
+       <div class="toggle-btn" onclick="toggleTheme(this, 'sicherheit')">Sicherheitstechnik</div>
+       <div class="toggle-btn" onclick="toggleTheme(this, 'datenschutz')">Datenschutz</div>
+      <div class="toggle-btn" onclick="toggleTheme(this, 'waffenrecht')">Waffenrecht</div>
+    </div>
+    <button id="start-btn" onclick="starteQuiz()">Training starten</button>
+    <div id="counter"></div>
+      <div class="nav-buttons">
+    <button id="back-btn" onclick="vorherigeFrage()">  Zurück </button>
+    <button id="next-btn" onclick="naechsteFrage()"> Weiter  </button>
+
+</div>
+
+  <br> 
+   <br>
+<div style="text-align: center; font-size: 12px;">
+    Version 2.0.1<br>
+   © Christopher Czelzinski <br>
+    <a href="https://www.cdesign-berlin.de"
+       target="_blank"
+       rel="noopener noreferrer"
+       style="color: #57BFFC;">
+        www.cdesign-berlin.de
+    </a>
+</div>
+  
+    <script>
+        const daten = [
+             /* strafrecht */
+{ t: "Strafrecht", f: "Wann ist der Versuch strafbar?", a: "Verbrechen immer, Vergehen nur wenn das Gesetz es ausdrücklich bestimmt." },
+{ t: "Strafrecht", f: "Unterschied zwischen Strafanzeige und Strafantrag?", a: "Strafanzeige: Jeder kann eine Straftat melden. Strafantrag: Der Verletzte verlangt die Strafverfolgung." },
+{ t: "Strafrecht", f: "Unterschied zwischen Raub und räuberischem Diebstahl?", a: "Raub: Erst Gewalt, dann Wegnahme. Räuberischer Diebstahl: Erst Diebstahl, dann Gewalt zur Beutesicherung." },
+{ t: "Strafrecht", f: "Wann liegt Diebstahl vor?", a: "Fremde bewegliche Sache, Wegnahme und Zueignungsabsicht." },
+{ t: "Strafrecht", f: "Welche Merkmale hat die Körperverletzung (§223 StGB)?", a: "Körperliche Misshandlung oder Gesundheitsschädigung eines anderen Menschen." },
+{ t: "Strafrecht", f: "Unterschied zwischen gefährlicher und schwerer Körperverletzung?", a: "Gefährliche KV beschreibt die Art der Begehung (z. B. Waffe, Gift). Schwere KV beschreibt die schweren Folgen (z. B. Verlust eines Auges)." },
+{ t: "Strafrecht", f: "Was ist Begünstigung?", a: "Jemand hilft einem Täter nach der Tat, um ihm die Vorteile der Tat zu sichern." },
+{ t: "Strafrecht", f: "Welche Arten von Vorsatz gibt es?", a: "Absicht (dolus directus 1. Grades)\nDirekter Vorsatz (dolus directus 2. Grades)\nBedingter Vorsatz (dolus eventualis)." },
+{ t: "Strafrecht", f: "Wann beginnt der Versuch einer Straftat?", a: "Mit dem unmittelbaren Ansetzen zur Tat." },
+{ t: "Strafrecht", f: "Welche Voraussetzungen hat ein Betrug?", a: "Täuschung\nIrrtum\nVermögensverfügung\nVermögensschaden" },
+{ t: "Strafrecht", f: "Was ist der Unterschied zwischen Notwehr und rechtfertigendem Notstand?", a: "Notwehr richtet sich gegen einen rechtswidrigen Angriff durch einen Menschen. Der rechtfertigende Notstand dient der Abwehr einer gegenwärtigen Gefahr und kann auch von Sachen oder Tieren ausgehen." },
+{ t: "Strafrecht", f: "Was ist Nothilfe?", a: "Die Verteidigung eines anderen gegen einen gegenwärtigen rechtswidrigen Angriff." },
+{ t: "Strafrecht", f: "Was regelt das Strafrecht?", a: "Es regelt die Bestrafung von Personen, die Straftaten begehen." },
+{ t: "Strafrecht", f: "Zu welchem Rechtsgebiet gehört das Strafrecht?", a: "Zum öffentlichen Recht." },
+{ t: "Strafrecht", f: "Wofür steht das StGB?", a: "Strafgesetzbuch." },
+{ t: "Strafrecht", f: "Welche zwei Teile hat das StGB?", a: "Allgemeiner Teil und Besonderer Teil." },
+{ t: "Strafrecht", f: "Was regelt der Allgemeine Teil?", a: "Grundregeln wie Vorsatz, Fahrlässigkeit, Notwehr, Versuch." },
+{ t: "Strafrecht", f: "Was steht im Besonderen Teil?", a: "Einzelne Straftatbestände wie Diebstahl oder Betrug." },
+{ t: "Strafrecht", f: "Was bedeutet „keine Strafe ohne Gesetz“?", a: "Eine Tat ist nur strafbar, wenn sie vorher gesetzlich verboten war." },
+{ t: "Strafrecht", f: "Was ist das Rückwirkungsverbot f?", a: "Eine Handlung darf nicht nachträglich bestraft werden." },
+{ t: "Strafrecht", f: "Was ist der Bestimmtheitsgrundsatz?", a: "Gesetze müssen klar und verständlich sein." },
+{ t: "Strafrecht", f: "Unterschied zwischen OWi und Straftat?", a: "OWi bedeutet Bußgeld, Straftat bedeutet Geld- oder Freiheitsstrafe." },
+{ t: "Strafrecht", f: "Wer verfolgt Ordnungswidrigkeiten?", a: "Ordnungsamt oder Verwaltungsbehörde." },
+{ t: "Strafrecht", f: "Wer verfolgt Straftaten?", a: "Polizei, Staatsanwaltschaft und Gerichte." },
+{ t: "Strafrecht", f: "Was ist ein Vergehen?", a: "Straftat mit Geldstrafe oder Freiheitsstrafe unter einem Jahr." },
+{ t: "Strafrecht", f: "Was ist ein Verbrechen?", a: "Straftat mit Mindestfreiheitsstrafe ab einem Jahr." },
+{ t: "Strafrecht", f: "Was ist das Legalitätsprinzip?", a: "Behörden müssen Straftaten verfolgen." },
+{ t: "Strafrecht", f: "Was ist das Opportunitätsprinzip?", a: "Behörden können bei Ordnungswidrigkeiten entscheiden, ob sie verfolgen." },
+{ t: "Strafrecht", f: "Welche drei Stufen hat eine Straftat?", a: "Tatbestand, Rechtswidrigkeit, Schuld." },
+{ t: "Strafrecht", f: "Wann ist jemand strafbar?", a: "Wenn alle drei Stufen erfüllt sind." },
+{ t: "Strafrecht", f: "Was ist der Unterschied zwischen objektivem und subjektivem Tatbestand?", a: "Der objektive Tatbestand beschreibt die äußere Handlung und den Erfolg, der subjektive Tatbestand beschreibt Vorsatz oder Fahrlässigkeit des Täters." },
+{ t: "Strafrecht", f: "Was bedeutet Rechtswidrigkeit?", a: "Kein Rechtfertigungsgrund liegt vor." },
+{ t: "Strafrecht", f: "Was bedeutet Schuld?", a: "Jemand hat eine Straftat begangen und kann persönlich dafür verantwortlich gemacht werden, weil er wusste, dass es falsch ist und trotzdem anders handeln konnte." },
+{ t: "Strafrecht", f: "Was ist Notwehr?", a: "Verteidigung gegen einen gegenwärtigen, rechtswidrigen Angriff." },
+{ t: "Strafrecht", f: "Welche Voraussetzungen hat Notwehr?", a: "Gegenwärtig, rechtswidrig, erforderlich, angemessen." },
+{ t: "Strafrecht", f: "Was ist Notwehrexzess?", a: "Übertriebene Verteidigung aus Angst oder Panik." },
+{ t: "Strafrecht", f: "Was ist Putativnotwehr?", a: "Irrtum über eine angebliche Notwehrlage." },
+{ t: "Strafrecht", f: "Was ist rechtfertigender Notstand?", a: "Eine Tat wird begangen, um eine größere Gefahr abzuwenden." },
+{ t: "Strafrecht", f: "Was bedeutet Schuldfähigkeit?", a: "Fähigkeit, Unrecht einzusehen." },
+{ t: "Strafrecht", f: "Ab wann ist man strafmündig?", a: "Ab 14 Jahren." },
+{ t: "Strafrecht", f: "Welche Altersstufen gibt es im Strafrecht?", a: "Unter 14 Jahren (nicht strafmündig), 14–17 Jahre (Jugendstrafrecht), Heranwachsende 18–20 Jahre (je nach Reife Jugend- oder Erwachsenenstrafrecht)." },
+{ t: "Strafrecht", f: "Was ist ein Schuldausschlussgrund?", a: "Wenn jemand eine rechtswidrige Tat begeht, ihm diese aber persönlich nicht vorgeworfen werden kann und er deshalb straffrei bleibt." },
+{ t: "Strafrecht", f: "Nenne Schuldausschlussgründe.", a: "Kinder, geistige Störung, Vollrausch, Irrtum, entschuldigender Notstand." },
+{ t: "Strafrecht", f: "Was ist Vorsatz?", a: "Wissen und Wollen der Tat." },
+{ t: "Strafrecht", f: "Was ist Fahrlässigkeit?", a: "Missachtung der erforderlichen Sorgfalt." },
+{ t: "Strafrecht", f: "Unterschied bewusste und unbewusste Fahrlässigkeit?", a: "Bewusst bedeutet Risiko erkannt, unbewusst bedeutet nicht erkannt." },
+{ t: "Strafrecht", f: "Wer ist Täter?", a: "Wer die Tat selbst ausführt." },
+{ t: "Strafrecht", f: "Was ist Mittäterschaft?", a: "Gemeinsame Tatausführung." },
+{ t: "Strafrecht", f: "Was ist Anstiftung?", a: "Jemand bestimmt einen anderen zur Tat." },
+{ t: "Strafrecht", f: "Was ist Beihilfe?", a: "Unterstützung einer Tat." },
+{ t: "Strafrecht", f: "Unterschied Begehungs- und Unterlassungsdelikt?", a: "Tun versus Nichtstun." },
+{ t: "Strafrecht", f: "Was ist ein echtes Unterlassungsdelikt?", a: "Das Gesetz bestraft das Nichtstun direkt." },
+{ t: "Strafrecht", f: "Was ist ein unechtes Unterlassungsdelikt?", a: "Pflichtverletzung aufgrund Garantenstellung." },
+{ t: "Strafrecht", f: "Wer hat eine Garantenstellung?", a: "Eltern, Pfleger, Lehrer, Bademeister, SMA usw." },
+{ t: "Strafrecht", f: "Was ist ein Offizialdelikt?", a: "Wird von Amts wegen verfolgt." },
+{ t: "Strafrecht", f: "Was ist ein Antragsdelikt?", a: "Wird nur auf Strafantrag verfolgt." },
+{ t: "Strafrecht", f: "Was ist ein Versuch?", a: "Unmittelbares Ansetzen zur Tat ohne Vollendung." },
+{ t: "Strafrecht", f: "Was ist Diebstahl?", a: "Wegnahme einer fremden Sache." },
+{ t: "Strafrecht", f: "Was ist Zueignungsabsicht?", a: "Sache behalten oder sich aneignen wollen." },
+{ t: "Strafrecht", f: "Was ist Raub?", a: "Diebstahl mit Gewalt oder Drohung (erst hauen, dann klauen)." },
+{ t: "Strafrecht", f: "Unterschied Diebstahl und Unterschlagung?", a: "Diebstahl ist Wegnahme, Unterschlagung ist behalten." },
+{ t: "Strafrecht", f: "Was ist Körperverletzung?", a: "Gesundheitsschädigung oder körperliche Misshandlung." },
+{ t: "Strafrecht", f: "Was ist gefährliche Körperverletzung?", a: "Zum Beispiel mit Waffe, Gift oder gemeinschaftlich begangen." },
+{ t: "Strafrecht", f: "Was ist schwere Körperverletzung?", a: "Dauerhafte körperliche Schäden." },
+{ t: "Strafrecht", f: "Was ist Nötigung?", a: "Zwang durch Gewalt oder Drohung." },
+{ t: "Strafrecht", f: "Was ist Erpressung?", a: "Nötigung mit Vermögensvorteil." },
+{ t: "Strafrecht", f: "Was ist Urkundenfälschung?", a: "Herstellen oder Verändern einer echten oder falschen Urkunde." },
+{ t: "Strafrecht", f: "Was ist Zeugenaussagepflicht?", a: "Wahrheit sagen und erscheinen müssen." },
+{ t: "Strafrecht", f: "Was ist Zeugnisverweigerungsrecht?", a: "Bestimmte Personen dürfen die Aussage verweigern, z. B. Ehepartner, Verlobte und nahe Verwandte." },
+{ t: "Strafrecht", f: "Aufgabe der Staatsanwaltschaft?", a: "Ermittlungen führen und Anklage erheben." },
+            
+          
+            /* bgb*/
+{ t: "BGB", f: "Wofür steht BGB?", a: "Bürgerliches Gesetzbuch." },
+{ t: "BGB", f: "Was regelt das Bürgerliche Gesetzbuch (BGB)?", a: "Die Rechtsbeziehungen zwischen gleichgestellten Personen (Bürger gegen Bürger)." },
+{ t: "BGB", f: "Zu welchem Rechtsgebiet gehört das BGB?", a: "Zum Privatrecht." },
+{ t: "BGB", f: "Was bedeutet das Koordinationsprinzip?", a: "Die Beteiligten stehen rechtlich auf gleicher Ebene." },
+{ t: "BGB", f: "Was ist eine Sache?", a: "Eine Sache ist ein körperlicher Gegenstand." },
+{ t: "BGB", f: "Was ist ein Eigentümer?", a: "Der Eigentümer hat die rechtliche Herrschaft über eine Sache." },
+{ t: "BGB", f: "Was ist ein Besitzer?", a: "Der Besitzer hat die tatsächliche Gewalt über eine Sache." },
+{ t: "BGB", f: "Was ist der Unterschied zwischen Eigentümer und Besitzer?", a: "Der Eigentümer hat die rechtliche Herrschaft, der Besitzer die tatsächliche Gewalt über eine Sache." },
+{ t: "BGB", f: "Was ist ein Besitzdiener?", a: "Ein Besitzdiener übt die tatsächliche Gewalt für den Besitzer aus und ist weisungsgebunden." },
+{ t: "BGB", f: "Nennen Sie Beispiele für Besitzdiener.", a: "Sicherheitsmitarbeiter\nFahrer\nAngestellte" },
+{ t: "BGB", f: "Was versteht man unter dem Hausrecht?", a: "Das Recht zu bestimmen, wer ein Grundstück oder Gebäude betreten oder dort bleiben darf." },
+{ t: "BGB", f: "Ist das Hausrecht ein Rechtfertigungsgrund?", a: "Nein." },
+{ t: "BGB", f: "Wodurch wird das Hausrecht durchgesetzt?", a: "Gegebenenfalls durch Notwehr oder andere gesetzliche Rechtfertigungsgründe." },
+{ t: "BGB", f: "Was ist eine Rechtsgrundlage?", a: "Sie erklärt, warum man überhaupt handeln darf." },
+{ t: "BGB", f: "Was ist eine Befugnis?", a: "Sie beschreibt, was man konkret tun darf." },     
+{ t: "BGB", f: "Was sind Selbsthilferechte?", a: "Gesetzliche Rechte, mit denen Privatpersonen ausnahmsweise ihre Rechte selbst durchsetzen dürfen, wenn staatliche Hilfe nicht rechtzeitig erreichbar ist." },
+{ t: "BGB", f: "Was ist die allgemeine Selbsthilfe (§ 229 BGB)?", a: "Sie erlaubt es, einen Rechtsanspruch selbst zu sichern, wenn gerichtliche Hilfe zu spät käme." },
+{ t: "BGB", f: "Wann ist die allgemeine Selbsthilfe nach § 229 BGB zulässig?", a: "Wenn staatliche Hilfe nicht rechtzeitig erreichbar ist und der Anspruch sonst vereitelt oder wesentlich erschwert würde." },
+{ t: "BGB", f: "Was ist die Selbsthilfe des Besitzers (§ 859 BGB)?", a: "Der Besitzer darf seinen Besitz gegen verbotene Eigenmacht verteidigen oder sich den Besitz sofort zurückholen." },
+{ t: "BGB", f: "Was ist Besitzwehr?", a: "Die Verteidigung des Besitzes gegen eine gegenwärtige Störung oder Entziehung." },
+{ t: "BGB", f: "Was ist Besitzkehr?", a: "Das sofortige Zurückholen des Besitzes nach einer widerrechtlichen Entziehung." },
+{ t: "BGB", f: "Was ist die Selbsthilfe des Besitzdieners (§ 860 BGB)?", a: "Der Besitzdiener darf für den Besitzer den Besitz gegen Störungen oder Entziehung verteidigen." },
+{ t: "BGB", f: "Wer kann Selbsthilfe nach § 860 BGB ausüben?", a: "Besitzdiener, z. B. Sicherheitsmitarbeiter, die im Auftrag des Besitzers handeln." },
+{ t: "BGB", f: "Was ist verbotene Eigenmacht?", a: "Die widerrechtliche Entziehung oder Störung des Besitzes gegen den Willen des Besitzers." },
+{ t: "BGB", f: "Was versteht man unter einer Garantenstellung im BGB?", a: "Eine Garantenstellung gibt es im BGB nicht. Sie gehört zum Strafrecht." },
+{ t: "BGB", f: "Was ist eine Gefahr?", a: "Eine Gefahr liegt vor, wenn bei ungehindertem Ablauf ein Schaden für Menschen oder Sachen wahrscheinlich ist." },
+{ t: "BGB", f: "Was bedeutet gegenwärtige Gefahr?", a: "Die Gefahr steht unmittelbar bevor, besteht bereits oder dauert noch an." },
+{ t: "BGB", f: "Was bedeutet Verhältnismäßigkeit?", a: "Eine Maßnahme muss geeignet, erforderlich und angemessen sein." },
+{ t: "BGB", f: "Was ist ein Rechtsanspruch?", a: "Das Recht, von einer anderen Person ein Tun, Dulden oder Unterlassen zu verlangen." },
+{ t: "BGB", f: "Wozu dient die allgemeine Selbsthilfe?", a: "Sie dient der Sicherung eines Rechtsanspruchs, wenn staatliche Hilfe nicht rechtzeitig möglich ist." },          
+{ t: "BGB", f: "Was ist Notwehr nach § 227 BGB?", a: "Die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff." },
+{ t: "BGB", f: "Welche Voraussetzungen hat die Notwehr nach § 227 BGB?", a: "Gegenwärtiger Angriff\nRechtswidriger Angriff\nErforderliche Verteidigung" },
+{ t: "BGB", f: "Wogegen richtet sich die Notwehr?", a: "Gegen einen Menschen, von dem der Angriff ausgeht." },
+{ t: "BGB", f: "Was ist Nothilfe?", a: "Die Verteidigung eines anderen gegen einen gegenwärtigen rechtswidrigen Angriff." },
+{ t: "BGB", f: "Was ist ein Notstand?", a: "Die Abwehr einer gegenwärtigen Gefahr, die von einer Sache oder einem Tier ausgeht." },
+{ t: "BGB", f: "Was ist der Verteidigungsnotstand (§ 228 BGB)?", a: "Die Beschädigung oder Zerstörung einer Gefahr verursachenden Sache zur Abwehr einer gegenwärtigen Gefahr." },
+{ t: "BGB", f: "Beispiel für einen Verteidigungsnotstand?", a: "Ein Zaun wird beschädigt, um einen angreifenden Hund abzuwehren." },
+{ t: "BGB", f: "Was ist der Angriffsnotstand (§ 904 BGB)?", a: "Die Einwirkung auf eine unbeteiligte fremde Sache, um eine gegenwärtige Gefahr abzuwenden." },
+{ t: "BGB", f: "Beispiel für einen Angriffsnotstand?", a: "Eine Fensterscheibe wird eingeschlagen, um ein eingeschlossenes Baby zu retten." },
+{ t: "BGB", f: "Welcher Unterschied besteht zwischen Angriffsnotstand und Verteidigungsnotstand?", a: "Beim Verteidigungsnotstand geht die Gefahr von der beschädigten Sache selbst aus. Beim Angriffsnotstand wird eine unbeteiligte Sache beschädigt." },
+{ t: "BGB", f: "Besteht beim Verteidigungsnotstand ein Schadensersatzanspruch?", a: "Nein." },
+{ t: "BGB", f: "Besteht beim Angriffsnotstand ein Schadensersatzanspruch?", a: "Ja." },
+{ t: "BGB", f: "Was regelt § 823 BGB?", a: "Die Schadensersatzpflicht bei einer schuldhaft verursachten Rechtsgutsverletzung." },
+{ t: "BGB", f: "Wann besteht eine Schadensersatzpflicht nach § 823 BGB?", a: "Wenn jemand vorsätzlich oder fahrlässig das Leben, den Körper, die Gesundheit, die Freiheit, das Eigentum oder ein anderes Recht eines anderen widerrechtlich verletzt." },
+{ t: "BGB", f: "Welche Rechtfertigungsgründe kennt das BGB?", a: "Notwehr (§ 227 BGB)\nVerteidigungsnotstand (§ 228 BGB)\nAngriffsnotstand (§ 904 BGB)\nSelbsthilfe (§ 229 BGB)\nSelbsthilfe des Besitzers (§ 859 BGB)\nSelbsthilfe des Besitzdieners (§ 860 BGB)" },          
+{ t: "BGB", f: "Was ist eine Fundsache?", a: "Eine verlorene bewegliche Sache, die gefunden wird." },
+{ t: "BGB", f: "Welche Vorschriften regeln das Fundrecht?", a: "§§ 965 bis 984 BGB." },
+{ t: "BGB", f: "Was regelt § 965 BGB?", a: "Die Anzeigepflicht des Finders." },
+{ t: "BGB", f: "Was bedeutet Anzeigepflicht?", a: "Der Finder muss den Fund unverzüglich dem Eigentümer oder der zuständigen Behörde melden." },
+{ t: "BGB", f: "Was regelt § 966 BGB?", a: "Die Verwahrungspflicht des Finders." },
+{ t: "BGB", f: "Was bedeutet Verwahrungspflicht?", a: "Der Finder muss die Fundsache sorgfältig aufbewahren, bis sie abgegeben werden kann." },
+{ t: "BGB", f: "Was regelt § 967 BGB?", a: "Die Ablieferungspflicht der Fundsache." },
+{ t: "BGB", f: "Was bedeutet Ablieferungspflicht?", a: "Die Fundsache muss an den Eigentümer oder die zuständige Fundbehörde übergeben werden." },
+{ t: "BGB", f: "Was regelt § 971 BGB?", a: "Den Anspruch auf Finderlohn." },
+{ t: "BGB", f: "Wie hoch ist der Finderlohn?", a: "5 % des Wertes bis 500 Euro, darüber 3 % des Mehrwertes." },
+{ t: "BGB", f: "Ab welchem Wert besteht grundsätzlich eine Anzeigepflicht?", a: "Bei einem Wert von mehr als 10 Euro." },
+{ t: "BGB", f: "Wem muss eine Fundsache gemeldet werden?", a: "Dem Eigentümer (wenn bekannt), dem Auftraggeber oder Objektleiter sowie der zuständigen Behörde (Fundbüro oder Polizei)." },
+{ t: "BGB", f: "Was ist bei einer Fundsache zu dokumentieren?", a: "Fundort\nZeit\nBeschreibung der Sache\nFinder" },
+{ t: "BGB", f: "Was bedeutet 'unverzüglich'?", a: "Ohne schuldhaftes Zögern, also so schnell wie möglich." },
+{ t: "BGB", f: "Was passiert, wenn eine Fundsache behalten wird?", a: "Das kann den Straftatbestand der Unterschlagung (§ 246 StGB) erfüllen." },          
+          
+          /* delikt stgb bgb*/
+           
+  
+  
+   { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Paar lässt sich beim Amtsgericht scheiden.", 
+    a: "Thema: Scheidung\nEinordnung: Zivilrecht" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher schlägt einem anderen Besucher mit der Faust ins Gesicht.", 
+    a: "Straftat: Körperverletzung\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Gast wehrt sich mit der mittleren Besitzwehr nach BGB.", 
+    a: "Thema: Besitzwehr\nEinordnung: Zivilrecht" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher beleidigt einen Sicherheitsmitarbeiter mit den Worten: „Du Idiot!“", 
+    a: "Straftat: Beleidigung\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher klettert trotz Hausverbot über den Zaun auf das Gelände.", 
+    a: "Straftat: Hausfriedensbruch\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Gast nimmt das Portemonnaie eines anderen Besuchers aus dessen Jackentasche.", 
+    a: "Straftat: Diebstahl (Taschendiebstahl)\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher beschädigt absichtlich die Fensterscheibe eines Verkaufsstandes.", 
+    a: "Straftat: Sachbeschädigung\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Kunde bezahlt seine offene Rechnung nach mehreren Mahnungen nicht.", 
+    a: "Thema: Zahlungsverzug / Forderung\nEinordnung: Zivilrecht" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher droht einem anderen: „Wenn du nicht verschwindest, bringe ich dich um!“", 
+    a: "Straftat: Bedrohung\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher fordert von einem anderen 500 Euro und droht andernfalls peinliche Bilder zu veröffentlichen.", 
+    a: "Straftat: Erpressung\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Veranstaltungsbesucher findet eine Geldbörse und behält sie für sich.", 
+    a: "Straftat: Unterschlagung (Fundunterschlagung)\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher blockiert einen Notausgang und erklärt: „Hier geht niemand durch!“", 
+    a: "Straftat: Nötigung\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Mitarbeiter nimmt regelmäßig Geld aus der Firmenkasse für private Ausgaben.", 
+    a: "Straftat: Untreue (oder Diebstahl)\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher kauft bewusst ein gestohlenes Fahrrad zu einem ungewöhnlich niedrigen Preis.", 
+    a: "Straftat: Hehlerei\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Sicherheitsmitarbeiter schließt versehentlich ein Tor nicht ab. Dadurch entsteht ein Schaden.", 
+    a: "Thema: Schadensersatz / Haftung aus Vertrag\nEinordnung: Zivilrecht" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher gibt sich als Polizeibeamter aus und verlangt die Personalien anderer Gäste.", 
+    a: "Straftat: Amtsanmaßung\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher fährt beim Ausparken gegen ein anderes Fahrzeug und entfernt sich anschließend.", 
+    a: "Straftat: Unerlaubtes Entfernen vom Unfallort (Unfallflucht)\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher veröffentlicht wissentlich falsche Tatsachen über einen anderen Besucher.", 
+    a: "Straftat: Verleumdung / Üble Nachrede\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher wird bei einem Diebstahl erwischt und bedroht den Ladendetektiv, damit er fliehen kann.", 
+    a: "Straftat: Räuberischer Diebstahl\nEinordnung: Strafrecht + Offizialdelikt" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nEin Besucher verletzt sich auf einer Veranstaltung, weil der Betreiber eine offensichtliche Stolperfalle nicht beseitigt hat.", 
+    a: "Thema: Verletzung der Verkehrssicherungspflicht (Schadensersatz)\nEinordnung: Zivilrecht" 
+  },
+  { 
+    t: "STGB/BGB", 
+    f: "Welcher Sachverhalt liegt vor?\nWelches Recht/Delikt?\n\nBesucher A leiht sich von Besucher B ein Smartphone für einen Anruf. Nach der Veranstaltung gibt A das Handy nicht zurück.", 
+    a: "Straftat: Unterschlagung\nEinordnung: Strafrecht + Antragsdelikt" 
+  },
+
+
+           
+            
+               /* öfentliche Sicherheit */
+             { t: "Öffentliche Sicherheit", f: "Wer darf in Deutschland Gesetze erlassen?", a: "Der Bund (Bundestag und Bundesrat) sowie die Länder (Landtage)." },
+          { t: "Öffentliche Sicherheit", f: "Was versteht man unter einer Beleihung?", a: "Der Staat überträgt bestimmte hoheitliche Aufgaben auf private Stellen oder Unternehmen." },
+          { t: "Öffentliche Sicherheit", f: "Welche Aufgaben haben die Grundrechte?", a: "Sie schützen Bürger vor staatlicher Willkür.\nSie wirken auch zwischen Bürgern (Drittwirkung).\nSie schützen wichtige Rechtsgüter wie Leben, Gesundheit, Freiheit und Eigentum." },
+          { t: "Öffentliche Sicherheit", f: "Was bedeutet 'Bundesrecht bricht Landesrecht'?", a: "Stehen Bundesrecht und Landesrecht im Widerspruch, gilt das Bundesrecht (Art. 31 GG)." },
+          { t: "Öffentliche Sicherheit", f: "Was haben Artikel 1 und Artikel 20 GG gemeinsam?", a: "Sie sind durch die Ewigkeitsklausel geschützt und dürfen nicht geändert werden." },
+            { t: "Öffentliche Sicherheit", f:  "Was versteht man unter Staatsgebiet?",             a: "Das räumlich abgegrenzte Gebiet eines Staates." },
+            { t: "Öffentliche Sicherheit", f:  "Welche drei Elemente benötigt ein Staat?",         a: "Staatsgebiet, Staatsvolk und Staatsgewalt." }, 
+            { t: "Öffentliche Sicherheit", f:  "Was versteht man unter Staatsvolk?",               a: "Die Menschen, die einem Staat angehören."},
+            { t: "Öffentliche Sicherheit", f:  "Was versteht man unter Staatsgewalt?",             a: "Die Befugnis des Staates, Gesetze zu erlassen und durchzusetzen."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Gewaltenteilung?",                    a: "Die Aufteilung staatlicher Macht auf verschiedene Organe."},
+            { t: "Öffentliche Sicherheit", f:  "Welche drei Gewalten gibt es in Deutschland?",     a: "Legislative, Exekutive und Judikative."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Aufgabe hat die Legislative?",              a: "Gesetze erlassen."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Aufgabe hat die Exekutive?",                a: "Gesetze ausführen und durchsetzen."}, 
+            { t: "Öffentliche Sicherheit", f:  "Welche Aufgabe hat die Judikative?",               a: "Recht sprechen und Gesetze anwenden."},
+            { t: "Öffentliche Sicherheit", f:  "Nenne ein Beispiel für die Exekutive.",                           a: "Polizei."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet vertikale Gewaltenteilung?",                         a: "Die Aufteilung staatlicher Aufgaben auf Bund, Länder und Kommunen."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Aufgaben haben die Bundesländer im föderalen System?",     a: "Sie sind unter anderem für Bildung, Polizei, Kultur und Teile des Gesundheitswesens zuständig."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Föderalismus?",                                       a: "Die Verteilung staatlicher Aufgaben zwischen Bund und Ländern."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Aufgaben übernehmen die Kommunen?",                          a: "Örtliche Aufgaben wie Müllabfuhr, Schwimmbäder oder Bauangelegenheiten."},
+            { t: "Öffentliche Sicherheit", f:  "Wie viele Bundesländer hat Deutschland?",                           a: "16"},
+            { t: "Öffentliche Sicherheit", f:  "Warum gibt es Föderalismus in Deutschland?",                        a: "Damit Macht verteilt wird und die Länder eigene Zuständigkeiten haben."},
+            { t: "Öffentliche Sicherheit", f:  "Warum gibt es unterschiedliche Polizeigesetze in Deutschland?",     a: "Weil das Polizeirecht grundsätzlich Sache der Bundesländer ist."},
+            { t: "Öffentliche Sicherheit", f:  "Was sind Menschenrechte?",                                          a: "Rechte, die jedem Menschen zustehen in Deutschland."},
+            { t: "Öffentliche Sicherheit", f:  " Was bedeutet die Menschenwürde nach Art. 1 GG?",                   a: "Jeder Mensch besitzt einen unantastbaren Wert, der geschützt werden muss."},
+            { t: "Öffentliche Sicherheit", f:  "Was sind Bürgerrechte?",                                            a: "Rechte, die nur deutschen Staatsangehörigen zustehen."},
+            { t: "Öffentliche Sicherheit", f:  "Worin liegt der Unterschied zwischen Menschenrechten und Bürgerrechten?",     a: "Menschenrechte gelten für alle Menschen in Deutschland, Bürgerrechte nur für deutsche Staatsbürgern."},
+            { t: "Öffentliche Sicherheit", f:  "Welcher Artikel schützt die allgemeine Handlungsfreiheit?",     a: "Art. 2 GG."},
+            { t: "Öffentliche Sicherheit", f:  " Welcher Artikel schützt die Menschenwürde?",     a: "Art. 1 GG."},
+            { t: "Öffentliche Sicherheit", f:  "Welcher Artikel schützt die Freizügigkeit?",      a: "Art. 11 GG."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Freizügigkeit?",                     a: "Die freie Wahl des Aufenthaltsortes innerhalb Deutschlands."},
+            { t: "Öffentliche Sicherheit", f:  "Welcher Artikel schützt die Versammlungsfreiheit?",     a: "Art. 8 GG."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Versammlungsfreiheit?",     a: " Das Recht, sich friedlich und ohne Waffen zu versammeln."},
+            { t: "Öffentliche Sicherheit", f:  "Nenne ein Beispiel für ein Bürgerrecht.",     a: "Versammlungsfreiheit oder Wahlrecht."},
+            { t: "Öffentliche Sicherheit", f:  "Was sind Rechtsgüter?",     a: "Werte, die durch die Rechtsordnung geschützt werden."},
+            { t: "Öffentliche Sicherheit", f:  "Nenne wichtige Rechtsgüter.",     a: "Leben, Gesundheit, Freiheit, Eigentum, Ehre und Privatsphäre."},
+            { t: "Öffentliche Sicherheit", f:  "Warum schützt der Staat Rechtsgüter?",     a: " Damit ein geordnetes Zusammenleben möglich ist."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Gewaltmonopol?",     a: "Nur der Staat darf grundsätzlich Gewalt anwenden."},
+            { t: "Öffentliche Sicherheit", f:  "Wer übt das Gewaltmonopol aus?",     a: "Staatliche Organe wie Polizei und Gerichte."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist das Sicherheitsmonopol?",     a: "Gibt es nicht :-D "},
+            { t: "Öffentliche Sicherheit", f:  "Wann dürfen Privatpersonen Gewalt anwenden?",     a: "Nur in gesetzlich geregelten Ausnahmefällen, z. B. Notwehr"},
+            { t: "Öffentliche Sicherheit", f:  "Welche Staatsform hat Deutschland?",     a: " Republik"},
+            { t: "Öffentliche Sicherheit", f:  "Welche Regierungsform hat Deutschland?",     a: "Demokratie"},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Rechtsstaat?",     a: "Staatliches Handeln ist an Recht und Gesetz gebunden."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Sozialstaat?",     a: "Der Staat sorgt für soziale Sicherheit und Gerechtigkeit."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Staatsprinzipien enthält Art. 20 GG?",     a: "Demokratie-, Rechtsstaats-, Sozialstaats- und Bundesstaatsprinzip."},
+            { t: "Öffentliche Sicherheit", f:  "Was versteht man unter Recht?",     a: "Die Gesamtheit aller verbindlichen Regeln eines Staates."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist eine Rechtsnorm?",     a: "Eine einzelne gesetzliche Regel."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist öffentliches Recht?",     a: "Das Recht zwischen Staat und Bürger."},
+            { t: "Öffentliche Sicherheit", f:  "Was bedeutet Subordination?",     a: "Über- und Unterordnungsverhältnis zwischen Staat und Bürger."},
+            { t: "Öffentliche Sicherheit", f:  " Nenne Beispiele für öffentliches Recht.",     a: "Verwaltungsrecht, Gewerberecht, Strafrecht."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist Privatrecht?",     a: " Das Recht zwischen gleichgestellten Personen."},
+            { t: "Öffentliche Sicherheit", f:  " Was bedeutet Koordinationsprinzip?",     a: "Die Beteiligten stehen rechtlich auf gleicher Ebene."},
+            { t: "Öffentliche Sicherheit", f:  "Welches Gesetz ist die wichtigste Grundlage des Privatrechts?",     a: "Das Bürgerliche Gesetzbuch (BGB)."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist das Grundgesetz?",     a: " Die Verfassung der Bundesrepublik Deutschland."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Artikel enthalten die Grundrechte?",     a: "Art. 1 bis 19 GG."},
+            { t: "Öffentliche Sicherheit", f:  " Welche Bedeutung haben Grundrechte?",     a: "Sie schützen den Bürger vor ungerechtfertigten Eingriffen des Staates."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist die Hauptaufgabe der Polizei?",     a: "Schutz der öffentlichen Sicherheit und Ordnung sowie Strafverfolgung."},
+            { t: "Öffentliche Sicherheit", f:  "Haben Sicherheitsmitarbeiter dieselben Befugnisse wie die Polizei?",     a: "Nein"},
+            { t: "Öffentliche Sicherheit", f:  "Auf welche Rechte können sich Sicherheitsmitarbeiter stützen?",     a: "Jedermannsrechte, Hausrecht und Selbsthilferechte."},
+            { t: "Öffentliche Sicherheit", f:  " Was versteht man unter einer Rechtsgrundlage?",     a: "Sie erklärt, warum man überhaupt handeln darf."},
+            { t: "Öffentliche Sicherheit", f:  "Was versteht man unter einer Befugnis?",     a: " Sie bestimmt, was man konkret tun darf."},
+            { t: "Öffentliche Sicherheit", f:  "Welche Rechtsgrundlagen sind für Sicherheitsmitarbeiter besonders wichtig?",     a: " Notwehr, Notstand, Jedermann-Festnahme, Hausrecht und Selbsthilferechte."},
+            { t: "Öffentliche Sicherheit", f:  "Was ist das Hausrecht?",     a: "Das Recht zu bestimmen, wer ein Grundstück oder Gebäude betreten oder dort bleiben darf."},
+            { t: "Öffentliche Sicherheit", f:  " Ist das Hausrecht ein Rechtfertigungsgrund?",     a: "Nein!!!!"},
+            { t: "Öffentliche Sicherheit", f:  " Wodurch wird das Hausrecht in einer Konfliktsituation praktisch durchgesetzt?",     a: "Gegebenenfalls durch Notwehr oder andere gesetzliche Rechtfertigungsgründe."},
+          
+
+
+             /* umgang mit menschen */ 
+            
+          
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter Motivation?", "a": "Die inneren Antriebe eines Menschen." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Motive?", "a": "Gründe, die menschliches Verhalten beeinflussen." },
+  { "t": "Umgang mit Menschen", "f": "Welche drei Bereiche prägen die Persönlichkeit?", "a": "Verstand, Triebe und Gefühle." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Primärmotive?", "a": "Angeborene Bedürfnisse wie Essen, Trinken und Schlafen." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Sekundäre Motive?", "a": "Erlernte Bedürfnisse wie Anerkennung, Macht oder Erfolg." },
+  { "t": "Umgang mit Menschen", "f": "Wann entsteht ein Bedürfnis?", "a": "Wenn ein Mangel mit einem Wunsch verbunden ist." },
+  { "t": "Umgang mit Menschen", "f": "Wie kann man Menschen motivieren?", "a": "Durch Anerkennung, Interesse, Vertrauen und klare Ziele." },
+  { "t": "Umgang mit Menschen", "f": "Was sind physiologische Bedürfnisse?", "a": "Grundbedürfnisse wie Essen, Trinken und Schlafen." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Sicherheitsbedürfnisse?", "a": "Bedürfnisse nach Schutz, Gesundheit und finanzieller Sicherheit." },
+  { "t": "Umgang mit Menschen", "f": "Was sind soziale Bedürfnisse?", "a": "Bedürfnisse nach Freundschaft, Liebe und Zugehörigkeit." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Individualbedürfnisse?", "a": "Bedürfnisse nach Anerkennung, Erfolg und Respekt." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter Selbstverwirklichung?", "a": "Die Entfaltung eigener Fähigkeiten und Ziele." },
+  { "t": "Umgang mit Menschen", "f": "Was ist Frustration?", "a": "Enttäuschung, wenn ein Ziel nicht erreicht werden kann." },
+  { "t": "Umgang mit Menschen", "f": "Wie entsteht Frustration?", "a": "Wenn Ziele auf Hindernisse oder Barrieren treffen." },
+  { "t": "Umgang mit Menschen", "f": "Was ist Aggression?", "a": "Absichtliches schädigendes Verhalten gegenüber Personen, Tieren oder Sachen." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter innerer Aggression?", "a": "Aggressive Gedanken oder Gefühle." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter äußerer Aggression?", "a": "Offene aggressive Handlungen oder Äußerungen." },
+  { "t": "Umgang mit Menschen", "f": "Was ist verschobene Aggression?", "a": "Aggression gegen unbeteiligte Personen, Tiere oder Gegenstände." },
+  { "t": "Umgang mit Menschen", "f": "Was ist Kommunikation?", "a": "Der Austausch von Informationen zwischen Sender und Empfänger." },
+  { "t": "Umgang mit Menschen", "f": "Was ist verbale Kommunikation?", "a": "Kommunikation durch gesprochene Worte." },
+  { "t": "Umgang mit Menschen", "f": "Was ist nonverbale Kommunikation?", "a": "Kommunikation durch Körpersprache." },
+  { "t": "Umgang mit Menschen", "f": "Was ist paraverbale Kommunikation?", "a": "Kommunikation durch Tonfall, Lautstärke und Sprechtempo." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter extraverbaler Kommunikation?", "a": "Die Wirkung des äußeren Erscheinungsbildes." },
+  { "t": "Umgang mit Menschen", "f": "Welche vier Ebenen hat eine Nachricht nach dem Vier-Ohren-Modell?", "a": "Sachebene, Selbstoffenbarung, Beziehungsebene und Appell." },
+  { "t": "Umgang mit Menschen", "f": "Was wird auf der Sachebene vermittelt?", "a": "Sachinformationen und Fakten." },
+  { "t": "Umgang mit Menschen", "f": "Was zeigt die Selbstoffenbarungsebene?", "a": "Was der Sprecher über sich selbst preisgibt." },
+  { "t": "Umgang mit Menschen", "f": "Was zeigt die Beziehungsebene?", "a": "Wie der Sprecher zum Empfänger steht." },
+  { "t": "Umgang mit Menschen", "f": "Was zeigt die Appellebene?", "a": "Was der Sprecher vom Empfänger möchte." },
+  { "t": "Umgang mit Menschen", "f": "Was besagt das Eisbergmodell der Kommunikation?", "a": "80% aus Gefühle, Emotionen, Ängste & 20% Worte bewuste Handlungen" },
+  { "t": "Umgang mit Menschen", "f": "Erkläre den 5 Stufige Bedürfnispyramide?", "a": "1) Physiologische Bedürfnis, 2) Sicherheitsbedürfnis, 3) Soziale Bedürfnis,  4) Individual Bedürfnis, 5) Selbstverwirklichung" },
+  { "t": "Umgang mit Menschen", "f": "Wo können Kommunikationsfehler entstehen?", "a": "Beim Sender oder beim Empfänger." },
+  { "t": "Umgang mit Menschen", "f": "Wie kann man Missverständnisse vermeiden?", "a": "Durch Nachfragen und verständliche Erklärungen." },
+  { "t": "Umgang mit Menschen", "f": "Warum ist aktives Zuhören wichtig?", "a": "Um Missverständnisse zu vermeiden." },
+  { "t": "Umgang mit Menschen", "f": "Was sind offene Fragen?", "a": "Fragen, die ausführliche Antworten ermöglichen." },
+  { "t": "Umgang mit Menschen", "f": "Was sind geschlossene Fragen?", "a": "Fragen, die meist mit Ja oder Nein beantwortet werden." },
+  { "t": "Umgang mit Menschen", "f": "Was sind Suggestivfragen?", "a": "Fragen, die eine bestimmte Antwort nahelegen." },
+  { "t": "Umgang mit Menschen", "f": "Was analysiert das Johari-Fenster?", "a": "Selbst- und Fremdwahrnehmung." },
+  { "t": "Umgang mit Menschen", "f": "Was ist der öffentliche Bereich?", "a": "Dinge, die mir und anderen bekannt sind." },
+  { "t": "Umgang mit Menschen", "f": "Was ist der blinde Fleck?", "a": "Dinge, die andere über mich wissen, ich selbst aber nicht." },
+  { "t": "Umgang mit Menschen", "f": "Was ist der geheime Bereich?", "a": "Dinge, die ich über mich weiß, andere aber nicht." },
+  { "t": "Umgang mit Menschen", "f": "Was ist der unbekannte Bereich?", "a": "Dinge, die weder mir noch anderen bekannt sind." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter Wahrnehmung?", "a": "Die Aufnahme und Verarbeitung von Informationen aus der Umwelt." },
+  { "t": "Umgang mit Menschen", "f": "Welche Faktoren beeinflussen die Wahrnehmung?", "a": "Interesse, Motivation, Befinden und Erfahrungen." },
+  { "t": "Umgang mit Menschen", "f": "Warum können Vorurteile die Wahrnehmung beeinflussen?", "a": "Weil sie zu voreiligen Bewertungen führen." },
+  { "t": "Umgang mit Menschen", "f": "Welche drei Schritte umfasst der Wahrnehmungsprozess?", "a": "Wahrnehmen, Beurteilen und Handeln." },
+  { "t": "Umgang mit Menschen", "f": "Was ist ein Konflikt?", "a": "Eine psychische oder physische Auseinandersetzung." },
+  { "t": "Umgang mit Menschen", "f": "Was ist ein echter Konflikt?", "a": "Ein Interessenkonflikt." },
+  { "t": "Umgang mit Menschen", "f": "Was ist ein unechter Konflikt?", "a": "Ein Konflikt aufgrund von Missverständnissen." },
+  { "t": "Umgang mit Menschen", "f": "Was ist ein verschobener Konflikt?", "a": "Ein Konflikt, bei dem das eigentliche Problem verdeckt wird." },
+  { "t": "Umgang mit Menschen", "f": "Welcher Abstand gilt als sinnvoll bei Konfliktgesprächen?", "a": "So nah wie nötig, so weit wie möglich." },
+  { "t": "Umgang mit Menschen", "f": "Woran erkennt man eine Person in Panikstarre?", "a": "Die Person reagiert kaum oder gar nicht auf verbale Anweisungen und wirkt wie erstarrt." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter Panik?", "a": "Eine intensiv empfundene Angst vor einer realen oder vermeintlichen Gefahr." },
+  { "t": "Umgang mit Menschen", "f": "Was bedeutet Konfliktverschiebung?", "a": "Zeit gewinnen und die Situation beruhigen." },
+  { "t": "Umgang mit Menschen", "f": "Was ist ein Kompromiss?", "a": "Eine Lösung, mit der beide Seiten leben können." },
+  { "t": "Umgang mit Menschen", "f": "Was versteht man unter Deeskalation?", "a": "Das stufenweise Abbauen von Konflikten." },
+  { "t": "Umgang mit Menschen", "f": "Was ist die wichtigste Regel der Deeskalation?", "a": "Ruhe bewahren." },
+  { "t": "Umgang mit Menschen", "f": "Welche Stufen der Panik gibt es?", "a": "Panikgefühl, Panik Ereignis, Panikstarre und Paniksturm." },
+  { "t": "Umgang mit Menschen", "f": "Was bedeutet aktives Zuhören bei Konflikten?", "a": "Dem Gesprächspartner aufmerksam zuhören und Verständnis zeigen." },
+  { "t": "Umgang mit Menschen", "f": "Was ist die Schallplattentechnik?", "a": "Das ruhige Wiederholen derselben Aussage." },
+  { "t": "Umgang mit Menschen", "f": "Was ist die Vernebelungstechnik?", "a": "Provokationen ruhig aufnehmen, ohne darauf emotional zu reagieren." },
+
+           
+            
+            
+              /* mündliche fragen */ 
+{ t: "Mündlich", f: "Was sind Rechtsnormen?", a: "Verbindliche Verhaltensregeln des Staates." },
+{ t: "Mündlich", f: "Warum gibt es die Gewaltenteilung?", a: "Um Machtmissbrauch zu verhindern." },
+{ t: "Mündlich", f: "Was ist die horizontale Gewaltenteilung?", a: "Legislative, Exekutive und Judikative." },
+{ t: "Mündlich", f: "Was ist das Bundesstaatsprinzip?", a: "Deutschland ist ein Bundesstaat und besteht aus 16 Bundesländern, die eigene Zuständigkeiten und Befugnisse haben."},
+{ t: "Mündlich", f: "Sind Tiere Sachen?", a: "Nein, § 90a BGB. Sie werden aber rechtlich ähnlich behandelt." },
+{ t: "Mündlich", f: "Was regelt das Schikaneverbot?", a: "Rechte dürfen nicht nur ausgeübt werden, um anderen zu schaden." },
+{ t: "Mündlich", f: "Was ist Hausrecht?", a: "Recht zu bestimmen, wer ein Grundstück oder Gebäude betreten oder verbleiben darf." },
+{ t: "Mündlich", f: "Was sind die Befugnisse eines Eigentümers?", a: "Nutzen, verändern, verkaufen und andere ausschließen. z. B. nutzen, verändern, vermieten oder verkaufen" },
+{ t: "Mündlich", f: "Was ist Gefährdungshaftung?", a: "Haftung ohne Verschulden wegen einer besonderen Gefahr." },
+{ t: "Mündlich", f: "Was ist Tatbestandsmäßigkeit?", a: "Erfüllung der gesetzlichen Merkmale einer Straftat." },
+{ t: "Mündlich", f: "Aus welchen 2 Teilen besteht das Strafgesetzbuch (StGB)?", a: "Allgemeiner Teil und Besonderer Teil." },
+{ t: "Mündlich", f: "Wie lautet der dreistufige Deliktsaufbau?", a: "Tatbestand, Rechtswidrigkeit und Schuld." },
+{ t: "Mündlich", f: "Was ist eine Körperverletzung?", a: "Gesundheitsschädigung oder körperliche Misshandlung." },
+{ t: "Mündlich", f: "Was ist Betrug?", a: "Täuschung mit Vermögensschaden." },
+{ t: "Mündlich", f: "Was ist räuberischer Diebstahl?", a: "Gewalt nach einem Diebstahl zur Beutesicherung." },
+{ t: "Mündlich", f: "Erkläre die Putativnotwehr.", a: "Irrtümliche Annahme einer Notwehrlage." },
+{ t: "Mündlich", f: "Erkläre die Notwehr gem. § 32 StGB.", a: "Ist eine Verteidigung die erforderlich ist gegen einen gegenwärtigen rechtswidrigen Angriff." },
+{ t: "Mündlich", f: "Welche Rechtsgüter sind notwehrfähig?", a: "Alle rechtlich geschützten Güter." },
+{ t: "Mündlich", f: "Wann ist ein Angriff gegenwärtig?", a: "Wenn er bevorsteht, stattfindet oder andauert." },
+{ t: "Mündlich", f: "Darfst du dich mit der Notwehr gegen den gegenwärtigen Angriff eines Tieres verteidigen?", a: "Nein, gegen Tiere gilt Notstand, nicht Notwehr." },
+{ t: "Mündlich", f: "Unterschied Defensivnotstand und Aggressivnotstand?", a: "Defensiv: Gefahr geht von der Sache aus. Aggressiv: Unbeteiligte Sache wird beschädigt." },
+{ t: "Mündlich", f: "Der Notstand (Aggressivnotstand) nach § 904 BGB.", a: "Einwirkung auf fremde Sachen zur Gefahrenabwehr." },
+{ t: "Mündlich", f: "Nenne die Rechtfertigungsgründe aus dem BGB.", a: "Notwehr, Defensivnotstand, Selbsthilfe, Besitzwehr und Aggressivnotstand." },
+{ t: "Mündlich", f: "Was können Schuldausschließungsgründe sein?", a: "Schuldunfähigkeit oder entschuldigender Notstand." },
+{ t: "Mündlich", f: "Für wen gelten die Jedermannsrechte?", a: "Für jeden Bürger." },
+{ t: "Mündlich", f: "Nenne die Voraussetzungen der vorläufigen Festnahme.", a: "Straftat, frische Tat, Fluchtverdacht oder unbekannte Identität." },
+{ t: "Mündlich", f: "Bist du als Sicherheitsmitarbeiter verpflichtet, einen Täter festzunehmen?", a: "Nein, du darfst festnehmen, musst aber nicht." },
+{ t: "Mündlich", f: "Für welche Tätigkeiten benötigst du eine Sachkundeprüfung gem. § 34a GewO?", a: "Türsteher, Diskotheken, Flüchtlingsunterkünfte, leitende Ladendetektive und Bewachung im öffentlichen Raum." },
+{ t: "Mündlich", f: "Nenne die Mindestvoraussetzungen, um im Sicherheitsgewerbe beschäftigt zu werden.", a: "Zuverlässigkeit, Unterrichtungsnachweis oder Sachkunde und ausreichende Deutschkenntnisse." },
+{ t: "Mündlich", f: "Dürfen private Hunde im Dienst eingesetzt werden?", a: "Ja, wenn sie geeignet und ausgebildet sind." },
+{ t: "Mündlich", f: "Wo sind Sicherheitsmitarbeiter tätig?", a: "Objektschutz, Veranstaltungsschutz, Empfangsdienst und Revierdienst." },
+{ t: "Mündlich", f: "Standardausrüstung im Sicherheitsgewerbe.", a: "Dienstkleidung, Ausweis, Funkgerät und Taschenlampe." },
+{ t: "Mündlich", f: "Nebentätigkeiten im Dienst.", a: "Nur wenn die Sicherheitsaufgaben nicht beeinträchtigt werden." },
+{ t: "Mündlich", f: "Was sind Schusswaffen?", a: "Waffen, die Geschosse durch einen Lauf verschießen." },
+{ t: "Mündlich", f: "Was sind nach dem Waffengesetz verbotene Gegenstände?", a: "Zum Beispiel Schlagringe, Butterflymesser und Fallmesser." },
+{ t: "Mündlich", f: "Was ist bei Abhandenkommen einer Schusswaffe zu machen?", a: "Sofort Polizei und Waffenbehörde informieren." },
+{ t: "Mündlich", f: "Welche Rechte haben Betroffene gemäß DSGVO?", a: "Auskunft, Berichtigung, Löschung und Widerspruch." },
+{ t: "Mündlich", f: "Was sind besondere Kategorien personenbezogener Daten?", a: "Gesundheitsdaten, Religion, Herkunft und politische Meinungen." },
+{ t: "Mündlich", f: "Wann muss ein Datenschutzbeauftragter bestellt werden?", a: "Wenn die gesetzlichen Voraussetzungen nach DSGVO und BDSG erfüllt sind." },
+{ t: "Mündlich", f: "Was verstehst du unter einem Konflikt?", a: "Zusammenstoß unterschiedlicher Interessen." },
+{ t: "Mündlich", f: "Zu was kann Frustration führen?", a: "Zu Aggression oder Rückzug." },
+{ t: "Mündlich", f: "Bedürfnispyramide.", a: "Modell von Maslow von Grundbedürfnissen bis zur Selbstverwirklichung." },
+{ t: "Mündlich", f: "Was sind Bedürfnisse?", a: "Mangelzustände, die befriedigt werden wollen." },
+{ t: "Mündlich", f: "Welche Bedürfnisgruppen gibt es?", a: "Körperliche, soziale und individuelle Bedürfnisse." },
+{ t: "Mündlich", f: "Was sind Motive?", a: "Gründe für menschliches Handeln." },
+{ t: "Mündlich", f: "Wie wird Verhalten gesteuert?", a: "Durch Bedürfnisse, Motive und Umwelt." },
+{ t: "Mündlich", f: "Was ist Selbstwertgefühl?", a: "Bewertung der eigenen Person." },
+{ t: "Mündlich", f: "Was sind Vorurteile?", a: "Meinungen ohne ausreichende Fakten." },
+{ t: "Mündlich", f: "Was bezeichnet man als Menschenkenntnis?", a: "Fähigkeit, Menschen einzuschätzen." },
+{ t: "Mündlich", f: "Was ist Kommunikation?", a: "Austausch von Informationen." },
+{ t: "Mündlich", f: "Nenne die vier Kommunikationsarten und erläutere diese.", a: "Verbal, nonverbal, paraverbal und schriftlich." },
+{ t: "Mündlich", f: "Woran erkennt man Kompromissbereitschaft?", a: "An Zuhören und Bereitschaft zum Nachgeben." },
+{ t: "Mündlich", f: "Was ist der erste Eindruck?", a: "Schnelle erste Einschätzung einer Person." },
+{ t: "Mündlich", f: "Was ist Aggressionsverschiebung?", a: "Aggression richtet sich gegen einen anderen als den Verursacher." },
+{ t: "Mündlich", f: "Welche Arten der Aggression gibt es?", a: "Verbale, körperliche, direkte und indirekte Aggression." },
+{ t: "Mündlich", f: "Zwei Arten von Stress.", a: "Eustress und Distress." },
+{ t: "Mündlich", f: "Vier Stufen einer Panik.", a: "Unsicherheit, Angst, Panik und Massenpanik." },
+{ t: "Mündlich", f: "Nenne zwei Arten von Gruppen.", a: "Formelle und informelle Gruppen." },
+{ t: "Mündlich", f: "Was ist eine Menschengruppe?", a: "Mehrere Personen mit gemeinsamer Beziehung oder Ziel." },
+{ t: "Mündlich", f: "Welche Grundsätze sind beim Umgang mit Drogenabhängigen zu beachten?", a: "Ruhig, respektvoll und konfliktvermeidend handeln." },
+{ t: "Mündlich", f: "Welche alterstypischen Verhaltensweisen zeigen Jugendliche?", a: "Gruppenorientierung, Risikobereitschaft und Identitätssuche." },
+{ t: "Mündlich", f: "Unterschied zwischen drohender und gegenwärtiger Gefahr.", a: "Drohend kann eintreten, gegenwärtig steht unmittelbar bevor oder hat begonnen." },
+{ t: "Mündlich", f: "Drei Säulen der Sicherheitstechnik.", a: "Mechanische, elektronische und organisatorische Sicherheit." },
+{ t: "Mündlich", f: "Schließanlagen.", a: "Systeme zur Regelung von Zutrittsberechtigungen." },
+{ t: "Mündlich", f: "Brandklassen und Löschmittel.", a: "A, B, C, D, F sowie Wasser, Schaum, Pulver und CO₂." },
+{ t: "Mündlich", f: "Brandmelderarten.", a: "Rauch-, Wärme-, Flammen- und Handmelder." },
+{ t: "Mündlich", f: "Zweck von Gefahrenmeldeanlagen.", a: "Gefahren erkennen und melden." },
+{ t: "Mündlich", f: "Bestandteile einer EMA.", a: "Melder, Zentrale und Alarmgeber." },
+{ t: "Mündlich", f: "Aufgabe von Störmeldeanlagen.", a: "Technische Störungen melden." },
+{ t: "Mündlich", f: "Widerstandswert von Fenstern erhöhen.", a: "Durch Sicherheitsglas, Pilzkopfverriegelungen und Zusatzsicherungen." },
+{ t: "Mündlich", f: "Einsatzorte von Drehsperren.", a: "Stadien, Unternehmen und Bahnhöfe." },
+{ t: "Mündlich", f: "Was für Merkmale hat das Gebotszeichen", a: "Blau und rund, schreiben ein Verhalten vor." },
+{ t: "Mündlich", f: "Was für Merkmale hat das Verbotszeichen.", a: "Rot und rund, verbieten ein Verhalten." },
+          
+              /* difinition */ 
+{ t: "Definition", f: "Nenne die Definition von Straftat", a: "Eine rechtswidrige Tat, die den Tatbestand eines Strafgesetzbuchs verwirklicht und mit Strafe bedroht ist." },
+{ t: "Definition", f: "Nenne die Definition von Vorsatz", a: "Handeln mit Wissen und Wollen." },
+{ t: "Definition", f: "Nenne die Definition von Fahrlässigkeit", a: "Außerachtlassen der erforderlichen Sorgfalt." },
+{ t: "Definition", f: "Nenne die Definition von Versuch", a: "Der Täter setzt unmittelbar zur Tat an, ohne dass die Tat vollendet wird." },
+{ t: "Definition", f: "Nenne die Definition von Offizialdelikt", a: "Eine Straftat, die von Amts wegen verfolgt wird." },
+{ t: "Definition", f: "Nenne die Definition von Antragsdelikt", a: "Eine Straftat, die nur auf Strafantrag verfolgt wird." },
+{ t: "Definition", f: "Nenne die Definition von Diebstahl", a: "Wegnahme einer fremden beweglichen Sache in Zueignungsabsicht." },
+{ t: "Definition", f: "Nenne die Definition von Wegnahme", a: "Bruch fremden und Begründung neuen Gewahrsams." },
+{ t: "Definition", f: "Nenne die Definition von Gewahrsam", a: "Die tatsächliche Sachherrschaft über eine Sache." },
+{ t: "Definition", f: "Nenne die Definition von Notwehr", a: "Erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff (VEGRA)." },
+{ t: "Definition", f: "Nenne die Definition von Rechtsgut", a: "Durch Gesetze besonders geschützte Werte und Güter, z. B. Leben oder Eigentum." },
+{ t: "Definition", f: "Nenne die Definition von Hausrecht", a: "Das Recht zu bestimmen, wer ein Grundstück oder Gebäude betreten oder dort verbleiben darf." },
+{ t: "Definition", f: "Nenne die Definition von Besitzdiener", a: "Person, die die tatsächliche Gewalt über eine Sache für einen anderen ausübt." },
+{ t: "Definition", f: "Nenne die Definition von Identifizierte Person", a: "Person, deren Identität bereits feststeht." },
+{ t: "Definition", f: "Nenne die Definition von Identifizierbare Person", a: "Eine Person, deren Identität mit zusätzlichen Informationen festgestellt werden kann." },
+{ t: "Definition", f: "Nenne die Definition von Waffe", a: "Gegenstand, der seinem Wesen nach dazu bestimmt ist, die Angriffs- oder Abwehrfähigkeit von Menschen zu beseitigen oder herabzusetzen." },
+{ t: "Definition", f: "Nenne die Definition von Schusswaffe", a: "Waffe, bei der ein Geschoss durch einen Lauf getrieben wird." },
+{ t: "Definition", f: "Nenne die Definition von Anscheinswaffe", a: "Gegenstand, der einer echten Schusswaffe täuschend ähnlich sieht." },
+{ t: "Definition", f: "Nenne die Definition von Sache", a: "Körperliche Gegenstände. Alles, was körperlich ist, Raum einnimmt und nicht nur gedanklich oder digital existiert." },
+{ t: "Definition", f: "Nenne die Definition von Recht", a: "Die Gesamtheit aller verbindlichen Regeln, die das Zusammenleben der Menschen ordnen." },
+{ t: "Definition", f: "Nenne die Definition von Funktionen des Rechts", a: "Ausgleichsfunktion, Schutzfunktion und Ordnungsfunktion." },
+{ t: "Definition", f: "Nenne die Definition von Jedermannsrecht", a: "Recht, in bestimmten Ausnahmesituationen Gewalt anwenden zu dürfen." },
+{ t: "Definition", f: "Nenne die Definition von PPP", a: "Zusammenarbeit zwischen öffentlichen Behörden und privaten Sicherheitsdienstleistern." },
+{ t: "Definition", f: "Nenne die Definition von Menschenkenntnis", a: "Die Fähigkeit, Menschen richtig einzuschätzen und professionell mit ihnen umzugehen." },
+{ t: "Definition", f: "Nenne die Definition von Personenbezogene Daten", a: "Daten, die sich auf eine bestimmte oder bestimmbare Person beziehen." },
+          
+  /* gewerberecht*/ 
+          { t: "gewerbe", f: "Welche Voraussetzungen muss ein Bewachungsunternehmer erfüllen, um eine Erlaubnis nach § 34a GewO zu erhalten?", a: "Zuverlässig – finanziell geordnet – sachkundig – versichert" },
+          { t: "gewerbe", f: "Welche persönlichen Voraussetzungen muss ein Sicherheitsmitarbeiter erfüllen?", a: "Mindestalter 18 Jahre, Persönliche Zuverlässigkeit, Ausreichende Deutschkenntnisse, Unterrichtung oder Sachkundeprüfung (je nach Tätigkeit)" }, 
+          { t: "gewerbe", f: "Welche Ausweise müssen während des Dienstes eines SMA mitgeführt werden?", a: "Dienstausweis und amtlicher Lichtbildausweis (z. B. Personalausweis)." },
+          { t: "gewerbe", f: "Welche Anforderungen gelten zusätzlich für den Dienstausweis?", a: "Der Dienstausweis muss sich deutlich von behördlichen Ausweisen unterscheiden und darf nicht mit diesen verwechselt werden." }, 
+          { t: "gewerbe", f: "Welche Angaben muss ein Dienstausweis nach § 18 BewachV enthalten?", a: "Name und Anschrift des Bewachungsunternehmens, Vorname und Nachname des Sicherheitsmitarbeiters, Unterschrift des Mitarbeiters & Unternehmensverantwortlichen, Bewacherregister-ID des Unternehmens & Mitarbeiters" }, 
+          { t: "gewerbe", f: "Was regelt § 34a GewO?", a: "Wer gewerbsmäßig Leben oder Eigentum fremder Personen bewachen darf ." }, 
+          { t: "gewerbe", f: "Benötigt ein Bewachungsunternehmen eine behördliche Erlaubnis?", a: "Ja" }, 
+          { t: "gewerbe", f: "Was regelt die BewachV", a: "Wie das Bewachungsgewerbe ausgeübt werden muss." },         
+          { t: "gewerbe", f: "Welche wichtigen Bereiche regelt die BewachV?", a: "Unterrichtung, Sachkundeprüfung, Bewacherregister, Dienstausweis, Dienstkleidung, Dienstanweisung und Umgang mit Waffen." }, 
+          { t: "gewerbe", f: "Was ist das Bewacherregister?", a: "Eine behördliche Datenbank für Bewachungsunternehmen und Wachpersonen." }, 
+          { t: "gewerbe", f: "Wofür steht GewO?", a: "Gewerbeordnung" }, 
+          { t: "gewerbe", f: "Was sagt die GewO?", a: "Wer bewachen darf." }, 
+          { t: "gewerbe", f: "Wofür steht BewachV?", a: "Bewachungsverordnung." }, 
+          { t: "gewerbe", f: "Was sagt die BewachV?", a: "Wie bewacht wird." }, 
+          { t: "gewerbe", f: "Wofür steht DGUV V23?", a: "Deutsche Gesetzliche Unfallversicherung Vorschrift 23 (für Sicherheitsmitarbeiter.)." }, 
+    
+            /* Sicherheit*/ 
+{ t: "sicherheit", f: "Was versteht man unter dem Widerstandswert?", a: "Der Widerstandswert beschreibt die Widerstandsklasse einer mechanischen Sicherung, z. B. RC1 bis RC6 bei Türen oder Fenstern." },
+{ t: "sicherheit", f: "Wovon hängt die Widerstandsfähigkeit einer Tür ab?", a: "Von der Bauart (Konstruktion) und dem verwendeten Material." },
+{ t: "sicherheit", f: "Was ist die Widerstandszeit?", a: "Die Zeit, die ein geübter Täter mit geeignetem Werkzeug benötigt, um ein Hindernis zu überwinden." },
+{ t: "sicherheit", f: "Welche drei Säulen der Sicherheit gibt es?", a: "Mechanische Sicherheit\nElektronische Sicherheit\nOrganisation / Personal" },
+{ t: "sicherheit", f: "Was gehört zur mechanischen Sicherheitstechnik?", a: "Zäune\nTore\nTüren\nFenster" },
+{ t: "sicherheit", f: "Was ist das Ziel der mechanischen Grundsicherung?", a: "Sicherheitsbereiche trennen\nSicherheitsbereiche kennzeichnen\nEindringen verhindern oder erschweren" },
+{ t: "sicherheit", f: "Welche Aufgaben haben Zaunanlagen?", a: "Grundstücksgrenzen kennzeichnen\nWiderrechtliches Eindringen verhindern oder erschweren" },
+{ t: "sicherheit", f: "Welche Anforderungen muss ein Sicherheitszaun erfüllen?", a: "Schutz gegen Durchbrechen\nSchutz gegen Übersteigen\nSchutz gegen Untergraben\nSchutz gegen Durchreichen von Gegenständen" },
+{ t: "sicherheit", f: "Wie verhindert man das Übersteigen eines Zaunes?", a: "Höhe mindestens 2,50 m\nÜbersteigschutz\nKronensicherung" },
+{ t: "sicherheit", f: "Wie verhindert man das Untergraben eines Zaunes?", a: "Zaun mindestens 30 cm im Erdreich verankern\nFundamente ca. 80 cm tief" },
+{ t: "sicherheit", f: "Warum haben Sicherheitszäune kleine Maschen?", a: "Damit keine Gegenstände durchgereicht werden können." },
+{ t: "sicherheit", f: "Nennen Sie mögliche Schwachstellen einer Zaunanlage.", a: "Tore\nTüren\nDurchlässe\nSchnittstellen" },
+{ t: "sicherheit", f: "Was ist eine Fluchttür?", a: "Eine Tür, die sich im Notfall jederzeit in Fluchtrichtung (von innen nach außen) öffnen lässt." },
+{ t: "sicherheit", f: "Welche Anforderungen gelten für Fluchttüren?", a: "Müssen jederzeit leicht zu öffnen sein\nMüssen frei zugänglich sein\nMüssen deutlich gekennzeichnet sein\nDürfen niemals verstellt werden" },
+{ t: "sicherheit", f: "Was ist ein Panikschloss?", a: "Ein Schloss, das sich jederzeit von innen öffnen lässt, auch wenn die Tür abgeschlossen ist." },
+{ t: "sicherheit", f: "Wozu dienen Türsysteme?", a: "Sie vereinzeln Personen und lassen nur berechtigte Personen eintreten." },
+{ t: "sicherheit", f: "Nennen Sie Beispiele für Türsysteme.", a: "Drehkreuz\nDrehsperre\nPersonenschleuse\nPortaldrehkreuz" },
+{ t: "sicherheit", f: "Welche Aufgabe hat ein Schutzbeschlag?", a: "Er schützt den Schließzylinder gegen:\nAufbohren\nHerausziehen\nAbbrechen" },
+{ t: "sicherheit", f: "Was ist eine Hauptschlüsselanlage?", a: "Der Hauptschlüssel öffnet alle Türen, Einzelschlüssel öffnen nur ihre jeweilige Tür." },
+{ t: "sicherheit", f: "Was ist eine Zentralschlossanlage?", a: "Mehrere verschiedene Wohnungsschlüssel öffnen zusätzlich die Haustür." },
+{ t: "sicherheit", f: "Was ist eine Generalhauptschlüsselanlage?", a: "Mehrere Hauptschlüsselanlagen werden zusammengefasst. Der Generalhauptschlüssel öffnet alle Bereiche." },
+{ t: "sicherheit", f: "Welche Schlossarten gibt es?", a: "Buntbartschloss\nZylinderschloss\nTransponderschloss\nZahlenkombinationsschloss\nChubb-Schloss\nMechatronisches Schloss" },
+{ t: "sicherheit", f: "Welche Fenstersicherungen gibt es?", a: "Sicherheitsglas\nRollläden\nFenstergitter\nPilzkopfverriegelung" },
+{ t: "sicherheit", f: "Welche Widerstandsklassen gibt es bei Sicherheitsverglasungen?", a: "Durchwurfhemmend (z. B. Steinwurf)\nDurchbruchhemmend (z. B. Axthieb)\nDurchschusshemmend (z. B. Schusswaffe)\nSprengwirkungshemmend (z. B. Sprengstoff)" },
+{ t: "sicherheit", f: "Welche zusätzlichen Fenstersicherungen gibt es?", a: "Splitterschutzfolie\nSplitterschutzvorhang\nAbschließbarer Fenstergriff\nRollläden\nFenstergitter\nRollgitter" },
+{ t: "sicherheit", f: "Wozu dienen Wertbehältnisse?", a: "Zum Schutz von:\nBargeld\nWertsachen\nDokumenten" },
+{ t: "sicherheit", f: "Was bedeutet ZKS?", a: "Zutrittskontrollsystem." },
+{ t: "sicherheit", f: "Welche Ziele hat ein Zutrittskontrollsystem?", a: "Zutritt kontrollieren\nPersonen identifizieren\nUnbefugte fernhalten\nAlarm auslösen" },
+{ t: "sicherheit", f: "Welche biometrischen Verfahren gibt es?", a: "Fingerabdruck\nIris\nStimme" },
+{ t: "sicherheit", f: "Welche weiteren Zutrittsverfahren gibt es?", a: "PIN\nBerechtigungskarte\nTransponder\nCodierter Ausweis" },
+{ t: "sicherheit", f: "Aus welchen Bestandteilen besteht eine Meldeeinrichtung?", a: "Melder\nMeldelinie\nStromversorgung\nMeldezentrale\nÜbertragungseinrichtung" },
+{ t: "sicherheit", f: "Welche Aufgabe hat ein Melder?", a: "Ein Melder erkennt Gefahren oder Störungen und meldet diese an die Meldezentrale." },
+{ t: "sicherheit", f: "Welche Aufgabe hat die Meldelinie?", a: "Sie verbindet die Melder mit der Meldezentrale." },
+{ t: "sicherheit", f: "Welche Aufgabe hat die Stromversorgung?", a: "Sie versorgt die Meldeanlage mit elektrischer Energie und verfügt häufig über eine Notstromversorgung." },
+{ t: "sicherheit", f: "Welche Aufgabe hat die Meldezentrale?", a: "Sie verarbeitet eingehende Meldungen und löst bei Bedarf Alarm aus." },
+{ t: "sicherheit", f: "Welche Aufgabe hat die Übertragungseinrichtung?", a: "Sie leitet den Alarm an die Notruf- und Serviceleitstelle (NSL), Polizei oder Feuerwehr weiter." },
+{ t: "sicherheit", f: "Was bedeutet GMA?", a: "Gefahrenmeldeanlage (Oberbegriff)." },
+{ t: "sicherheit", f: "Was bedeutet EMA?", a: "Einbruchmeldeanlage." },
+{ t: "sicherheit", f: "Was bedeutet BMA?", a: "Brandmeldeanlage." },
+{ t: "sicherheit", f: "Was bedeutet ÜMA?", a: "Überfallmeldeanlage." },
+{ t: "sicherheit", f: "Was bedeutet STÖMA?", a: "Störmeldeanlage." },
+{ t: "sicherheit", f: "Welche Gefahrenmeldeanlagen gibt es?", a: "Brandmeldeanlage (BMA)\nEinbruchmeldeanlage (EMA)\nÜberfallmeldeanlage (ÜMA)\nStörmeldeanlage (STÖMA)" },         
+{ t: "sicherheit", f: "Welche Melder gehören zur Brandmeldeanlage?", a: "Rauchmelder\nWärmemelder\nFlammenmelder" },
+{ t: "sicherheit", f: "Welcher Melder reagiert auf Temperatur?", a: "Der Wärmemelder." },
+{ t: "sicherheit", f: "Welche Melder gehören zur Einbruchmeldeanlage?", a: "Glasbruchmelder\nMagnetkontaktmelder\nSchlossriegelmelder\nIR-Bewegungsmelder\nUltraschallmelder\nLichtschranke\nZaunmeldesystem\nErschütterungsmelder" },
+{ t: "sicherheit", f: "Welche Bereiche können durch eine EMA überwacht werden?", a: "Freilandüberwachung\nAußenhautüberwachung\nRaumüberwachung\nObjektüberwachung" },
+{ t: "sicherheit", f: "Wann wird eine EMA scharf geschaltet?", a: "Wenn sich niemand mehr im Gebäude oder auf dem Gelände befindet." },
+{ t: "sicherheit", f: "Was unterscheidet die EMA von den übrigen Gefahrenmeldeanlagen?", a: "Die EMA muss manuell scharf und unscharf geschaltet werden. Die übrigen Gefahrenmeldeanlagen sind in der Regel dauerhaft betriebsbereit." },
+{ t: "sicherheit", f: "Welche Melder gehören zur Überfallmeldeanlage?", a: "Geldscheinkontaktmelder\nTrittleistenmelder\nDruckknopfmelder\nSondercodierung" },
+{ t: "sicherheit", f: "Was ist die Interventionszeit?", a: "Die Zeit zwischen Alarmauslösung und Eintreffen der Sicherheitskräfte." },
+{ t: "sicherheit", f: "Wie lautet der Merksatz zu den Gefahrenmeldeanlagen?", a: "B = Brand\nE = Einbruch\nÜ = Überfall\n\nAlle gehören zur Gefahrenmeldeanlage (GMA)." },
+{ t: "sicherheit", f: "Welche Löschklassen gibt es?", a: "A = Feste Stoffe (Holz, Papier)\nB = Flüssigkeiten (Benzin, Alkohol)\nC = Gase (Propan, Erdgas)\nD = Metalle (Magnesium)\nF = Speiseöle und Speisefette (Fritteuse)\n\nMerke: Eine Löschklasse E gibt es heute nicht mehr." },
+{ t: "sicherheit", f: "Welchen Löscheffekt hat Wasser?", a: "Wasser löscht durch Kühlwirkung." },
+{ t: "sicherheit", f: "Welche Löschmittel wirken durch Ersticken (Stickwirkung)?", a: "Kohlendioxid (CO₂)\nSchaum\nPulver" },
+{ t: "sicherheit", f: "Wie löscht man einen Fettbrand?", a: "Mit einem Fettbrandlöscher der Klasse F oder den Topf bzw. die Pfanne mit einem Deckel abdecken.\n\nWichtig: Niemals Wasser verwenden!" },        
+      
+        
+          /* gewerberecht*/ 
+  { t: "datenschutz", f: "Auf welchen Grundrechten beruht das Recht auf informationelle Selbstbestimmung?", a: "Auf Art. 1 GG (Menschenwürde) und Art. 2 GG (freie Entfaltung der Persönlichkeit)." },
+          
+{ t: "datenschutz", f: "Wofür steht DSGVO?", a: "Datenschutz-Grundverordnung der Europäischen Union." },
+{ t: "datenschutz", f: "Welche Straftaten schützen personenbezogene Daten?", a: "Verletzung der Vertraulichkeit des Wortes (§ 201 StGB)\nVerletzung des höchstpersönlichen Lebensbereichs (§ 201a StGB)\nVerletzung des Briefgeheimnisses (§ 202 StGB)\nAusspähen von Daten (§ 202a StGB)." },
+{ t: "datenschutz", f: "Wofür steht BDSG?", a: "Bundesdatenschutzgesetz." },
+{ t: "datenschutz", f: "Wofür steht LDSG?", a: "Landesdatenschutzgesetz." },
+{ t: "datenschutz", f: "Was bedeutet das Recht auf informationelle Selbstbestimmung?", a: "Jeder Mensch entscheidet selbst über die Verwendung seiner personenbezogenen Daten." },
+{ t: "datenschutz", f: "Was sind personenbezogene Daten?", a: "Alle Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen." },
+{ t: "datenschutz", f: "Nennen Sie fünf personenbezogene Daten.", a: "Name\nAdresse\nTelefonnummer\nKfz-Kennzeichen\nAusweisnummer\nIP-Adresse\nVideoaufzeichnungen" },
+{ t: "datenschutz", f: "Was sind besondere Kategorien personenbezogener Daten?", a: "Gesundheitsdaten\nReligiöse Überzeugung\nPolitische Meinung\nGewerkschaftszugehörigkeit\nEthnische Herkunft\nSexuelle Orientierung\nBiometrische Daten\nGenetische Daten" },
+{ t: "datenschutz", f: "Warum werden besondere Kategorien personenbezogener Daten besonders geschützt?", a: "Weil sie zur Diskriminierung, Benachteiligung oder Stigmatisierung von Personen führen können." },
+{ t: "datenschutz", f: "Was ist eine identifizierte Person?", a: "Eine Person, deren Identität eindeutig bekannt ist.\n\nBeispiel: Max Mustermann, wohnhaft in Berlin." },
+{ t: "datenschutz", f: "Was ist eine identifizierbare Person?", a: "Eine Person, deren Identität durch zusätzliche Informationen festgestellt werden kann.\n\nBeispiel: Der Trainer des Fußballvereins oder der Mann mit dem Schäferhund." },
+{ t: "datenschutz", f: "Was bedeutet Datenverarbeitung?", a: "Das Erheben, Erfassen, Speichern, Verändern, Nutzen, Weitergeben, Bereitstellen und Löschen personenbezogener Daten." },
+{ t: "datenschutz", f: "Wann ist die Verarbeitung personenbezogener Daten erlaubt?", a: "Mit Einwilligung der betroffenen Person.\nAufgrund einer gesetzlichen Verpflichtung.\nAufgrund eines berechtigten Interesses." },
+{ t: "datenschutz", f: "Welche Grundsätze der DSGVO gibt es?", a: "Rechtmäßigkeit\nTransparenz\nZweckbindung\nDatenminimierung\nVertraulichkeit" },
+{ t: "datenschutz", f: "Was bedeutet Zweckbindung?", a: "Personenbezogene Daten dürfen nur für den festgelegten Zweck erhoben und verarbeitet werden." }, 
+{ t: "datenschutz", f: "Was bedeutet Datenminimierung (Datensparsamkeit)?", a: "Es dürfen nur die personenbezogenen Daten erhoben werden, die für den jeweiligen Zweck notwendig sind." },
+{ t: "datenschutz", f: "Was bedeutet Transparenz?", a: "Betroffene Personen müssen darüber informiert werden, welche Daten erhoben und verarbeitet werden." },
+{ t: "datenschutz", f: "Wann ist eine Videoüberwachung zulässig?", a: "Bei berechtigtem Interesse.\nWenn sie erforderlich ist.\nNach einer Interessenabwägung.\nMit gut sichtbaren Hinweisschildern." },
+{ t: "datenschutz", f: "Welche Voraussetzungen gelten für eine Videoüberwachung?", a: "Zweckbindung\nVerhältnismäßigkeit\nTransparenz\nSpeicherung nur so lange wie erforderlich" },
+{ t: "datenschutz", f: "Wo ist eine Videoüberwachung grundsätzlich unzulässig?", a: "Toiletten\nDuschen\nUmkleidekabinen\nPausenräume" },
+{ t: "datenschutz", f: "Warum müssen Hinweisschilder angebracht werden?", a: "Damit Personen vor Betreten des überwachten Bereiches informiert werden.\n\nDas Hinweisschild informiert über:\nWer überwacht.\nWarum überwacht wird.\nWie lange gespeichert wird.\nAn wen man sich wenden kann." },
+{ t: "datenschutz", f: "Dürfen Videoaufnahmen unbegrenzt gespeichert werden?", a: "Nein. Sie dürfen nur so lange gespeichert werden, wie es für den vorgesehenen Zweck erforderlich ist." },
+{ t: "datenschutz", f: "Welche Rechte haben betroffene Personen nach der DSGVO?", a: "Auskunft\nBerichtigung\nLöschung\nWiderspruch" },
+{ t: "datenschutz", f: "Was bedeutet das Auskunftsrecht?", a: "Jede Person darf erfahren, welche personenbezogenen Daten über sie gespeichert wurden." },
+{ t: "datenschutz", f: "Was bedeutet das Recht auf Berichtigung?", a: "Falsche oder unvollständige personenbezogene Daten müssen berichtigt oder ergänzt werden." },
+{ t: "datenschutz", f: "Was bedeutet das Recht auf Löschung?", a: "Nicht mehr benötigte oder unrechtmäßig gespeicherte personenbezogene Daten müssen gelöscht werden." },
+{ t: "datenschutz", f: "Was bedeutet das Widerspruchsrecht?", a: "Betroffene Personen können der Verarbeitung ihrer personenbezogenen Daten in bestimmten Fällen widersprechen." },
+{ t: "datenschutz", f: "Welche Aufgaben hat ein Datenschutzbeauftragter?", a: "Beratung des Unternehmens\nÜberwachung der Einhaltung des Datenschutzes\nUnterstützung bei Datenschutzfragen\nMeldung von Datenschutzverletzungen an die zuständige Behörde" },
+{ t: "datenschutz", f: "Wann muss ein Datenschutzbeauftragter bestellt werden?", a: "Wenn in der Regel mehr als 20 Personen ständig mit der automatisierten Verarbeitung personenbezogener Daten beschäftigt sind." },
+       
+               /* waffenrecht */ 
+{ t: "waffenrecht", f: "Was ist die wichtigste Rechtsnorm des Waffenrechts?", a: "Das Waffengesetz (WaffG)." },
+{ t: "waffenrecht", f: "Welche Rechtsnorm enthält Pflichten zum Umgang mit Waffen im Sicherheitsgewerbe?", a: "Die Bewachungsverordnung (BewachV)." },
+{ t: "waffenrecht", f: "Was regelt die DGUV Vorschrift 23?", a: "Die DGUV (Deutsche Gesetzliche Unfallversicherung) Vorschrift 23 ist eine Unfallverhütungsvorschrift und enthält Pflichten zum Umgang mit Waffen und Munition." },
+{ t: "waffenrecht", f: "Was regelt § 1 WaffG?", a: "Umgang mit Waffen und Munition.\nWas eine Waffe ist.\nWer zum Umgang mit Waffen berechtigt ist." },
+{ t: "waffenrecht", f: "Was sind Waffen?", a: "Waffen sind Gegenstände, die dazu bestimmt sind, die Angriffs- oder Abwehrfähigkeit von Menschen zu beseitigen oder herabzusetzen." },
+{ t: "waffenrecht", f: "Was sind Schusswaffen?", a: "Schusswaffen sind Gegenstände, bei denen Geschosse durch einen Lauf getrieben werden." },
+{ t: "waffenrecht", f: "Welche Gegenstände sind Schusswaffen gleichgestellt?", a: "Bolzenschussgeräte\nArmbrüste\nSchreckschusswaffen" },
+{ t: "waffenrecht", f: "Was sind Hieb- und Stoßwaffen?", a: "Hiebwaffen dienen zum Schlagen.\nStoßwaffen dienen zum Stechen." },
+{ t: "waffenrecht", f: "Welche wesentlichen Teile einer Schusswaffe gibt es?", a: "Lauf\nVerschluss\nGriffstück\nMagazin (beim Revolver die Trommel)" },
+{ t: "waffenrecht", f: "Was bedeutet Erwerben?", a: "Die tatsächliche Gewalt über eine Waffe erlangen." },
+{ t: "waffenrecht", f: "Was bedeutet Besitzen?", a: "Die tatsächliche Gewalt über eine Waffe haben." },
+{ t: "waffenrecht", f: "Was bedeutet Führen?", a: "Eine Waffe zugriffsbereit außerhalb der eigenen Wohnung, Geschäftsräume oder des befriedeten Besitztums mit sich tragen." },
+{ t: "waffenrecht", f: "Was bedeutet Verbringen?", a: "Eine Waffe von Deutschland in einen anderen EU-Staat oder umgekehrt transportieren." },
+{ t: "waffenrecht", f: "Wann ist eine Waffe zugriffsbereit?", a: "Wenn sie mit wenigen schnellen Handgriffen (ca. drei Handgriffe) in Anschlag gebracht werden kann." },
+{ t: "waffenrecht", f: "Wann ist eine Waffe schussbereit?", a: "Wenn sie geladen ist, auch wenn sie gesichert ist." },
+{ t: "waffenrecht", f: "Welche Messer sind verboten?", a: "Butterflymesser\nFallmesser\nFaustmesser\nSpringmesser (soweit verboten)\nMesser mit versteckter Klinge" },
+{ t: "waffenrecht", f: "Welche Messer sind erlaubt?", a: "Klappmesser ohne Einhandöffnung\nMesser ohne feststellbare Klinge\nFeststehende Messer bis 12 cm Klingenlänge\nKüchen- und Alltagsmesser" },
+{ t: "waffenrecht", f: "Wer benötigt die Waffensachkunde nach § 7 WaffG?", a: "Sicherheitsmitarbeiter im:\nGeld- und Werttransport\nBewaffneten Personenschutz\nBewachung von Bundeswehrliegenschaften\nBewachung kritischer Infrastruktur" },
+{ t: "waffenrecht", f: "Welche Voraussetzungen gelten für Berufswaffenträger?", a: "Mindestalter 18 Jahre\nZuverlässigkeit\nPersönliche Eignung\nWaffensachkunde" },
+{ t: "waffenrecht", f: "Was regelt § 42 WaffG?", a: "Bei öffentlichen Veranstaltungen ist das Führen von Waffen verboten." },
+{ t: "waffenrecht", f: "Was ist eine Waffenbesitzkarte (WBK)?", a: "Die Waffenbesitzkarte berechtigt zum Erwerb und Besitz erlaubnispflichtiger Schusswaffen." },
+{ t: "waffenrecht", f: "Was ist ein Waffenschein?", a: "Der Waffenschein berechtigt zum Führen einer Schusswaffe in der Öffentlichkeit." },
+{ t: "waffenrecht", f: "Wie lange ist eine Waffenbesitzkarte gültig?", a: "Die Waffenbesitzkarte ist grundsätzlich unbefristet gültig." },
+{ t: "waffenrecht", f: "Wie lange ist ein Waffenschein gültig?", a: "Ein Waffenschein wird in der Regel für bis zu drei Jahre erteilt." },
+{ t: "waffenrecht", f: "Wann führt man eine Waffe?", a: "Wenn man eine Waffe zugriffsbereit außerhalb der eigenen Wohnung, der Geschäftsräume oder des befriedeten Besitztums bei sich trägt." },
+{ t: "waffenrecht", f: "Was ist zu tun, wenn eine Waffe verloren geht?", a: "Der Verlust muss unverzüglich der zuständigen Waffenbehörde gemeldet werden." },
+{ t: "waffenrecht", f: "Nennen Sie Beispiele für Waffenverbote oder Waffenverbotszonen nach § 42 WaffG.", a: "Schulen\nKindergärten\nJugendzentren\nÖffentliche Veranstaltungen\nGerichte\nBehörden mit Sicherheitskontrollen\nSicherheitsbereiche von Flughäfen\nWaffenverbotszonen" },
+{ t: "waffenrecht", f: "Sind Schreckschusswaffen überall erlaubt?", a: "Nein. Auch für Schreckschusswaffen gelten gesetzliche Vorschriften und Waffenverbote." },
+{ t: "waffenrecht", f: "Welche Prüfreihenfolge empfiehlt sich beim Waffenrecht?", a: "Ist es eine Waffe?\nIst der Besitz oder das Führen verboten?\nLiegt eine Erlaubnis vor?\nGibt es eine Ausnahme?\nLiegt eine Ordnungswidrigkeit oder Straftat vor?" },        
+        ];
+
+        let aktiveThemen = [], gefilterteFragen = [], index = 0;
+
+        function toggleTheme(el, thema) {
+            el.classList.toggle('active');
+            if (aktiveThemen.includes(thema)) aktiveThemen = aktiveThemen.filter(t => t !== thema);
+            else aktiveThemen.push(thema);
+        }
+
+        function starteQuiz() {
+            if(aktiveThemen.length === 0) return alert("Bitte wählen Sie ein Thema.");
+            gefilterteFragen = daten.filter(q => aktiveThemen.includes(q.t));
+            gefilterteFragen.sort(() => Math.random() - 0.5);
+            index = 0;
+            updateCard();
+        }
+
+      function updateCard() {
+    const inner = document.getElementById("card-inner");
+
+    inner.classList.remove("flipped");
+
+    document.getElementById("textF").innerText =
+        gefilterteFragen[index].f;
+
+    document.getElementById("textA").innerText =
+        gefilterteFragen[index].a;
+
+    document.getElementById("counter").innerText =
+        (index + 1) + " / " + gefilterteFragen.length;
+}
+
+        function flipCard() {
+            if (gefilterteFragen.length === 0) return;
+            const inner = document.getElementById('card-inner');
+            if (!inner.classList.contains('flipped')) {
+                document.getElementById('textA').innerText = gefilterteFragen[index].a;
+                inner.classList.add('flipped');
+            } else {
+                index = (index + 1) % gefilterteFragen.length;
+                setTimeout(updateCard, 300);
+            }
+        }
+      function naechsteFrage() {
+    if (gefilterteFragen.length === 0) return;
+
+    index++;
+    if (index >= gefilterteFragen.length) {
+        index = 0;
+    }
+
+    updateCard();
+}
+
+function vorherigeFrage() {
+    if (gefilterteFragen.length === 0) return;
+
+    const inner = document.getElementById("card-inner");
+
+    // Falls Antwort angezeigt wird:
+    if (inner.classList.contains("flipped")) {
+        inner.classList.remove("flipped");
+        return;
+    }
+
+    // Erst dann zur vorherigen Frage wechseln
+    index--;
+
+    if (index < 0) {
+        index = gefilterteFragen.length - 1;
+    }
+
+    updateCard();
+}
+    </script>
+</body>
+</html>
