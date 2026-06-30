@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1565C0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="34a Trainer">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>34a Training | Zertifizierung</title>
@@ -86,7 +93,7 @@ a:active {
   <br> 
    <br>
 <div style="text-align: center; font-size: 12px;">
-    Version 2.0.1<br>
+    Version 4.2.2<br>
    © Christopher Czelzinski <br>
     <a href="https://www.cdesign-berlin.de"
        target="_blank"
@@ -798,5 +805,15 @@ function vorherigeFrage() {
     updateCard();
 }
     </script>
+  <script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+            .then(reg => console.log("Service Worker registriert"))
+            .catch(err => console.error(err));
+    });
+}
+</script>
+  
 </body>
 </html>
