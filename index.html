@@ -64,7 +64,8 @@ a:active {
     <h2>Sachkunde § 34a - Prüfungsvorbereitung</h2>
     <div id="card-container" onclick="flipCard()">
         <div id="card-inner">
-            <div class="card-face card-front" id="textF">Wählen Sie Themen aus und starte.</div>
+            <div class="card-face card-front" id="textF"> Wählen Sie zunächst die gewünschten Themen aus und klicken Sie anschließend auf „Training starten“. <br><br>
+  Um zur nächsten Frage bzw. Antwort zu gelangen, klicken Sie einfach auf die Karte.</div>
             <div class="card-face card-back" id="textA"></div>
         </div>
 
@@ -81,6 +82,7 @@ a:active {
        <div class="toggle-btn" onclick="toggleTheme(this, 'sicherheit')">Sicherheitstechnik</div>
        <div class="toggle-btn" onclick="toggleTheme(this, 'datenschutz')">Datenschutz</div>
       <div class="toggle-btn" onclick="toggleTheme(this, 'waffenrecht')">Waffenrecht</div>
+       <div class="toggle-btn" onclick="toggleTheme(this, 'katalog')">Katalog</div>
     </div>
     <button id="start-btn" onclick="starteQuiz()">Training starten</button>
     <div id="counter"></div>
@@ -93,7 +95,7 @@ a:active {
   <br> 
    <br>
 <div style="text-align: center; font-size: 12px;">
-    Version 4.3.0<br>
+    Version 5.2.1 <br>
    © Christopher Czelzinski <br>
     <a href="https://www.cdesign-berlin.de"
        target="_blank"
@@ -653,7 +655,7 @@ a:active {
 { t: "sicherheit", f: "Welche Melder gehören zur Brandmeldeanlage?", a: "Rauchmelder\nWärmemelder\nFlammenmelder" },
 { t: "sicherheit", f: "Welcher Melder reagiert auf Temperatur?", a: "Der Wärmemelder." },
 { t: "sicherheit", f: "Welche Melder gehören zur Einbruchmeldeanlage?", a: "Glasbruchmelder\nMagnetkontaktmelder\nSchlossriegelmelder\nIR-Bewegungsmelder\nUltraschallmelder\nLichtschranke\nZaunmeldesystem\nErschütterungsmelder" },
-{ t: "sicherheit", f: "Welche Bereiche können durch eine EMA überwacht werden?", a: "Freilandüberwachung\nAußenhautüberwachung\nRaumüberwachung\nObjektüberwachung" },
+{ t: "sicherheit", f: "Welche Bereiche können durch eine EMA überwacht werden?", a: "Freilandüberwachung\n Außenhautüberwachung \n Raumüberwachung \n Objektüberwachung" },
 { t: "sicherheit", f: "Wann wird eine EMA scharf geschaltet?", a: "Wenn sich niemand mehr im Gebäude oder auf dem Gelände befindet." },
 { t: "sicherheit", f: "Was unterscheidet die EMA von den übrigen Gefahrenmeldeanlagen?", a: "Die EMA muss manuell scharf und unscharf geschaltet werden. Die übrigen Gefahrenmeldeanlagen sind in der Regel dauerhaft betriebsbereit." },
 { t: "sicherheit", f: "Welche Melder gehören zur Überfallmeldeanlage?", a: "Geldscheinkontaktmelder\nTrittleistenmelder\nDruckknopfmelder\nSondercodierung" },
@@ -727,8 +729,160 @@ a:active {
 { t: "waffenrecht", f: "Was ist zu tun, wenn eine Waffe verloren geht?", a: "Der Verlust muss unverzüglich der zuständigen Waffenbehörde gemeldet werden." },
 { t: "waffenrecht", f: "Nennen Sie Beispiele für Waffenverbote oder Waffenverbotszonen nach § 42 WaffG.", a: "Schulen\nKindergärten\nJugendzentren\nÖffentliche Veranstaltungen\nGerichte\nBehörden mit Sicherheitskontrollen\nSicherheitsbereiche von Flughäfen\nWaffenverbotszonen" },
 { t: "waffenrecht", f: "Sind Schreckschusswaffen überall erlaubt?", a: "Nein. Auch für Schreckschusswaffen gelten gesetzliche Vorschriften und Waffenverbote." },
-{ t: "waffenrecht", f: "Welche Prüfreihenfolge empfiehlt sich beim Waffenrecht?", a: "Ist es eine Waffe?\nIst der Besitz oder das Führen verboten?\nLiegt eine Erlaubnis vor?\nGibt es eine Ausnahme?\nLiegt eine Ordnungswidrigkeit oder Straftat vor?" },        
-        ];
+{ t: "waffenrecht", f: "Welche Prüfreihenfolge empfiehlt sich beim Waffenrecht?", a: "Ist es eine Waffe? \n Ist der Besitz oder das Führen verboten?\nLiegt eine Erlaubnis vor?\nGibt es eine Ausnahme?\nLiegt eine Ordnungswidrigkeit oder Straftat vor?" },        
+      
+          
+          
+           /* katalog*/ 
+ { t: "katalog", f: "Was ist räuberischer Diebstahl?", a: "Wenn ein Dieb nach einem Diebstahl Gewalt oder Drohungen anwendet, um die Beute zu behalten." },
+{ t: "katalog", f: "Welche Rechtsgüter sind notwehrfähig?", a: "Alle Individualrechtsgüter, z. B. Leben, Körper, Gesundheit, Freiheit, Eigentum, Besitz und Ehre." },
+{ t: "katalog", f: "Was sind die Befugnisse eines Eigentümers?", a: "Der Eigentümer darf mit seiner Sache nach Belieben verfahren und andere von der Nutzung ausschließen (§ 903 BGB), soweit keine Gesetze oder Rechte Dritter entgegenstehen." },
+{ t: "katalog", f: "Nenne die Voraussetzungen der vorläufigen Festnahme!", a: "Täter wurde auf frischer Tat betroffen oder verfolgt. Fluchtverdacht oder Identität kann nicht sofort festgestellt werden. Rechtsgrundlage: § 127 Abs. 1 StPO." },
+{ t: "katalog", f: "Bist du als Sicherheitsmitarbeiter immer dazu verpflichtet, einen Täter nach einer Straftat vorläufig festzunehmen?", a: "Nein. Eine Festnahme ist nur zulässig, wenn die Voraussetzungen des § 127 Abs. 1 StPO vorliegen und sie verhältnismäßig ist." },
+{ t: "katalog", f: "Welche Arten der Aggression gibt es?", a: "Verbale Aggression \n Körperliche Aggression \n Direkte Aggression \n Indirekte Aggression \n Passive Aggression" },
+{ t: "katalog", f: "Was sind Motive?", a: "Beweggründe oder Ursachen für menschliches Verhalten." },
+{ t: "katalog", f: "Welche Bedürfnisgruppen gibt es?", a: "Selbstverwirklichung \n Individualbedürfnisse \n Soziale Bedürfnisse \n Sicherheitsbedürfnisse \n Grundbedürfnisse" },
+{ t: "katalog", f: "Was bezeichnet man als Menschenkenntnis?", a: "Die Fähigkeit, Verhalten, Eigenschaften und Absichten anderer Menschen richtig einzuschätzen." },
+{ t: "katalog", f: "Nenne die vier Kommunikationsarten und erläutere diese!", a: "Verbale Kommunikation (Sprache) Nonverbale Kommunikation (Körpersprache) Paraverbale Kommunikation (Stimme, Tonfall) Extraverbale Kommunikation (Aussehen)" },
+{ t: "katalog", f: "In welcher Rechtsnorm steht, wer bewachen darf?", a: "§ 34a Gewerbeordnung (GewO)." },
+{ t: "katalog", f: "Was sind personenbezogene Daten?", a: "Alle Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen." },
+{ t: "katalog", f: "Was beinhaltet die DGUV Vorschrift 23: Wach- und Sicherungsdienste?", a: "Vorschriften zum Arbeits- und Unfallschutz für Beschäftigte im Wach- und Sicherheitsdienst." },
+{ t: "katalog", f: "Welche Pflichten hat der Gewerbetreibende bei Handhabung und Waffengebrauch nach § 20 BewachV?", a: "Unterweisung der Mitarbeiter \n  Sichere Aufbewahrung der Waffen \n  Regelmäßige Kontrolle \n  Einhaltung aller waffenrechtlichen Vorschriften." },
+{ t: "katalog", f: "Wozu braucht man einen Waffenschein?", a: "Zum Führen erlaubnispflichtiger Schusswaffen in der Öffentlichkeit." },
+{ t: "katalog", f: "Welche Anforderungen werden an einen Sicherheitszaun gestellt?", a: "Ausreichende Höhe und Stabilität. Übersteigschutz. Gute Übersicht. Widerstand gegen Durchtrennen." },
+{ t: "katalog", f: "Was ist der Zweck von Überfallmeldeanlagen?", a: "Schnelle Alarmierung bei einem Überfall, meist still und unbemerkt." },
+{ t: "katalog", f: "Welche Arten von Glasbruchmeldern gibt es?", a: "Akustische Glasbruchmelder \n Körperschallmelder \n Drahtglasmelder" },
+{ t: "katalog", f: "Was ist die Aufgabe von Notruf- und Serviceleitstellen?", a: "Entgegennahme von Meldungen \n  Alarmbearbeitung \n Einleitung geeigneter Maßnahmen." },
+{ t: "katalog", f: "Nenne zwei Arten von Feuerlöschern!", a: "Wasserlöscher CO₂-Löscher" },
+{ t: "katalog", f: "Erkläre die Notwehr gemäß § 32 StGB.", a: "Notwehr ist die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff." },
+{ t: "katalog", f: "Wann muss eine Nothilfehandlung umgehend abgebrochen werden?", a: "Sobald der Angriff beendet ist oder keine Gefahr mehr besteht." },
+{ t: "katalog", f: "Was ist das Hausrecht?", a: "Das Recht des Berechtigten, über Zutritt und Aufenthalt auf seinem Grundstück oder in seinen Räumen zu bestimmen." },
+{ t: "katalog", f: "Unterschied zwischen Rechtfertigungsgrund und Entschuldigungsgrund?", a: "Rechtfertigungsgrund: Die Tat ist rechtmäßig (z. B. Notwehr). \n  Entschuldigungsgrund: Die Tat bleibt rechtswidrig, der Täter wird aber entschuldigt (z. B. entschuldigender Notstand)." },
+{ t: "katalog", f: "Erkläre das Schikaneverbot (§ 226 BGB).", a: "Ein Recht darf nicht ausschließlich ausgeübt werden, um einem anderen zu schaden." },
+{ t: "katalog", f: "Was verstehen wir unter Frustration? ", a: "Enttäuschung durch unerfüllte Bedürfnisse." },
+{ t: "katalog", f: "Was ist Aggressionsverschiebung?", a: " Aggression richtet sich gegen eine unbeteiligte Person oder Sache." },
+{ t: "katalog", f: "Wie wird das Verhalten eines Menschen gesteuert?", a: "Bedürfnisse \n  Motive \n  Erfahrungen \n  Gefühle \n Umwelt" },
+{ t: "katalog", f: "Was ist das Selbstwertgefühl?", a: "Die persönliche Einschätzung des eigenen Wertes." },
+{ t: "katalog", f: "Was sind Vorurteile?", a: "Vorgefasste Meinungen ohne ausreichende Kenntnisse." },
+{ t: "katalog", f: "Nenne die Mindestvoraussetzungen, um im Sicherheitsgewerbe beschäftigt zu werden!", a: "Mindestalter 18 Jahre \n  Zuverlässigkeit \n  Unterrichtung oder Sachkunde nach § 34a GewO (je nach Tätigkeit) \n  Keine relevanten Vorstrafen." },
+{ t: "katalog", f: "Wie müssen Schusswaffen und Munition laut UVV geführt werden?", a: "Getrennt, sicher und nur von berechtigten Personen." },
+{ t: "katalog", f: "Wann muss ein Datenschutzbeauftragter bei einer öffentlichen Stelle bestellt werden?", a: "Grundsätzlich bei öffentlichen Stellen, soweit gesetzlich vorgeschrieben." },
+{ t: "katalog", f: "Welche Berufsgenossenschaft ist für das Sicherheitsgewerbe zuständig?", a: "Verwaltungs-Berufsgenossenschaft (VBG)" },
+{ t: "katalog", f: "Was sind Schusswaffen im Sinne des WaffG?", a: "Gegenstände, die Geschosse durch einen Lauf mittels Treibladung verschießen." },
+{ t: "katalog", f: "Nenne die drei Säulen der Sicherheitstechnik!", a: "Mechanische Sicherung \n  Elektronische Sicherung \n  Organisatorische Maßnahmen" },
+{ t: "katalog", f: "Nenne die Brandklassen!", a: "A: Feste Stoffe \n  B: Flüssigkeiten \n  C: Gase \n  D: Metalle \n  F: Speiseöle und Fette" },
+{ t: "katalog", f: "Nenne alle Bestandteile einer BMA!", a: "Brandmelder \n Brandmeldelinie \n Brandmelderzentrale \n Energieversorgung \n Alarmierungseinrichtungen" },
+{ t: "katalog", f: "Womit kann nachträglich der Widerstandswert einer Tür erhöht werden?", a: "Durch Sicherheitsbeschläge, Mehrfachverriegelung, Querriegelschloss oder einbruchhemmende Schließbleche." },
+{ t: "katalog", f: "Aus welchen zwei Teilen besteht das Strafgesetzbuch (StGB)?", a: "Allgemeiner Teil (AT) Besonderer Teil (BT)" },
+{ t: "katalog", f: "Was ist der Unterschied zwischen Verbrechen und Vergehen?", a: "Verbrechen: Mindestfreiheitsstrafe 1 Jahr \n Vergehen: Geringere Mindeststrafe oder Geldstrafe." },
+{ t: "katalog", f: "Was versteht man unter der sogenannten Gefährdungshaftung?", a: "Haftung ohne Verschulden. Wer eine besondere Gefahrenquelle schafft (z. B. ein Kraftfahrzeug betreibt), haftet bereits wegen der Gefahr, die davon ausgeht." },
+{ t: "katalog", f: "Was sind die Rechte und Pflichten des Finders einer Sache?", a: "Pflichten: Fund unverzüglich dem Eigentümer oder dem Fundbüro melden. Fundsache abgeben, wenn der Eigentümer unbekannt ist. \n  Rechte: Anspruch auf Finderlohn. Eigentumserwerb, wenn sich der Eigentümer innerhalb der gesetzlichen Frist nicht meldet." },
+{ t: "katalog", f: "Von wem kann ein gegenwärtiger rechtswidriger Angriff ausgehen?", a: "Von jeder natürlichen Person, unabhängig von Alter oder Schuldfähigkeit." },
+{ t: "katalog", f: "Was verstehst du unter einer Konflikteskalation?", a: "Eine Konflikteskalation ist die schrittweise Verschärfung eines Konflikts, bei der die Beteiligten zunehmend emotionaler und aggressiver reagieren." },
+{ t: "katalog", f: "Zu was kann Frustration führen?", a: "Aggression Resignation Rückzug Stress Fehlverhalten" },
+{ t: "katalog", f: "Was besagt die Bedürfnispyramide nach Abraham Maslow?", a: "Grund Bedürfnisse \n Sicherheitsbedürfnisse \n Soziale Bedürfnisse \n Individual Bedürfnisse \n Selbstverwirklichung" },
+{ t: "katalog", f: "Was versteht man unter interkultureller Kompetenz?", a: "Die Fähigkeit, Menschen anderer Kulturen respektvoll zu verstehen, angemessen mit ihnen zu kommunizieren und kulturelle Unterschiede zu berücksichtigen." },
+{ t: "katalog", f: "Was ist Kommunikation?", a: "Kommunikation ist der Austausch von Informationen, Gedanken, Gefühlen oder Meinungen zwischen Menschen durch Sprache, Schrift, Mimik, Gestik oder andere Zeichen." },
+{ t: "katalog", f: "Wann muss eine Wachperson Dienstkleidung tragen?", a: "Beim Betreten eines befriedeten Besitztums im Dienst (§ 19 BewachV). Ausnahmen: z. B. Kaufhausdetektive oder Personenschützer. \n Die Dienstkleidung muss den Sicherheitsmitarbeiter als solchen erkennbar machen und darf nicht mit Uniformen staatlicher Behörden verwechselt werden. " },
+{ t: "katalog", f: "Welche Unfallverhütungsvorschriften sind für das Sicherheitsgewerbe relevant?", a: "DGUV Vorschrift 1 – Grundsätze der Prävention DGUV Vorschrift 23 – Wach- und Sicherungsdienste Je nach Tätigkeit weitere DGUV-Vorschriften (z. B. für Fahrzeuge oder elektrische Anlagen)." },
+{ t: "katalog", f: "Für welche Tätigkeiten benötigst du eine Sachkundeprüfung gemäß § 34a GewO?", a: "Die Sachkundeprüfung ist erforderlich für: Kontrollgänge im öffentlichen Verkehrsraum oder in Hausrechtsbereichen mit tatsächlich öffentlichem Verkehr \n  Schutz vor Ladendieben (Kaufhausdetektiv) \n  Bewachung im Einlassbereich \n  gastgewerblicher Diskotheken \n  Bewachung von Flüchtlingsunterkünften \n  Bewachung von zugangsgeschützten Großveranstaltungen" },
+{ t: "katalog", f: "Was sind Anscheinswaffen?", a: "Anscheinswaffen sind Gegenstände, die echten Schusswaffen täuschend ähnlich sehen oder wie Waffen wirken, obwohl sie keine echten Schusswaffen sind." },
+{ t: "katalog", f: "Was sind z. B. nach dem Waffengesetz verbotene Gegenstände?", a: "Beispiele: Schlagringe Wurfsterne \n  Butterflymesser (mit Ausnahmen) \n  Fallmesser (weitgehend verboten) \n  Totschläger \n  bestimmte Springmesser" },
+{ t: "katalog", f: "Was sind die wesentlichen Bestandteile einer Tür?", a: "Türblatt \n  Türrahmen (Zarge) \n  Schloss \n  Schließblech \n  Bänder (Scharniere) Beschläge" },
+{ t: "katalog", f: "Was ist der Widerstandswert", a: "Der Widerstandswert beschreibt, wie lange ein Bauteil (z. B. Tür, Fenster oder Zaun) einem Einbruchsversuch standhält." },
+{ t: "katalog", f: "Was zählt zu den mechanischen Sicherungseinrichtungen?", a: "Zaun \n  Mauer \n  Fenster \n  Schranke" },
+{ t: "katalog", f: "Was ist die primäre Aufgabe einer EMA", a: "Ein Einbruch oder Einbruchsversuch frühzeitig zu erkennen und zu melden." },
+{ t: "katalog", f: "Wie sollte ein Tropf- und Fließbrand gelöscht werden?", a: "Von oben nach unten und von vorne nach hinten, damit sich der brennende Stoff nicht weiter ausbreitet." },
+{ t: "katalog", f: "Was sind Grundrechte?", a: "sind die wichtigsten Rechte, die jeder Mensch gegenüber dem Staat hat. \n  Sie stehen ganz am Anfang unserer Verfassung (dem Grundgesetz) in den Artikeln 1 bis 19." },
+{ t: "katalog", f: "Was regelt § 823 BGB in Bezug auf die Schadenersatzpflicht nach unerlaubter Handlung?", a: "Wer vorsätzlich oder fahrlässig das Rechtsgut (das Leben, den Körper, die Gesundheit, die Freiheit, das Eigentum) oder ein sonstiges Recht eines anderen widerrechtlich verletzt, ist zum Schadensersatz verpflichtet." },
+{ t: "katalog", f: "Welche Voraussetzungen müssen für die allgemeine Selbsthilfe gemäß § 229 BGB erfüllt sein?", a: "Selbsthilfe ist nur zulässig, wenn: ein Anspruch besteht, gerichtliche Hilfe nicht rechtzeitig zu erlangen ist, ohne sofortiges Handeln die Durchsetzung des Anspruchs vereitelt oder wesentlich erschwert würde, die Maßnahme erforderlich und verhältnismäßig ist." },
+{ t: "katalog", f: "Wann darfst du als Sicherheitsmitarbeiter hoheitliche Rechte ausüben?", a: "Gar nicht. Private Sicherheitsmitarbeiter besitzen grundsätzlich keine hoheitlichen Befugnisse." },
+{ t: "katalog", f: "Was bedeutet das Opportunitätsprinzip?", a: "Strafverfolgungsbehörde bei bestimmten Straftaten unter gesetzlich geregelten Voraussetzungen von einer Strafverfolgung absehen kann (z. B. bei geringfügigen Delikten)." },
+{ t: "katalog", f: "Welche Bedürfnisgruppen gibt es?", a: "Antwort (Maslow): Grundbedürfnisse \n  Sicherheitsbedürfnisse \n  Soziale Bedürfnisse \n  Individualbedürfnisse \n  Selbstverwirklichung" },
+{ t: "katalog", f: "Was bedeutet Deeskalation eines Konflikts?", a: "Deeskalation bedeutet, einen Konflikt zu beruhigen und eine weitere Verschärfung zu verhindern – z. B. durch ruhiges Auftreten, respektvolle Kommunikation und aktives Zuhören." },
+{ t: "katalog", f: "Wie kann Aggression vermieden werden?", a: "Ruhig bleiben Höflich und respektvoll auftreten Aktiv zuhören Provokationen vermeiden Ausreichend Abstand halten Klare und sachliche Kommunikation" },
+{ t: "katalog", f: "Was versteht man unter individueller Frustrationstoleranz?", a: "Beschreibt die Fähigkeit eines Menschen, Enttäuschungen oder Misserfolge auszuhalten, ohne unangemessen aggressiv oder emotional zu reagieren." },
+{ t: "katalog", f: "Was ist aktives Zuhören?", a: "Aktives Zuhören bedeutet: aufmerksam zuhören, Blickkontakt halten, Rückfragen stellen, Aussagen zusammenfassen, Verständnis zeigen." },
+{ t: "katalog", f: "Was ist das Bewacherregister?", a: "Das Bewacherregister ist ein bundesweites elektronisches Register, in dem Bewachungsunternehmen und Wachpersonen erfasst werden. Es dient der Überprüfung der Zuverlässigkeit und Qualifikation." },
+{ t: "katalog", f: "Was müssen Brillenträger gemäß DGUV Vorschrift 23 beachten?", a: "Brillenträger müssen eine geeignete Sehhilfe tragen. \n Brillenträger müssen laut dguv v23 die Brille gegen Verlust sichern oder eine Ersatzbrille bei sich führen" },
+{ t: "katalog", f: "Wann ist eine Schusswaffe „schussbereit“ im Sinne des Waffengesetzes?", a: "Eine Schusswaffe ist schussbereit, wenn sie geladen ist und mit wenigen Handgriffen sofort abgefeuert werden kann." },
+{ t: "katalog", f: "Was benötigt man zum Führen von PTB-Waffen?", a: "Zum Führen einer PTB-Schreckschuss-, Reizstoff- oder Signalwaffe (SRS-Waffe) in der Öffentlichkeit benötigt man den Kleinen Waffenschein." },
+{ t: "katalog", f: "Welche Arten von Brandmeldern kennst du?", a: "Rauchmelder \n  Wärmemelder \n  Flammenmelder \n  Mehrkriterienmelder (Kombimelder) \n  Handfeuermelder (Druckknopfmelder) \n  Rauchansaugsysteme (RAS)" },
+{ t: "katalog", f: "Was ist die Interventionszeit?", a: "Die Interventionszeit ist die Zeitspanne zwischen dem Eingang einer Alarmmeldung und dem Eintreffen der Interventionskräfte am Einsatzort." },
+{ t: "katalog", f: "Was muss bei der Kontrolle von Fluchtwegen und Fluchttüren in einem Sicherungsobjekt beachtet werden?", a: "Fluchtwege müssen jederzeit frei sein. Fluchttüren dürfen nicht verschlossen oder verstellt sein. Rettungswegkennzeichnungen müssen sichtbar sein. Notbeleuchtung muss funktionieren. Keine Lagerung von Gegenständen im Fluchtweg." },
+{ t: "katalog", f: "Welche Schlossarten gibt es?", a: "Buntbartschloss (Wc), \n Zylinderschloss (Haustür) \n Transponderschloss (Firmen/Hotel) \n Zahlenkombinationsschloss (Safe)" },
+{ t: "katalog", f: "Was ist der Zweck von Gefahrenmeldeanlagen (GMA)?", a: "Gefahrenmeldeanlagen erkennen Gefahren frühzeitig und melden sie automatisch, damit schnell geeignete Maßnahmen eingeleitet werden können. Beispiele: Brand Einbruch Überfall Gasaustritt" },
+{ t: "katalog", f: "Wo sind Sicherheitsmitarbeiter tätig?", a: "Zum Beispiel: Werk- und Objektschutz \n Empfangs- und Pfortendienst \n Veranstaltungsschutz \n  Revier- und Streifendienst \n  Geld- und Werttransport \n  Ladendetektiv \n Baustellenbewachung \n  Flüchtlingsunterkünfte \n  Flughäfen \n  Bahnhöfe" },
+{ t: "katalog", f: "Für wen gelten die Jedermannsrechte in der Bundesrepublik Deutschland?", a: "Die Jedermannsrechte gelten für jede Person, unabhängig von Beruf oder Ausbildung. Beispiele: Notwehr (§ 32 StGB) Nothilfe (§ 32 StGB) Vorläufige Festnahme (§ 127 Abs. 1 StPO)" },
+{ t: "katalog", f: "Was ist eine Körperverletzung?", a: "Wer eine andere Person körperlich misshandelt oder an der Gesundheit schädigt." },
+{ t: "katalog", f: "Nenne 4 Rechtfertigungsgründe aus dem BGB!", a: " § 227 BGB – Notwehr  \n  § 228 BGB – Defensivnotstand  \n  § 904 BGB – Aggressivnotstand  \n  § 229 BGB – Selbsthilfe" },
+{ t: "katalog", f: "Wie lautet der dreistufige Deliktsaufbau?", a: "Eine Straftat wird in drei Schritten geprüft: Tatbestandsmäßigkeit Rechtswidrigkeit Schuld" },
+{ t: "katalog", f: "Woran kann man Kompromissbereitschaft erkennen?", a: "Bereitschaft zuzuhören \n  Andere Meinungen akzeptieren \n  Nach gemeinsamen Lösungen suchen \n  Aufeinander zugehen \n  Gegenseitige Zugeständnisse machen" },
+{ t: "katalog", f: "Nenne die 2 Arten von Stress!", a: "positiver Stress (leistungsfördernd) \n  negativer Stress (belastend)" },
+{ t: "katalog", f: "Was ist der erste Eindruck und was bewirkt er?", a: "Der erste Eindruck entsteht innerhalb weniger Sekunden und beeinflusst die weitere Wahrnehmung einer Person. Er wird durch Aussehen, Körpersprache, Sprache und Auftreten geprägt." },
+{ t: "katalog", f: "Nenne und erläutere die vier Stufen einer Panik!", a: "Panikgefühl – Menschen bemerken eine Gefahr und sind verunsichert. \n  Panikereignis – Nervosität und hektisches Verhalten nehmen zu. \n  Panikstarre – Unkontrolliertes Verhalten, Angst und Fluchtreaktionen. \n  Paniksturm – Menschen handeln kopflos, drängen und gefährden sich gegenseitig." },
+{ t: "katalog", f: "Was ist Kommunikation?", a: "Kommunikation ist der Austausch von Informationen, Gedanken und Gefühlen zwischen Menschen – verbal, nonverbal, paraverbal oder schriftlich." },
+{ t: "katalog", f: "Wie sieht ein Gebotszeichen aus?", a: "Gebotszeichen sind: Rund Blauer Hintergrund Weißes Symbol Beispiele: Schutzhelm tragen Gehörschutz benutzen Schutzbrille tragen" },
+{ t: "katalog", f: "Welche Rechte haben Betroffene gemäß der DSGVO?", a: "Betroffene haben unter anderem das Recht auf: \n  Auskunft \n  Berichtigung \n  Löschung \n  Einschränkung der Verarbeitung \n Datenübertragbarkeit \n Widerspruch & Beschwerde bei der Datenschutzaufsichtsbehörde" },
+{ t: "katalog", f: "Dürfen private Hunde im Dienst eingesetzt werden?", a: "Ja, \n  wenn der Arbeitgeber den Einsatz erlaubt, \n der Hund geeignet und ausgebildet ist,\n der Hundeführer entsprechend qualifiziert ist, \n die Vorschriften des Arbeits- und Tierschutzes eingehalten werden." },
+{ t: "katalog", f: "Wozu braucht man einen Waffenschein?", a: "Ein Waffenschein berechtigt zum Führen erlaubnispflichtiger Schusswaffen in der Öffentlichkeit." },
+{ t: "katalog", f: "Was gehört zur Standardausrüstung im Sicherheitsgewerbe?", a: "Je nach Auftrag gehören dazu:  \n Dienstkleidung  \n  Dienstausweis  \n  Funkgerät oder Mobiltelefon \n  Taschenlampe \n  Schreibmaterial \n  Schlüssel \n  Schutzhandschuhe \n  Warnweste Persönliche Schutzausrüstung" },
+{ t: "katalog", f: "Was ist der Unterschied zwischen einer drohenden und einer gegenwärtigen Gefahr?", a: "Drohende Gefahr: Eine Gefahr könnte in naher Zukunft eintreten.  \n  Gegenwärtige Gefahr: Die Gefahr besteht bereits oder ihr Eintritt ist unmittelbar zu erwarten. Sofortiges Handeln ist erforderlich." },
+{ t: "katalog", f: "Was ist das Bundesstaatsprinzip?", a: "Deutschland ist ein Bundesstaat. Die Staatsgewalt ist zwischen dem Bund und den 16 Bundesländern aufgeteilt." },
+{ t: "katalog", f: "Was können Schuldausschließungsgründe sein?", a: "Vollrausch \n Seelische \n Störung \n Entschuldigender Notstand \n Schuldunfähigkeit wegen Alters (ab 14 Jahren)" },
+{ t: "katalog", f: "Was ist die sogenannte Gefährdungshaftung?", a: "Jemand auch ohne eigenes Verschulden haftet, wenn von einer erlaubten, aber gefährlichen Tätigkeit oder Einrichtung eine Gefahr ausgeht (z. B. Hundebesitzer)." },
+{ t: "katalog", f: "Was ist Betrug?", a: "Vorsätzliche Täuschung eines anderen, um durch dessen Irrtum einen finanziellen Schaden zu verursachen und sich selbst unberechtigt zu bereichern." },
+{ t: "katalog", f: "Nenne zwei Arten von Gruppen!", a: " Formelle Gruppen (z. B. Arbeitsgruppe) \n Informelle Gruppen (z. B. Freundeskreis) " },
+{ t: "katalog", f: "Was ist eine Menschengruppe?", a: "Eine Mehrzahl von Personen, die sich am gleichen Ort befindet und durch gemeinsames Verhalten oder ein gemeinsames Ziel verbunden sein kann." },
+{ t: "katalog", f: "Welche Grundsätze sind beim Umgang mit Drogenabhängigen zu beachten?", a: "Ruhig und respektvoll auftreten \n Nicht provozieren \n  Sicherheitsabstand einhalten \n  Eigenschutz beachten \n  Keine Vorurteile zeigen \n  Bei Gefahr Polizei oder Rettungsdienst verständigen \n  Keine Diskussion über den Drogenkonsum führen" },
+{ t: "katalog", f: "Was sind Bedürfnisse?", a: "Das empfundene Gefühl eines Mangels, verbunden mit dem Wunsch, diesen Mangel zu beseitigen. \n  Beispiele: Essen und Trinken \n  Sicherheit \n Anerkennung \n soziale Kontakte" },
+{ t: "katalog", f: "Welches sind alterstypische Verhaltensweisen von Jugendlichen?", a: "Suche nach der eigenen Identität Starkes Gruppenverhalten Wunsch nach Unabhängigkeit Emotionales Verhalten Austesten von Grenzen Höhere Risikobereitschaft" },
+{ "t": "katalog", "f": "Wie sieht ein Verbotszeichen aus?", "a": "Verbotszeichen sind: Rund, weißer Hintergrund, roter Rand, schwarzes Symbol, roter Schrägbalken. Beispiel: Rauchen verboten." },
+{ "t": "katalog", "f": "Was sind Nebentätigkeiten im Dienst?", "a": "Tätigkeiten, die nicht zum eigentlichen Bewachungsauftrag gehören und den Sicherheitsdienst nicht beeinträchtigen dürfen. Beispiele: Kleine Verwaltungsarbeiten, Dokumentation, Botengänge (wenn erlaubt)." },
+{ "t": "katalog", "f": "Was sind besondere Kategorien personenbezogener Daten?", "a": "Gesundheitsdaten,\n  biometrische Daten,\n  genetische Daten,\n  Religionszugehörigkeit, \n politische Meinung,\n  gewerkschaftszugehörigkeit, \n rassistische oder ethnische Herkunft,\n  sexuelle Orientierung bzw. Sexualleben." },
+{ "t": "katalog", "f": "Worauf müssen Wachpersonen im Umgang mit ihrer persönlichen Schutzausrüstung (PSA) achten?", "a": "PSA bestimmungsgemäß benutzen,\n  vor jeder Benutzung prüfen,\n  beschädigte PSA nicht verwenden,\n  sauber und einsatzbereit halten, \n Mängel sofort melden, \n Herstellerangaben beachten." },
+{ "t": "katalog", "f": "Was ist beim Abhandenkommen einer Schusswaffe zu machen?", "a": "Sofort den Arbeitgeber informieren,\n  unverzüglich die Polizei verständigen,\n  den Verlust dokumentieren.\n  Bei erlaubnispflichtigen Waffen zusätzlich die zuständige Waffenbehörde informieren." },
+{ "t": "katalog", "f": "Nenne die Bestandteile einer Einbruchmeldeanlage (EMA)!", "a": "Bedienteil (Scharf-/Unscharfschaltung) \n Einbruchmelder (z. B. Bewegungs-, Öffnungs-, Glasbruchmelder)\n  Energieversorgung (Netzteil und Notstromversorgung)\n  Einbruchmelderzentrale (EMZ)\n  Alarmgeber (Sirene, Blitzleuchte) \n  Übertragungseinrichtung zur Notruf- und Serviceleitstelle (NSL)" },
+{ "t": "katalog", "f": "Wo werden Drehsperren häufig eingesetzt?", "a": "Zutrittskontrolle, z. B. in: Unternehmen, Behörden, Stadien, Bahnhöfen, Flughäfen, Schwimmbädern, Fitnessstudios." },
+{ "t": "katalog", "f": "Was ist die Widerstandszeit?", "a": "Die Zeit, die ein geübter Täter mit geeignetem Werkzeug benötigt, um ein Hindernis zu überwinden." },
+{ "t": "katalog", "f": "Wie kann eine Überfallmeldeanlage ausgelöst werden?", "a": "Handtaster (Überfalltaster) \n Fußtaster \n Funkhandsender \n verdeckter Taster \n über die Alarmzentrale. \n In der Regel erfolgt die Alarmierung still, ohne den Täter zu warnen." },
+{ "t": "katalog", "f": "Welche biometrischen Identifikationsverfahren können in modernen Zutrittskontrollsystemen verwendet werden?", "a": "Fingerabdruck \n Gesichtserkennung \n Iris-Scan \n Handgeometrie \n Stimmerkennung (seltener)" },
+{ "t": "katalog", "f": "Was ist das Grundgesetz?", "a": "Das Grundgesetz ist die Verfassung der Bundesrepublik Deutschland.\n  Es regelt den Staatsaufbau, die Grundrechte sowie die wichtigsten Rechte und Pflichten von Staat und Bürgern." },
+{ "t": "katalog", "f": "Was ist der Unterschied zwischen Notwehr und Notstand?", "a": "Notwehr (§ 32 StGB):\n Abwehr eines gegenwärtigen rechtswidrigen Angriffs durch einen Menschen.\n  Notstand (§ 34 StGB):\n  Abwehr einer gegenwärtigen Gefahr für ein Rechtsgut. Die Gefahr kann auch von Tieren oder Naturereignissen ausgehen." },
+{ "t": "katalog", "f": "Was ist das Erschleichen von Leistungen?", "a": "Das unbefugte Inanspruchnehmen einer Leistung ohne Bezahlung. \n  Beispiele: Schwarzfahren, Nutzung kostenpflichtiger Einrichtungen ohne Bezahlung." },
+{ "t": "katalog", "f": "Ab welchem Lebensjahr ist man in Deutschland schadenersatzpflichtig?", "a": "Grundsätzlich ab 7 Jahren." },
+{ "t": "katalog", "f": "Was ist Diebstahl geringwertiger Güter?", "a": "Der Diebstahl geringwertiger Sachen (§ 248a StGB) betrifft Gegenstände von geringem Wert (nach heutiger Rechtsprechung häufig bis etwa 50 Euro). Die Tat wird grundsätzlich nur auf Strafantrag verfolgt, sofern kein besonderes öffentliches Interesse besteht." },
+{ "t": "katalog", "f": "Welche vier Fenster hat das Johari-Window?", "a": "Das Johari-Fenster besteht aus vier Bereichen: \n Öffentliche Person – Mir und anderen bekannt\n  Blinder Fleck – Anderen bekannt, mir selbst nicht \n  Verborgener Bereich – Mir bekannt, anderen nicht.\n  Unbekannter Bereich – Weder mir noch anderen bekannt" },
+{ "t": "katalog", "f": "Was bezeichnet man als Menschenkenntnis?", "a": "Die Fähigkeit, Verhalten, Eigenschaften und Absichten anderer Menschen möglichst richtig einzuschätzen." },
+{ "t": "katalog", "f": "Welche Regeln sollten beim Umgang mit Senioren beachtet werden?", "a": "Höflich und respektvoll sein, ruhig und deutlich sprechen, geduldig zuhören, genügend Zeit lassen, nicht bevormunden, bei Bedarf Hilfe anbieten, auf mögliche Hör- oder Sehbeeinträchtigungen Rücksicht nehmen." },
+{ "t": "katalog", "f": "Was ist der erste Eindruck und was bewirkt er?", "a": "Der erste Eindruck entsteht innerhalb weniger Sekunden und beeinflusst nachhaltig, wie eine Person wahrgenommen wird. Er wird durch Kleidung, Auftreten, Mimik, Gestik und Sprache geprägt." },
+{ "t": "katalog", "f": "Welche Fragearten unterscheiden wir?", "a": "Offene Fragen (z. B. „Was ist passiert?“) \n  geschlossene Fragen (Ja-/Nein-Fragen) \n  Suggestivfragen (beeinflussen die Antwort)" },
+{ "t": "katalog", "f": "Für welche Hindernisse und Gefahrstellen benutzt man das gelb-schwarze Flatterband?", "a": "Für ständige Hindernisse und Gefahrstellen (z. B. Anstoß-, Quetsch- oder Sturzgefahren)" },
+{ "t": "katalog", "f": "Was sind wichtige Begriffsbestimmungen aus dem Bereich Datenschutz?", "a": "Personenbezogene Daten \n  Verarbeitung \n  Verantwortlicher \n  Auftragsverarbeiter \n  betroffene Person \n  Einwilligung \n  Anonymisierung \n  Pseudonymisierung" },
+{ "t": "katalog", "f": "Wie sieht ein Brandschutzzeichen aus?", "a": "Quadratisch oder rechteckig \n  roter Hintergrund\n  weißes Symbol.\n  Beispiele: Feuerlöscher, Wandhydrant, Brandmelder." },
+{ "t": "katalog", "f": "Was sind Schusswaffen?", "a": "Gegenstände, die dazu bestimmt sind, Geschosse durch einen Lauf mittels Treibladung zu verschießen." },
+{ "t": "katalog", "f": "Wovon ist der Sicherheitswert eines Rollladens abhängig?", "a": "Der Sicherheitswert hängt ab von: Material, Stabilität, Führungsschienen, Verriegelung, einbruchhemmender Konstruktion, fachgerechter Montage." },
+{ "t": "katalog", "f": "Wie kann eine Überfallmeldeanlage ausgelöst werden?", "a": "Handtaster \n Fußtaster \n Funkhandsender \n verdeckten Alarmtaster \n Alarmierung über die Alarmzentrale.\n Wichtig: Die Alarmierung erfolgt meist still, damit der Täter nichts bemerkt." },
+{ "t": "katalog", "f": "Nenne die drei Säulen der Sicherheitstechnik!", "a": " Mechanische Sicherungstechnik \n elektronische Sicherungstechnik \n  organisatorische Sicherungsmaßnahmen" },
+{ "t": "katalog", "f": "Nenne die Brandklassen mit den dazugehörigen Löschmitteln!", "a": "Brandklasse A: Feste Stoffe (Holz, Papier) -> Wasser, Schaum, Pulver \n  Brandklasse B: Flüssigkeiten -> Schaum, Pulver, CO₂ \n Brandklasse C: Gase -> Pulver \n  Brandklasse D: Metalle -> Metallbrandpulver \n  Brandklasse F: Speiseöle/-fette -> Fettbrandlöscher" },
+{ "t": "katalog", "f": "Welche Arten von Sicherheitsverglasung gibt es?", "a": "Durchwurfhemmend  \n Durchbruchhemmend \n Durchschusshemmend  \n Sprengwirkungshemmend" },
+{ "t": "katalog", "f": "Was bedeutet Demokratie?", "a": "Demokratie bedeutet Volksherrschaft. Die Staatsgewalt geht vom Volk aus und wird durch Wahlen und Abstimmungen sowie durch die Staatsorgane ausgeübt." },
+{ "t": "katalog", "f": "Wer hat das Sicherheitsmonopol?", "a": "Gibt es nicht" },
+{ "t": "katalog", "f": "Was bedeutet Hausfriedensbruch?", "a": "Wer gegen den Willen des Berechtigten in eine Wohnung, Geschäftsräume, ein befriedetes Besitztum oder abgeschlossene Räume eindringt oder trotz Aufforderung nicht geht." },
+{ "t": "katalog", "f": "Was bedeutet Vorsatz?", "a": "Mit Wissen und Wollen handeln." },
+{ "t": "katalog", "f": "Ab welchem Alter ist ein Mensch schuldfähig?", "a": "Unter 14 Jahren: schuldunfähig (§ 19 StGB).\n  14 bis 17 Jahre: beschränkt schuldfähig nach Jugendstrafrecht.\n  Ab 18 Jahren: grundsätzlich voll schuldfähig (Ausnahmen nach § 20 StGB möglich)." },
+{ "t": "katalog", "f": "Was verstehen wir unter Panik?", "a": "Ein Zustand extremer Angst (Todesangst), bei dem Menschen oft unüberlegt und unkontrolliert handeln. Dadurch können sie sich selbst oder andere gefährden." },
+{ "t": "katalog", "f": "Welche altersbedingten Auffälligkeiten können bei Senioren auftreten?", "a": "Nachlassendes Hör- und Sehvermögen, langsamere Reaktionsfähigkeit, eingeschränkte Beweglichkeit, Vergesslichkeit, Unsicherheit beim Gehen, erhöhtes Sturzrisiko. Im Sicherheitsdienst: Geduldig, respektvoll und deutlich kommunizieren." },
+{ "t": "katalog", "f": "Nenne die Distanzzonen!", "a": "Intim Zone 0–50 cm \n Persönliche Zone: 50 cm–1,2 m \n Soziale Zone 1,2–3,6 m \n ÖffentlicheZone: ab 3,6 m." },
+{ "t": "katalog", "f": "Was sind Vorurteile?", "a": "Eine meist negative Meinung über einen Menschen wird gebildet, ohne tatsächliche Fakten zu kennen." },
+{ "t": "katalog", "f": "Was ist das Bewacherregister?", "a": "Bundesweites elektronisches Register für Bewachungsunternehmen und Wachpersonen.\n Es dient der Überprüfung von Zuverlässigkeit, Qualifikation und Erlaubnissen." },
+{ "t": "katalog", "f": "Was sind SRS-Waffen?", "a": "SRS-Waffen sind: S = Schreckschusswaffen, R = Reizstoffwaffen, S = Signalwaffen. Zum Führen in der Öffentlichkeit wird grundsätzlich der Kleine Waffenschein benötigt." },
+{ "t": "katalog", "f": "Welche Unfallverhütungsvorschriften sind für das Sicherheitsgewerbe relevant?", "a": "DGUV Vorschrift 1 – Grundsätze der Prävention, DGUV Vorschrift 23 – Wach- und Sicherungsdienste." },
+{ "t": "katalog", "f": "Zu welcher Zeit muss eine Objekteinweisung durchgeführt werden?", "a": "Muss vor Aufnahme der Tätigkeit erfolgen und bei wesentlichen Änderungen oder neuen Gefahren aktualisiert werden." },
+{ "t": "katalog", "f": "Was ist ein Durchgangsarzt?", "a": "Ein Durchgangsarzt (D-Arzt) ist ein von der gesetzlichen Unfallversicherung zugelassener Arzt, der Arbeits- und Wegeunfälle behandelt und das weitere Heilverfahren steuert." },
+{ "t": "katalog", "f": "Nenne die Bestandteile einer Brandmeldeanlage (BMA)!", "a": "Handfeuermeldern \n  Brandmeldern \n  Brandmeldelinie \n  Energieversorgung (Netz und Notstrom)\n  Brandmelderzentrale (BMZ)\n  Alarmierungseinrichtungen (Sirenen, Signalgeber)\n  Übertragungseinrichtung zur Feuerwehr oder Leitstelle." },
+{ "t": "katalog", "f": "Was ist der Vorteil von Kohlendioxid-Löschern (CO₂-Löschern)?", "a": "Vorteile: Hinterlassen keine Löschrückstände. \n Besonders geeignet für elektrische Anlagen und Serverräume. \n Löschen durch Verdrängen des Sauerstoffs. \n Verursachen keine Wasserschäden. \n  Nachteil: In kleinen, schlecht belüfteten Räumen besteht Erstickungsgefahr." }
+];
 
         let aktiveThemen = [], gefilterteFragen = [], index = 0;
 
