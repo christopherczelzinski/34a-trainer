@@ -1,6 +1,6 @@
 
   /* 34a-trainer-v2 oder erhöhen */ 
-const CACHE_NAME = "34a-trainer-v4";
+const CACHE_NAME = "34a-trainer-v5";
 
 self.addEventListener("install", event => {
     event.waitUntil(
