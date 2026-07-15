@@ -83,6 +83,7 @@ a:active {
        <div class="toggle-btn" onclick="toggleTheme(this, 'datenschutz')">Datenschutz</div>
       <div class="toggle-btn" onclick="toggleTheme(this, 'waffenrecht')">Waffenrecht</div>
        <div class="toggle-btn" onclick="toggleTheme(this, 'katalog')">Katalog</div>
+      <div class="toggle-btn" onclick="toggleTheme(this, 'para')">Paragraphen</div>
     </div>
     <button id="start-btn" onclick="starteQuiz()">Training starten</button>
     <div id="counter"></div>
@@ -95,7 +96,7 @@ a:active {
   <br> 
    <br>
 <div style="text-align: center; font-size: 12px;">
-    Version 5.4.0 <br>
+    Version 5.5.3 <br>
    © Christopher Czelzinski <br>
     <a href="https://www.cdesign-berlin.de"
        target="_blank"
@@ -854,7 +855,7 @@ a:active {
 { "t": "katalog", "f": "Was bezeichnet man als Menschenkenntnis?", "a": "Die Fähigkeit, Verhalten, Eigenschaften und Absichten anderer Menschen möglichst richtig einzuschätzen." },
 { "t": "katalog", "f": "Welche Regeln sollten beim Umgang mit Senioren beachtet werden?", "a": "Höflich und respektvoll sein, ruhig und deutlich sprechen, geduldig zuhören, genügend Zeit lassen, nicht bevormunden, bei Bedarf Hilfe anbieten, auf mögliche Hör- oder Sehbeeinträchtigungen Rücksicht nehmen." },
 { "t": "katalog", "f": "Was ist der erste Eindruck und was bewirkt er?", "a": "Der erste Eindruck entsteht innerhalb weniger Sekunden und beeinflusst nachhaltig, wie eine Person wahrgenommen wird. Er wird durch Kleidung, Auftreten, Mimik, Gestik und Sprache geprägt." },
-{ "t": "katalog", "f": "Welche Fragearten unterscheiden wir?", "a": "Offene Fragen (z. B. „Was ist passiert?“) \n  geschlossene Fragen (Ja-/Nein-Fragen) \n  Suggestivfragen (beeinflussen die Antwort)" },
+{ "t": "katalog", "f": "Welche Fragearten unterscheiden wir?", "a": "Offene Fragen bundes(z. B. „Was ist passiert?“) \n  geschlossene Fragen (Ja-/Nein-Fragen) \n  Suggestivfragen (beeinflussen die Antwort)" },
 { "t": "katalog", "f": "Für welche Hindernisse und Gefahrstellen benutzt man das gelb-schwarze Flatterband?", "a": "Für ständige Hindernisse und Gefahrstellen (z. B. Anstoß-, Quetsch- oder Sturzgefahren)" },
 { "t": "katalog", "f": "Was sind wichtige Begriffsbestimmungen aus dem Bereich Datenschutz?", "a": "Personenbezogene Daten \n  Verarbeitung \n  Verantwortlicher \n  Auftragsverarbeiter \n  betroffene Person \n  Einwilligung \n  Anonymisierung \n  Pseudonymisierung" },
 { "t": "katalog", "f": "Wie sieht ein Brandschutzzeichen aus?", "a": "Quadratisch oder rechteckig \n  roter Hintergrund\n  weißes Symbol.\n  Beispiele: Feuerlöscher, Wandhydrant, Brandmelder." },
@@ -879,8 +880,45 @@ a:active {
 { "t": "katalog", "f": "Zu welcher Zeit muss eine Objekteinweisung durchgeführt werden?", "a": "Muss vor Aufnahme der Tätigkeit erfolgen und bei wesentlichen Änderungen oder neuen Gefahren aktualisiert werden." },
 { "t": "katalog", "f": "Was ist ein Durchgangsarzt?", "a": "Ein Durchgangsarzt (D-Arzt) ist ein von der gesetzlichen Unfallversicherung zugelassener Arzt, der Arbeits- und Wegeunfälle behandelt und das weitere Heilverfahren steuert." },
 { "t": "katalog", "f": "Nenne die Bestandteile einer Brandmeldeanlage (BMA)!", "a": "Handfeuermeldern \n  Brandmeldern \n  Brandmeldelinie \n  Energieversorgung (Netz und Notstrom)\n  Brandmelderzentrale (BMZ)\n  Alarmierungseinrichtungen (Sirenen, Signalgeber)\n  Übertragungseinrichtung zur Feuerwehr oder Leitstelle." },
-{ "t": "katalog", "f": "Was ist der Vorteil von Kohlendioxid-Löschern (CO₂-Löschern)?", "a": "Vorteile: Hinterlassen keine Löschrückstände. \n Besonders geeignet für elektrische Anlagen und Serverräume. \n Löschen durch Verdrängen des Sauerstoffs. \n Verursachen keine Wasserschäden. \n  Nachteil: In kleinen, schlecht belüfteten Räumen besteht Erstickungsgefahr." }
-];
+{ "t": "katalog", "f": "Was ist der Vorteil von Kohlendioxid-Löschern (CO₂-Löschern)?", "a": "Vorteile: Hinterlassen keine Löschrückstände. \n Besonders geeignet für elektrische Anlagen und Serverräume. \n Löschen durch Verdrängen des Sauerstoffs. \n Verursachen keine Wasserschäden. \n  Nachteil: In kleinen, schlecht belüfteten Räumen besteht Erstickungsgefahr." },
+
+        /* waffenrecht */ 
+ { "t": "para", "f": "Welcher Paragraph regelt das Bewachungsgewerbe?", "a": "§ 34a GewO" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Schadensersatzpflicht?", "a": "§ 823 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die verbotene Eigenmacht?", "a": "§ 858 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Selbsthilfe des Besitzers?", "a": "§ 859 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Selbsthilfe des Besitzdieners?", "a": "§ 860 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt das Eigentum?", "a": "§ 903 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den defensiven Notstand?", "a": "§ 904 BGB" },
+
+  { "t": "para", "f": "Welcher Paragraph regelt die Notwehr?", "a": "§ 32 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den Notwehrexzess?", "a": "§ 33 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den rechtfertigenden Notstand?", "a": "§ 34 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den entschuldigenden Notstand?", "a": "§ 35 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den Hausfriedensbruch?", "a": "§ 123 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Körperverletzung?", "a": "§ 223 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die gefährliche Körperverletzung?", "a": "§ 224 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die fahrlässige Körperverletzung?", "a": "§ 229 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Nötigung?", "a": "§ 240 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den Diebstahl?", "a": "§ 242 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den besonders schweren Fall des Diebstahls?", "a": "§ 243 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den Diebstahl mit Waffen oder als Bandendiebstahl?", "a": "§ 244 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den Raub?", "a": "§ 249 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den räuberischen Diebstahl?", "a": "§ 252 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Sachbeschädigung?", "a": "§ 303 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Jedermann-Festnahme?", "a": "§ 127 Abs. 1 StPO" },
+  { "t": "para", "f": "Welcher Paragraph erlaubt die Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff?", "a": "§ 32 StGB" },
+  { "t": "para", "f": "Welcher Paragraph erlaubt das Festhalten eines auf frischer Tat betroffenen Täters?", "a": "§ 127 Abs. 1 StPO" },
+  { "t": "para", "f": "Welcher Paragraph erlaubt die Selbsthilfe des Besitzer?", "a": "§ 859 BGB" },
+  { "t": "para", "f": "Welcher Paragraph verbietet die Verbotene Eigenmacht", "a": "§ 858 BGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt die Schadensersatzpflicht?", "a": "§ 823 BGB" }, 
+  { "t": "para", "f": "Welcher Paragraph greift, wenn Gewalt erst nach einem vollendeten Diebstahl eingesetzt wird, um die Beute zu sichern?", "a": "§ 252 StGB" },
+  { "t": "para", "f": "Welcher Paragraph greift, wenn Gewalt zur Wegnahme einer Sache eingesetzt wird?", "a": "§ 249 StGB" },
+  { "t": "para", "f": "Welcher Paragraph greift bei Diebstahl", "a": "§ 242 StGB" },
+  { "t": "para", "f": "Welcher Paragraph schützt vor dem unbefugten Betreten befriedeten Besitztums?", "a": "§ 123 StGB" },
+  { "t": "para", "f": "Welcher Paragraph regelt den rechtfertigenden Notstand?", "a": "§ 34 StGB" },
+ 
+        ];
 
         let aktiveThemen = [], gefilterteFragen = [], index = 0;
 
