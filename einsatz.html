@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<!-- saved from url=(0143)file:///Users/cczelzinski/Library/Containers/net.whatsapp.WhatsApp/Data/tmp/documents/FC59BD69-5E06-414F-B84D-CCCF501235FA/34a%20SImulator.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Einsatzsimulator §34a – Prototyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./css/css" rel="stylesheet">
+<style>
+:root{
+  --bg:#12161c;
+  --panel:#1b212a;
+  --panel-2:#232b36;
+  --border:#333f4d;
+  --text:#e8e6df;
+  --muted:#8b96a3;
+  --amber:#f0a83c;
+  --red:#e0524a;
+  --green:#4fb286;
+  --blue:#5aa0d6;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100%;overflow:hidden;}
+.stencil{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+#app{position:relative;width:100vw;height:100vh;background:
+  radial-gradient(ellipse at 20% -10%, #1c2734 0%, transparent 55%),
+  repeating-linear-gradient(135deg, rgba(240,168,60,0.02) 0px, rgba(240,168,60,0.02) 2px, transparent 2px, transparent 24px),
+  var(--bg);
+}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ---------- top bar ---------- */
+#topbar{
+  height:52px;flex:0 0 52px;display:flex;align-items:center;gap:22px;
+  padding:0 22px;background:var(--panel);border-bottom:2px solid var(--amber);
+}
+#topbar .brand{font-size:20px;letter-spacing:.08em;color:var(--amber);}
+#topbar .stat{font-size:12px;color:var(--muted);}
+#topbar .stat b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-weight:600;}
+#topbar .stripe{
+  flex:1;height:10px;border-radius:2px;
+  background:repeating-linear-gradient(45deg,#2a323d,#2a323d 8px,#1b212a 8px,#1b212a 16px);
+  position:relative;overflow:hidden;margin:0 8px;
+}
+#topbar .stripe i{position:absolute;left:0;top:0;bottom:0;background:var(--amber);width:0%;transition:width .4s;}
+
+/* ---------- center screens (intro/equip/briefing/report) ---------- */
+.center-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:28px 32px;max-width:640px;width:100%;}
+h1.stencil{font-size:40px;margin:0 0 6px;color:var(--text);}
+h1 .accent{color:var(--amber);}
+p.lead{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 26px;}
+label.field{display:block;margin-bottom:16px;}
+label.field span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;}
+input[type=text]{width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;padding:10px 12px;color:var(--text);font-size:15px;font-family:inherit;}
+input[type=text]:focus{outline:none;border-color:var(--amber);}
+.btn{
+  appearance:none;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;font-size:15px;padding:12px 22px;border-radius:4px;
+  background:var(--amber);color:#1a1305;transition:transform .12s, box-shadow .12s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(240,168,60,.25);}
+.btn.secondary{background:var(--panel-2);color:var(--text);border:1px solid var(--border);}
+.btn.danger{background:var(--red);color:#210a08;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-row{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;}
+
+/* mission select cards */
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;}
+.mission-card{background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;cursor:pointer;position:relative;}
+.mission-card.locked{opacity:.4;cursor:not-allowed;}
+.mission-card:hover:not(.locked){border-color:var(--amber);}
+.mission-card .m-title{font-family:'Barlow Condensed';font-weight:700;font-size:18px;text-transform:uppercase;}
+.mission-card .m-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;background:#2b2210;color:var(--amber);border:1px solid #4a3a15;padding:2px 6px;border-radius:3px;margin-top:8px;margin-right:6px;}
+.tag.req{background:#2b1210;color:var(--red);border-color:#4a1f1a;text-transform:none;letter-spacing:0;}
+
+/* equipment grid */
+.equip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:6px;}
+.equip-item{background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:14px 10px;text-align:center;cursor:pointer;position:relative;}
+.equip-item:hover{border-color:var(--amber);}
+.equip-item.owned{border-color:var(--green);background:#132019;}
+.equip-item.locked{opacity:.5;filter:grayscale(.4);}
+.equip-item.locked:hover{border-color:var(--red);}
+.equip-item .ic{font-size:26px;margin-bottom:6px;}
+.equip-item .nm{font-size:12px;font-weight:600;}
+.equip-item .check{position:absolute;top:6px;right:6px;color:var(--green);font-size:13px;display:none;}
+.equip-item.owned .check{display:block;}
+
+/* ---------- modal (quiz / legal / event) ---------- */
+#modalOverlay{position:absolute;inset:0;background:rgba(8,10,13,.72);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:50;}
+#modalOverlay.active{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:6px;max-width:560px;width:92%;padding:26px 28px;}
+.modal.legal{border-top-color:var(--red);}
+.modal .kicker{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+.modal.legal .kicker{color:var(--red);}
+.modal h3{font-family:'Barlow Condensed';font-size:24px;text-transform:uppercase;margin:0 0 14px;}
+.modal p.q{font-size:15px;line-height:1.5;margin:0 0 18px;}
+.opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;padding:11px 14px;margin-bottom:9px;cursor:pointer;color:var(--text);font-size:14px;font-family:inherit;}
+.opt:hover{border-color:var(--amber);}
+.opt.correct{border-color:var(--green);background:#122b1f;}
+.opt.wrong{border-color:var(--red);background:#2b1513;}
+.explain{margin-top:14px;padding:12px 14px;background:var(--panel-2);border-left:3px solid var(--amber);border-radius:0 4px 4px 0;font-size:13px;line-height:1.5;color:var(--muted);display:none;}
+.explain b{color:var(--text);}
+.explain.show{display:block;}
+
+/* ---------- mission screen ---------- */
+#missionScreen{flex-direction:row;}
+#mapWrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#0d1015;overflow-y:auto;padding:16px 12px;gap:10px;}
+canvas{background:#171d25;border:1px solid var(--border);max-width:100%;height:auto;display:block;}
+#controlsBar{display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto;}
+#hint{background:rgba(20,24,30,.85);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;color:var(--muted);text-align:center;}
+#hint b{color:var(--amber);}
+
+/* on-screen D-pad (mouse/touch movement control) — sits directly under the map */
+#dpad{
+  width:132px; height:132px;
+  display:grid; grid-template-columns:44px 44px 44px; grid-template-rows:44px 44px 44px;
+  gap:0; user-select:none; -webkit-user-select:none; touch-action:none;
+}
+.dpad-btn{
+  appearance:none; border:1px solid var(--border); background:rgba(27,33,42,.9);
+  color:var(--amber); font-size:16px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  touch-action:none; -webkit-tap-highlight-color:transparent;
+  transition:background .1s, border-color .1s;
+}
+.dpad-btn:active, .dpad-btn.active{background:var(--amber); color:#1a1305; border-color:var(--amber);}
+.dpad-up{grid-column:2; grid-row:1; border-radius:6px 6px 0 0;}
+.dpad-left{grid-column:1; grid-row:2; border-radius:6px 0 0 6px;}
+.dpad-right{grid-column:3; grid-row:2; border-radius:0 6px 6px 0;}
+.dpad-down{grid-column:2; grid-row:3; border-radius:0 0 6px 6px;}
+
+/* right dispatch log (signature element) */
+#dispatch{width:300px;flex:0 0 300px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;}
+#dispatch .dhead{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+#dispatch .dhead .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+#dispatch .dhead span{font-family:'Barlow Condensed';font-size:15px;letter-spacing:.06em;text-transform:uppercase;}
+#log{flex:1;overflow-y:auto;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.6;}
+.logline{margin-bottom:10px;color:var(--muted);}
+.logline .t{color:var(--blue);}
+.logline.ev{color:var(--amber);}
+.logline.dec{color:var(--text);}
+.logline.err{color:var(--red);}
+
+/* ego view panel */
+#egoPanel{flex:0 0 160px;border-top:1px solid var(--border);padding:10px 14px;}
+#egoPanel .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+#egoScene{height:110px;border-radius:4px;background:linear-gradient(180deg,#2a3441,#161b21);display:flex;align-items:center;justify-content:center;font-size:38px;border:1px solid var(--border);}
+
+/* report screen */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.rstat{background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;}
+.rstat .v{font-family:'Barlow Condensed';font-size:30px;font-weight:700;}
+.rstat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.rstat.good .v{color:var(--green);}
+.rstat.bad .v{color:var(--red);}
+.review-item{border-bottom:1px solid var(--border);padding:14px 0;}
+.review-item:last-child{border-bottom:none;}
+.review-item .rq{font-size:14px;margin-bottom:6px;}
+.review-item .ra{font-size:12px;padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;}
+.ra.ok{background:#122b1f;color:var(--green);}
+.ra.no{background:#2b1513;color:var(--red);}
+.review-item .rex{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* ---------- mobile layout ---------- */
+@media (max-width:760px){
+  #missionScreen{flex-direction:column;}
+  #dispatch{width:100%;flex:0 0 auto;border-left:none;border-top:1px solid var(--border);max-height:220px;}
+  #egoPanel{flex:0 0 90px;}
+  #egoScene{height:60px;font-size:26px;}
+  #topbar{flex-wrap:wrap;height:auto;padding:8px 14px;gap:10px 16px;}
+  #topbar .stripe{flex:1 1 100%;order:5;}
+}
+#footerMark{
+  position:fixed; right:10px; bottom:6px; z-index:200;
+  font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.04em;
+  color:rgba(232,230,223,0.3); pointer-events:none; user-select:none;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div id="topbar" style="display:none;">
+    <div class="brand stencil">SMA // SACHKUNDE-SIM</div>
+    <div class="stat">CALLSIGN <b id="tbName">—</b></div>
+    <div class="stat">EINSATZZEIT <b id="tbTime" class="mono">00:00</b></div>
+    <div class="stripe"><i id="tbDeesk" style="width:60%"></i></div>
+    <div class="stat">DEESKALATION</div>
+    <div class="stat">PUNKTE <b id="tbScore" class="mono">0</b></div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="center-wrap">
+      <div class="card">
+        <h1 class="stencil">EINSATZSIMULATOR <span class="accent">§34a</span></h1>
+        <p class="lead">Lern- und Prüfungssimulation für die IHK-Sachkundeprüfung nach §34a GewO. Du übernimmst die Rolle eines Sicherheitsmitarbeiters (SMA), rüstest dich aus und triffst im Einsatz rechtssichere Entscheidungen.</p>
+        <label class="field"><span>Name</span><input type="text" id="inName" placeholder="Vorname Nachname"></label>
+        <label class="field"><span>Funkrufname</span><input type="text" id="inCall" placeholder="z. B. SMA-3"></label>
+        <div class="btn-row">
+          <button class="btn" onclick="startBriefingScreen()">Dienst antreten →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRIEFING -->
+  <div class="screen" id="screen-briefing">
+    <div class="center-wrap">
+      <div class="card" style="max-width:760px;">
+        <h1 class="stencil" style="font-size:30px;">EINSATZBESPRECHUNG</h1>
+        <p class="lead">Zentrale an alle Kräfte: Wähle deinen Einsatzort. Jede Mission bringt eigene Ereignisse und Rechtsfragen mit sich — verhaltet euch stets verhältnismäßig und deeskalierend.</p>
+        <div class="mission-grid" id="missionGrid" style="grid-template-columns:1fr 1fr;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQUIP -->
+  <div class="screen" id="screen-equip">
+    <div class="center-wrap">
+      <div class="card" style="max-width:760px;">
+        <h1 class="stencil" style="font-size:30px;">AUSRÜSTUNGSRAUM</h1>
+        <p class="lead" id="equipMissionInfo">Wähle deine Ausrüstung. Jeder Gegenstand prüft dein Fachwissen — nur bei richtiger Antwort wandert er ins Inventar.</p>
+        <div class="equip-grid" id="equipGrid"></div>
+        <div class="btn-row">
+          <button class="btn secondary" onclick="backToBriefing()">← Zurück zur Einsatzauswahl</button>
+          <button class="btn" id="briefBtn" onclick="goToMission()" disabled="">Einsatz beginnen →</button>
+          <span class="stat" id="equipCount" style="align-self:center;">0 / 3 Pflichtgegenstände</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="screen" id="screen-mission">
+    <div id="missionScreen" style="flex:1;display:flex;">
+      <div id="mapWrap">
+        <canvas id="canvas" width="720" height="560"></canvas>
+        <div id="controlsBar">
+          <div id="hint">Bewegen: <b>WASD</b> / Pfeiltasten oder Steuerkreuz — nähere dich Personen für Interaktion</div>
+          <div id="dpad">
+            <button class="dpad-btn dpad-up" data-dir="w" aria-label="Nach oben">▲</button>
+            <button class="dpad-btn dpad-left" data-dir="a" aria-label="Nach links">◀</button>
+            <button class="dpad-btn dpad-right" data-dir="d" aria-label="Nach rechts">▶</button>
+            <button class="dpad-btn dpad-down" data-dir="s" aria-label="Nach unten">▼</button>
+          </div>
+        </div>
+      </div>
+      <div id="dispatch">
+        <div class="dhead"><div class="dot"></div><span>Funkspruch-Log</span></div>
+        <div id="log"></div>
+        <div id="egoPanel">
+          <div class="lbl">Ego-Ansicht</div>
+          <div id="egoScene">🏬</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="screen" id="screen-report">
+    <div class="center-wrap">
+      <div class="card" style="max-width:720px;">
+        <h1 class="stencil" style="font-size:30px;">EINSATZBERICHT</h1>
+        <p class="lead" id="repSub"></p>
+        <div class="report-grid" id="repStats"></div>
+        <div id="repReview"></div>
+        <div class="btn-row">
+          <button class="btn" onclick="location.reload()">Neuer Einsatz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalOverlay"><div class="modal" id="modal"></div></div>
+  <div id="footerMark">© F.S.</div>
+</div>
+
+<script>
+/* ===================== STATE ===================== */
+const S = {
+  name:'', call:'',
+  inventory:{}, // key -> true
+  score:0, correctAnswers:0, wrongAnswers:0, legalErrors:0,
+  deescalation:60, professionalism:60,
+  startTime:null, elapsedMs:0, timerInt:null,
+  reviewLog:[], // {q, ok, ex}
+  missionKey:null
+};
+
+function log(text, cls){
+  const el=document.getElementById('log');
+  const ts=new Date().toISOString().substr(11,8);
+  const line=document.createElement('div');
+  line.className='logline '+(cls||'');
+  line.innerHTML='<span class="t">['+ts+']</span> '+text;
+  el.appendChild(line);
+  el.scrollTop=el.scrollHeight;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ===================== EQUIPMENT DATA ===================== */
+const EQUIP = [
+  {key:'taschenlampe', name:'Taschenlampe', icon:'🔦', required:false,
+    q:'Welche Aussage zur Taschenlampe im Wachdienst trifft zu?',
+    opts:[
+      'Sie gehört zur persönlichen Sicherheitstechnik und Grundausstattung im Streifendienst.',
+      'Sie ist ausschließlich persönliche Schutzausrüstung (PSA) im Sinne der DGUV.',
+      'Sie dient ausschließlich der Selbstverteidigung.',
+      'Sie darf laut Bewachungsverordnung nur nachts benutzt werden.'
+    ], correct:0,
+    explain:'Die Taschenlampe zählt zur allgemeinen Ausstattung für Kontroll- und Streifentätigkeit, ist aber keine PSA nach DGUV Vorschrift 1 (die schützt vor Gefahren für Leib/Leben, z. B. Helm, Handschuhe).'},
+  {key:'funkgeraet', name:'Funkgerät', icon:'📻', required:false,
+    q:'Welche Funkdisziplin ist im Sicherheitsdienst korrekt?',
+    opts:[
+      'Rufname, Sprechen erst nach Freigabe des Kanals, kurze und klare Meldungen ohne Klartextnamen Dritter.',
+      'Beliebig lange Meldungen mit allen Details, da Funk verschlüsselt ist.',
+      'Dauerhaftes Mithören genügt, eigene Meldungen sind optional.',
+      'Funkgeräte dürfen personenbezogene Daten uneingeschränkt öffentlich übertragen.'
+    ], correct:0,
+    explain:'Funkdisziplin bedeutet: Kanal freihalten, sich mit Rufname melden, kurz/präzise sprechen und Datenschutz beachten (keine unnötige Nennung personenbezogener Daten über offene Kanäle).'},
+  {key:'erstehilfe', name:'Erste-Hilfe-Tasche', icon:'⛑️', required:false,
+    q:'Welche Pflicht besteht für Sicherheitsmitarbeiter bei einer hilflosen Person?',
+    opts:[
+      'Grundsätzlich keine, da nur Rettungsdienst zuständig ist.',
+      'Erste Hilfe im Rahmen der eigenen Kenntnisse leisten und Rettungsdienst alarmieren (unterlassene Hilfeleistung §323c StGB vermeiden).',
+      'Nur bei ausdrücklicher Anweisung des Auftraggebers eingreifen.',
+      'Erste Hilfe nur leisten, wenn eine Haftungsfreistellung unterschrieben wurde.'
+    ], correct:1,
+    explain:'§323c StGB verpflichtet jede Person – auch SMA – im Rahmen des Zumutbaren Erste Hilfe zu leisten und Hilfe zu organisieren.'},
+  {key:'guertel', name:'Einsatzgürtel', icon:'🧷', required:false,
+    q:'Wozu dient der Einsatzgürtel primär?',
+    opts:['Als Waffe im Nahkampf.','Zum sicheren, griffbereiten Tragen erlaubter Ausrüstung.','Er ist gesetzlich vorgeschrieben für jeden SMA.','Er ersetzt die Dienstkleidungspflicht.'], correct:1,
+    explain:'Der Gürtel dient der geordneten, griffbereiten Mitführung der zulässigen Ausrüstung – kein Waffenersatz, keine gesetzliche Pflicht.'},
+  {key:'handschuhe', name:'Handschuhe', icon:'🧤', required:false,
+    q:'Handschuhe im Wachdienst zählen zu:',
+    opts:['Waffen im waffenrechtlichen Sinn','Persönlicher Schutzausrüstung (PSA) nach DGUV Vorschrift 1','Beweismitteln','Kommunikationsmitteln'], correct:1,
+    explain:'Handschuhe sind klassische PSA nach DGUV Vorschrift 1 (Schutz vor Verletzung, Kontamination etc.).'},
+  {key:'pfefferspray', name:'Pfefferspray', icon:'🧴', required:false,
+    q:'Wann darf Pfefferspray gegen eine Person eingesetzt werden?',
+    opts:[
+      'Immer, wenn eine Person unkooperativ ist.',
+      'Nur zur Nothilfe/Notwehr, wenn ein gegenwärtiger rechtswidriger Angriff vorliegt und der Einsatz erforderlich sowie verhältnismäßig ist (§32 StGB).',
+      'Nur nach schriftlicher Genehmigung des Auftraggebers.',
+      'Präventiv, sobald ein Hausverbot ausgesprochen wurde.'
+    ], correct:1,
+    explain:'Der Einsatz von Reizstoffsprühgeräten gegen Personen ist nur im Rahmen von Notwehr/Nothilfe (§32 StGB) gerechtfertigt – erforderlich und verhältnismäßig, kein Mittel zur bloßen Durchsetzung von Anweisungen.'},
+  {key:'handfesseln', name:'Handfesseln', icon:'⛓️', required:false,
+    q:'Wann dürfen SMA Handfesseln zum Festhalten einer Person einsetzen?',
+    opts:[
+      'Nur im Rahmen einer rechtmäßigen vorläufigen Festnahme nach §127 StPO (auf frischer Tat, Fluchtgefahr/Identität ungeklärt) und verhältnismäßig.',
+      'Immer, wenn der Hausdetektiv es anordnet.',
+      'Nur mit polizeilicher Dienstmarke.',
+      'Handfesseln dürfen SMA generell nicht besitzen.'
+    ], correct:0,
+    explain:'Das Jedermannsrecht nach §127 StPO erlaubt die vorläufige Festnahme bei Betretung auf frischer Tat, wenn Fluchtgefahr besteht oder die Identität nicht sofort feststellbar ist – die Fixierung muss verhältnismäßig sein.'},
+  {key:'dokumappe', name:'Dokumentenmappe', icon:'🗂️', required:false,
+    q:'Was gehört sinnvollerweise in die Dokumentenmappe?',
+    opts:['Dienstanweisung, Objektpläne, Meldeformulare','Privater Ausweis von Kunden','Fundgegenstände zur privaten Verwahrung','Nur Werbematerial des Objekts'], correct:0,
+    explain:'Die Mappe dient der ordnungsgemäßen Dokumentation: Dienstanweisung, Objektunterlagen, Formulare für Meldungen/Berichte.'},
+  {key:'bodycam', name:'Bodycam', icon:'📷', required:false,
+    q:'Welche Datenschutzvorgabe ist beim Bodycam-Einsatz zentral?',
+    opts:[
+      'Aufnahmen sind grundsätzlich zulässig und müssen nie kenntlich gemacht werden.',
+      'Aufnahme nur situativ gerechtfertigt (z. B. Eigen-/Beweissicherung), mit Kennzeichnungspflicht/Transparenz und befristeter, zweckgebundener Speicherung nach DSGVO.',
+      'Bodycams dürfen nur die Polizei einsetzen, SMA nie.',
+      'Aufnahmen dürfen dauerhaft und unbegrenzt gespeichert werden.'
+    ], correct:1,
+    explain:'Der Einsatz muss anlassbezogen, transparent (Kennzeichnung) und datensparsam erfolgen – Rechtsgrundlage i. d. R. berechtigtes Interesse nach DSGVO, mit kurzer Speicherfrist und Löschkonzept.'},
+  {key:'schluessel', name:'Schlüsselbund', icon:'🔑', required:false,
+    q:'Der Umgang mit dem Objekt-Schlüsselbund unterliegt vor allem:',
+    opts:['Keinen besonderen Regeln','Einer Verwahr- und Dokumentationspflicht laut Dienstanweisung','Dem Waffengesetz','Der StVO'], correct:1,
+    explain:'Schlüssel sind sicherheitsrelevant und müssen gemäß Dienstanweisung verwahrt, quittiert und dokumentiert werden.'},
+  {key:'ausweis', name:'Dienstausweis', icon:'🪪', required:true,
+    q:'Der Dienstausweis eines SMA dient dazu:',
+    opts:['Hoheitliche Befugnisse zu verleihen','Sich als beauftragter Mitarbeiter des Bewachungsunternehmens auszuweisen','Polizeiliche Befugnisse zu ersetzen','Waffenscheine zu ersetzen'], correct:1,
+    explain:'Der Ausweis legitimiert als Mitarbeiter eines Bewachungsunternehmens – er verleiht keine hoheitlichen (polizeilichen) Befugnisse, SMA handeln auf Basis von Jedermannsrechten und Hausrecht.'},
+  {key:'notizblock', name:'Notizblock', icon:'📓', required:true,
+    q:'Warum sind zeitnahe, eigene Notizen im Einsatz wichtig?',
+    opts:['Sie sind rechtlich irrelevant','Sie dienen als Gedächtnisstütze für einen späteren, wahrheitsgemäßen Bericht/Aussage','Sie ersetzen den Einsatzbericht vollständig','Sie sind nur für Buchhaltungszwecke gedacht'], correct:1,
+    explain:'Zeitnahe Notizen sichern Fakten (Zeit, Ort, Beobachtung) für einen korrekten Bericht und ggf. eine spätere Zeugenaussage.'},
+  {key:'helm', name:'Helm', icon:'⛑', required:false,
+    q:'Der Helm zählt zu:',
+    opts:['PSA gegen Kopfverletzungen (DGUV Vorschrift 1)','Waffe','Kommunikationsmittel','Ausweisdokument'], correct:0,
+    explain:'Der Helm schützt vor Kopfverletzungen und ist klassische persönliche Schutzausrüstung.'},
+  {key:'schutzweste', name:'Schutzweste', icon:'🛡️', required:false,
+    q:'Der Einsatz einer Schutzweste ist sinnvoll bei:',
+    opts:['Erhöhtem Gefährdungspotenzial laut Gefährdungsbeurteilung','Ausschließlich repräsentativen Anlässen','Nie, da gesetzlich verboten','Nur in der Probezeit'], correct:0,
+    explain:'Die Ausstattung richtet sich nach der objektbezogenen Gefährdungsbeurteilung des Auftraggebers/Unternehmens.'},
+  {key:'warnweste', name:'Warnweste', icon:'🦺', required:false,
+    q:'Wozu dient die Warnweste vor allem?',
+    opts:[
+      'Der Reduzierung des eigenen Diebstahlrisikos.',
+      'Der frühzeitigen, guten Sichtbarkeit für andere (z. B. Baustellenverkehr) als PSA nach DGUV Vorschrift 1 – besonders wichtig auf Baustellen, bei Verkehrsregelung oder in der Dunkelheit.',
+      'Dem Schutz vor Schlagverletzungen.',
+      'Ausschließlich repräsentativen Zwecken.'
+    ], correct:1,
+    explain:'Die Warnweste erhöht die Sichtbarkeit für andere (z. B. Fahrzeugführer) und ist klassische PSA nach DGUV Vorschrift 1 – auf Baustellen und bei schlechter Sicht ist sie unverzichtbar.'},
+  {key:'metalldetektor', name:'Metalldetektor', icon:'📡', required:false,
+    q:'Beim Einsatz eines Metalldetektors zur Einlasskontrolle gilt:',
+    opts:['Er ersetzt jede rechtliche Grundlage','Die Kontrolle muss auf Basis von Hausrecht/Einwilligung erfolgen und verhältnismäßig sein','Er darf ohne jeden Anlass zwangsweise angewendet werden','Nur die Polizei darf ihn bedienen'], correct:1,
+    explain:'Einlasskontrollen stützen sich auf das Hausrecht (§903 BGB) bzw. die Einwilligung des Besuchers (freiwilliges Betreten unter Bedingungen) – zwangsweise Durchsuchung ist SMA nicht erlaubt.'},
+  {key:'spiegel', name:'Spiegel zur Fahrzeugkontrolle', icon:'🪞', required:false,
+    q:'Der Kontrollspiegel für Fahrzeuge dient vor allem:',
+    opts:['Der äußeren Sichtprüfung, z. B. auf verdächtige Gegenstände am Unterboden','Dem Anhalten von Fahrzeugen mit Zwang','Der Feststellung der Fahrtüchtigkeit','Er ist ein Ausweisdokument'], correct:0,
+    explain:'Der Spiegel unterstützt die äußere Sichtkontrolle – SMA haben keine Anhalte- oder Durchsuchungsbefugnis wie die Polizei.'},
+  {key:'feuerloescher', name:'Feuerlöscher', icon:'🧯', required:false,
+    q:'Welcher Feuerlöscher-Typ eignet sich für brennende Holzpaletten (Brandklasse A)?',
+    opts:['CO2-Löscher (Brandklasse B)','Wasser- oder Schaumlöscher (Brandklasse A)','Fettbrandlöscher (Brandklasse F)','Metallbrandlöscher (Brandklasse D)'], correct:1,
+    explain:'Brandklasse A (feste, glutbildende Stoffe wie Holz) wird mit Wasser- oder Schaumlöschern bekämpft.'},
+  {key:'schreckschuss', name:'Schreckschusswaffe', icon:'🔫', required:false, locked:true,
+    lockReason:'Die Schreckschusswaffe wird in diesem Einsatz nicht ausgegeben: Sie ist im laufenden Objekt- und Streifendienst nicht zweckmäßig, da sie mit einer scharfen Waffe verwechselt werden kann, Situationen unnötig eskaliert und keinen zuverlässigen Eigenschutz bietet. Für die Sachkundeprüfung bleibt das Wissen dennoch relevant: Der Kleine Waffenschein (§10 Abs. 4 WaffG) berechtigt zum Führen von Schreckschuss-, Reizstoff- und Signalwaffen mit gültigem PTB-Zeichen – er berechtigt nicht zum verdeckten Führen scharfer Schusswaffen und ersetzt keinen regulären Waffenschein.'},
+  {key:'schusswaffe', name:'Schusswaffe', icon:'🔫', required:false,
+    q:'Welche Aussage zum Führen einer scharfen Schusswaffe im Bewachungsgewerbe ist zutreffend?',
+    opts:[
+      'Der Sachkundenachweis nach §34a GewO berechtigt automatisch zum Führen von Schusswaffen.',
+      'Das Führen einer scharfen Schusswaffe erfordert zusätzlich zur §34a-Erlaubnis einen eigenen Waffenschein nach WaffG sowie eine objektbezogene Genehmigung und bleibt auf eng begrenzte Ausnahmefälle beschränkt (z. B. Geld-/Werttransport, bestimmte Hochsicherheitsobjekte).',
+      'Jeder SMA mit bestandener Sachkundeprüfung darf ohne weitere Erlaubnis eine Schusswaffe tragen.',
+      'Schusswaffen sind im privaten Sicherheitsgewerbe generell gesetzlich verboten.'
+    ], correct:1,
+    explain:'Die Sachkundeprüfung nach §34a GewO berechtigt nicht automatisch zum Führen von Schusswaffen. Dafür sind ein gültiger Waffenschein nach dem Waffengesetz und eine objektbezogene Erlaubnis erforderlich – der reguläre Streifen- oder Objektschutz erfolgt in aller Regel unbewaffnet; bewaffnete Einsätze bleiben Ausnahmefällen wie dem Geld- und Werttransport vorbehalten.'}
+];
+const REQUIRED = EQUIP.filter(e=>e.required).map(e=>e.key);
+
+function renderEquip(){
+  const grid=document.getElementById('equipGrid');
+  grid.innerHTML='';
+  EQUIP.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='equip-item'+(S.inventory[item.key]?' owned':'')+(item.locked?' locked':'');
+    div.id='eq-'+item.key;
+    div.innerHTML='<div class="check">✓</div><div class="ic">'+item.icon+'</div><div class="nm">'+item.name+(item.required?' *':'')+(item.locked?' 🔒':'')+'</div>';
+    div.onclick=()=> item.locked ? openInfoModal(item) : openEquipQuiz(item);
+    grid.appendChild(div);
+  });
+  updateEquipCount();
+}
+function updateEquipCount(){
+  const have=REQUIRED.filter(k=>S.inventory[k]).length;
+  document.getElementById('equipCount').textContent=have+' / '+REQUIRED.length+' Pflichtgegenstände';
+  document.getElementById('briefBtn').disabled = have < REQUIRED.length;
+}
+
+function openInfoModal(item){
+  const m=document.getElementById('modal');
+  m.className='modal';
+  m.innerHTML='<div class="kicker">Hinweis — nicht ausgegeben</div><h3>'+item.icon+' '+item.name+'</h3><div class="explain show">'+item.lockReason+'</div>';
+  const btn=document.createElement('button');
+  btn.className='btn'; btn.style.marginTop='16px'; btn.textContent='Verstanden';
+  btn.onclick=closeModal;
+  m.appendChild(btn);
+  openModal();
+}
+
+function openEquipQuiz(item){
+  if(S.inventory[item.key]) return;
+  const m=document.getElementById('modal');
+  m.className='modal';
+  m.innerHTML='<div class="kicker">Fachfrage — '+item.name+'</div><h3>'+item.icon+' '+item.name+'</h3><p class="q">'+item.q+'</p><div id="optsWrap"></div><div class="explain" id="ex"></div>';
+  const wrap=m.querySelector('#optsWrap');
+  // shuffle option order so the correct answer isn't always in the same position
+  const order=shuffle(item.opts.map((_,i)=>i));
+  order.forEach(origIdx=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=item.opts[origIdx];
+    b.onclick=()=>{
+      const all=wrap.querySelectorAll('.opt');
+      all.forEach(o=>o.onclick=null);
+      if(origIdx===item.correct){
+        b.classList.add('correct');
+        S.inventory[item.key]=true;
+        S.score+=10; S.correctAnswers++;
+        log('Fachfrage '+item.name+' korrekt beantwortet.','dec');
+      } else {
+        b.classList.add('wrong');
+        const correctBtn=[...all].find((_,i2)=>order[i2]===item.correct);
+        if(correctBtn) correctBtn.classList.add('correct');
+        S.wrongAnswers++;
+        log('Fachfrage '+item.name+' falsch beantwortet — Gegenstand nicht freigeschaltet.','err');
+      }
+      const ex=m.querySelector('#ex');
+      ex.innerHTML='<b>Erklärung:</b> '+item.explain;
+      ex.classList.add('show');
+      const closeBtn=document.createElement('button');
+      closeBtn.className='btn';
+      closeBtn.style.marginTop='14px';
+      closeBtn.textContent='Weiter';
+      closeBtn.onclick=()=>{ closeModal(); renderEquip(); };
+      m.appendChild(closeBtn);
+    };
+    wrap.appendChild(b);
+  });
+  openModal();
+}
+
+function openModal(){ document.getElementById('modalOverlay').classList.add('active'); }
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
+
+/* ===================== MISSIONS DATA ===================== */
+const OUTER_WALLS = [
+  {x:0,y:0,w:720,h:20},{x:0,y:0,w:20,h:560},{x:700,y:0,w:20,h:560},{x:0,y:540,w:720,h:20}
+];
+
+const MISSIONS = {
+  mall: {
+    title:'Einkaufszentrum', sub:'Objektschutz · Streifengang · Ladendetektiv-Unterstützung', icon:'🏬',
+    briefing:'Zentrale an alle Kräfte: Objektschutz mit Streifengang, Einkaufszentrum "Rheincenter". Bekannte Häufung von Ladendiebstahl im Elektronikbereich.',
+    requiredEquip:[{key:'handfesseln', label:'Handfesseln', penalty:15,
+      missingText:'Ohne Handfesseln fehlte im Eskalationsfall ein rechtssicheres Mittel, eine vorläufige Festnahme nach §127 StPO sicher zu fixieren – ein spürbarer Ausrüstungsmangel für diesen Einsatztyp.',
+      presentText:'Handfesseln waren einsatzbereit mitgeführt – korrekt für einen Objektschutz mit Festnahmerisiko.'}],
+    theme:{bg:'#e6e3d8', zoneFill:'#f2f0e6', zoneStroke:'#c7c1ac', labelColor:'#4a4636', texture:'tile', gridColor:'rgba(120,108,76,0.10)', wallColor:'#3d372c', wallHighlight:'rgba(255,255,255,0.28)', flashlightAlpha:0.10},
+    introQuestion:{ kicker:'Einsatzbesprechung — Rechtsgrundlagen', title:'In welche Bereiche wird das Recht grundsätzlich unterschieden?',
+      desc:'Bevor du in den Einsatz startest, fragt dich der Ladendetektiv nach den rechtlichen Grundlagen deiner Tätigkeit: In welche großen Bereiche wird das Recht grundsätzlich unterteilt?',
+      options:[
+        {label:'In öffentliches Recht (regelt das Verhältnis zwischen Staat/Hoheitsträgern und Bürgern, z. B. Strafrecht, Polizei- und Ordnungsrecht) und privates Recht/Zivilrecht (regelt die Rechtsbeziehungen der Bürger untereinander, z. B. BGB).', deesk:0, prof:14, score:15,
+          explain:'Korrekt: Das Recht wird grundlegend in öffentliches Recht (Verhältnis Staat–Bürger) und privates Recht/Zivilrecht (Rechtsbeziehungen der Bürger untereinander) unterschieden. Für SMA ist das zentral, da ihre Befugnisse überwiegend aus dem Zivilrecht (Jedermannsrechte, Hausrecht) stammen, nicht aus hoheitlichen Befugnissen.',
+          reviewOk:true, reviewText:'Öffentliches Recht und privates Recht/Zivilrecht sind die grundlegende Zweiteilung der Rechtsordnung.'},
+        {label:'In Landesrecht und Bundesrecht — eine weitere Unterscheidung gibt es nicht.', deesk:0, prof:-6, score:-5,
+          explain:'Nicht korrekt: Das ist eine föderale Zuständigkeitsfrage, nicht die grundlegende Einteilung der Rechtsgebiete in öffentliches und privates Recht.',
+          reviewOk:false, reviewText:'Landes-/Bundesrecht betrifft die Zuständigkeit, nicht die Grundunterscheidung öffentliches/privates Recht.'},
+        {label:'In geschriebenes und ungeschriebenes Recht — eine Unterscheidung zwischen öffentlichem und privatem Recht existiert nicht.', deesk:0, prof:-6, score:-5,
+          explain:'Nicht korrekt: Die Unterscheidung zwischen öffentlichem und privatem Recht ist eine der grundlegendsten Einteilungen der Rechtsordnung.',
+          reviewOk:false, reviewText:'Die Unterscheidung öffentliches/privates Recht existiert sehr wohl und ist grundlegend.'},
+        {label:'In Zivilrecht und Verwaltungsrecht; das Strafrecht zählt zu keinem der beiden Bereiche.', deesk:0, prof:-6, score:-5,
+          explain:'Nicht korrekt: Das Strafrecht zählt zum öffentlichen Recht, da es das Verhältnis zwischen Staat und Bürger regelt.',
+          reviewOk:false, reviewText:'Das Strafrecht ist Teil des öffentlichen Rechts, nicht "keinem der beiden Bereiche" zugehörig.'}
+      ]
+    },
+    playerStart:{x:100,y:100},
+    renderWalls:[...OUTER_WALLS,
+      {x:20,y:20,w:200,h:16},{x:220,y:20,w:16,h:180},
+      {x:20,y:380,w:400,h:16},{x:500,y:20,w:16,h:300}],
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:200,h:16},{x:220,y:20,w:16,h:180},
+      {x:20,y:380,w:400,h:16},{x:500,y:20,w:16,h:300},
+      {x:294,y:70,w:152,h:14},{x:294,y:342,w:152,h:14},
+      {x:564,y:70,w:82,h:14},{x:564,y:272,w:82,h:14},
+      {x:395,y:449,w:150,h:42}],
+    doors:[{x:420,y:380,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:180,h:150,label:'Eingang',icon:'🚪'},
+      {x:250,y:40,w:240,h:330,label:'Verkaufsraum',icon:'🛍️',feature:'shelves'},
+      {x:520,y:40,w:170,h:260,label:'Elektronikbereich',icon:'📺',feature:'shelves'},
+      {x:250,y:400,w:440,h:140,label:'Kasse / Ausgang',icon:'🏧',feature:'counter'}
+    ],
+    npcStart:{x:600,y:150}, npcRoam:{minx:540,maxx:660,miny:60,maxy:270},
+    npcTargets:[{x:620,y:460},{x:310,y:470},{x:350,y:150},{x:400,y:250}],
+    events:[
+      { kicker:'Ereignis — Verdacht auf Ladendiebstahl', title:'Wie reagierst du?',
+        desc:'Du beobachtest, wie eine Person unauffällig Kopfhörer in die Jackentasche steckt und sich Richtung Ausgang bewegt, ohne zu bezahlen.',
+        options:[
+          {label:'Person freundlich ansprechen und um Rückgabe/Klärung an der Kasse bitten.', deesk:10, prof:8, score:10,
+            explain:'Deeskalierendes, verhältnismäßiges Vorgehen. Ansprache vor Zwang entspricht dem Grundsatz der Verhältnismäßigkeit und guter Kommunikation im Wachdienst.',
+            reviewOk:true, reviewText:'Freundliche Ansprache statt sofortiger Zwangsmaßnahme war die verhältnismäßigste Option.'},
+          {label:'Sofort körperlich festhalten, bevor sie den Kassenbereich verlässt.', deesk:-10, prof:-5, score:0,
+            explain:'Sofortiges Festhalten ohne vorherige Ansprache ist grenzwertig – es folgt jetzt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Sofortiges Festhalten ohne Ansprache kann unverhältnismäßig sein, wenn mildere Mittel nicht versucht wurden.',
+            legal:{ kicker:'Rechtsfrage — §127 StPO', title:'Liegt eine rechtmäßige vorläufige Festnahme vor?',
+              desc:'Voraussetzung für das "Jedermannsrecht" nach §127 Abs. 1 StPO ist unter anderem, dass die Person auf frischer Tat betroffen wird UND Fluchtgefahr besteht oder die Identität nicht sofort feststellbar ist. Trifft das hier zu?',
+              options:[
+                {label:'Ja — Tat wurde unmittelbar beobachtet, Person entfernt sich Richtung Ausgang (Fluchtgefahr). Festhalten ist zulässig, wenn verhältnismäßig.', correct:true},
+                {label:'Nein — SMA dürfen grundsätzlich niemanden festhalten, das ist ausschließlich Polizeisache.', correct:false},
+                {label:'Ja, aber nur wenn der Wert der Ware über 25 € liegt.', correct:false}
+              ],
+              explain:'§127 Abs. 1 StPO erlaubt jedermann die vorläufige Festnahme bei Betretung/Verfolgung auf frischer Tat, wenn Fluchtgefahr besteht oder die Identität nicht feststellbar ist. Der Warenwert spielt keine Rolle; entscheidend ist die Verhältnismäßigkeit der Mittel.',
+              reviewQ:'Rechtsfrage: Vorläufige Festnahme nach §127 StPO',
+              reviewText:'Voraussetzung ist frische Tat + Fluchtgefahr/ungeklärte Identität, unabhängig vom Warenwert; die Maßnahme muss verhältnismäßig bleiben.' }},
+          {label:'Per Funk den Ladendetektiv/die Zentrale informieren und weiter beobachten.', deesk:4, prof:10, score:8,
+            explain:'Korrektes Vorgehen zur Beweissicherung und Einbindung des Ladendetektivs, allerdings riskiert das Zuwarten, dass die Person das Haus verlässt.',
+            reviewOk:true, reviewText:'Information der Zentrale/des Detektivs ist ein solides, wenig eingriffsintensives Vorgehen.'}
+        ]
+      },
+      { kicker:'Ereignis — Eskalation', title:'Die Person wird aggressiv',
+        desc:'Im Kassenbereich stellst du die Person zur Rede. Sie wird laut, drängt sich an dir vorbei und stößt dich mit dem Arm zur Seite, um zu fliehen.',
+        options:[
+          {label:'Verbal deeskalieren, Abstand halten, Zentrale informieren.', deesk:12, prof:10, score:12,
+            explain:'Ein Wegstoßen ohne weitere Gefahr rechtfertigt meist keinen körperlichen Zwang gegen die fliehende Person – Eigensicherung und Deeskalation gehen vor.',
+            reviewOk:true, reviewText:'Ohne fortbestehende Gefahr ist Zurückhaltung und Meldung an die Zentrale verhältnismäßiger als körperlicher Zwang.'},
+          {label:'Pfefferspray einsetzen, um die Flucht zu verhindern.', deesk:0, prof:0, score:-5,
+            explain:'Reizstoffeinsatz gegen eine fliehende, nicht mehr angreifende Person ist in der Regel unverhältnismäßig. Es folgt eine Rechtsfrage zur Notwehrlage.',
+            reviewOk:false, reviewText:'Ein Angriff, der bereits beendet ist (Person flieht), begründet i. d. R. keine gegenwärtige Notwehrlage mehr.',
+            legal:{ kicker:'Rechtsfrage — §32 StGB', title:'War der Reizstoffeinsatz durch Notwehr gedeckt?',
+              desc:'Notwehr (§32 StGB) setzt einen gegenwärtigen rechtswidrigen Angriff voraus. Die Person hatte dich bereits zur Seite gestoßen und flieht nun, ohne weiter anzugreifen.',
+              options:[
+                {label:'Nein — der Angriff ist beendet, es liegt keine gegenwärtige Gefahr mehr vor; Zwangsmittel wären nicht mehr durch Notwehr gedeckt.', correct:true},
+                {label:'Ja — jede vorangegangene Tat rechtfertigt weitere Zwangsmittel bis zur Festnahme.', correct:false}
+              ],
+              explain:'Notwehr rechtfertigt nur die Abwehr eines gegenwärtigen Angriffs. Sobald die Person flieht und nicht mehr angreift, endet die Notwehrlage – weitere Zwangsmittel bräuchten eine andere Grundlage (z. B. §127 StPO) und müssen verhältnismäßig sein.',
+              reviewQ:'Rechtsfrage: Notwehr §32 StGB bei fliehendem Angreifer',
+              reviewText:'Notwehr erfordert Gegenwärtigkeit des Angriffs; bei Flucht ohne Fortsetzung der Gefahr entfällt die Rechtfertigung nach §32 StGB.' }},
+          {label:'Die Person mit Körperkraft festhalten und zu Boden bringen.', deesk:-15, prof:-10, score:-8,
+            explain:'Zu-Boden-Bringen mit Körperkraft gegen eine fliehende Person ohne fortbestehende Gefahr ist unverhältnismäßig und birgt Verletzungsrisiko.',
+            reviewOk:false, reviewText:'Erhebliche körperliche Gewalt gegen eine fliehende Person ohne aktuelle Gefahr verstößt gegen den Verhältnismäßigkeitsgrundsatz.'}
+        ]
+      },
+      { kicker:'Ereignis — die Person flieht nach der Eskalation', title:'Welche Voraussetzungen müssen für eine Festnahme nach §127 StPO vorliegen?',
+        desc:'Nachdem die Person aggressiv wurde und versucht, zu fliehen, fragt dich der Ladendetektiv, welche Voraussetzungen für eine vorläufige Festnahme nach §127 StPO überhaupt vorliegen müssen.',
+        options:[
+          {label:'Die Person muss auf frischer Tat betroffen oder unmittelbar nach der Tat verfolgt werden, und zusätzlich muss Fluchtgefahr bestehen oder die Identität nicht sofort feststellbar sein.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: §127 Abs. 1 StPO verlangt kumulativ, dass die Person auf frischer Tat betroffen oder unmittelbar danach verfolgt wird UND zusätzlich Fluchtgefahr besteht oder die Identität nicht sofort feststellbar ist. Die Festnahme muss zudem verhältnismäßig bleiben.',
+            reviewOk:true, reviewText:'Frische Tat/unmittelbare Verfolgung PLUS Fluchtgefahr oder ungeklärte Identität sind die kumulativen Voraussetzungen des §127 StPO.'},
+          {label:'Es genügt, wenn irgendwann zuvor ein Diebstahlsverdacht gegen die Person bestand, unabhängig vom zeitlichen Zusammenhang zur Tat.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: §127 StPO verlangt einen engen zeitlichen und tatsächlichen Zusammenhang – "auf frischer Tat" oder unmittelbare Verfolgung. Ein beliebig zurückliegender Verdacht genügt nicht.',
+            reviewOk:false, reviewText:'Ohne engen zeitlichen Zusammenhang zur Tat ("frische Tat") ist die Voraussetzung nicht erfüllt.'},
+          {label:'Die vorläufige Festnahme ist immer zulässig, unabhängig davon, ob Fluchtgefahr besteht oder die Identität feststellbar ist.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Genau diese beiden Merkmale – Fluchtgefahr oder ungeklärte Identität – sind zwingende zusätzliche Voraussetzungen neben der frischen Tat.',
+            reviewOk:false, reviewText:'Fluchtgefahr oder ungeklärte Identität sind zwingende, keine optionalen Voraussetzungen.'},
+          {label:'Eine vorläufige Festnahme durch Privatpersonen ist grundsätzlich unzulässig und ausschließlich der Polizei vorbehalten.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: §127 Abs. 1 StPO gewährt gerade jedermann – also auch Privatpersonen und SMA – dieses Festnahmerecht unter den genannten Voraussetzungen.',
+            reviewOk:false, reviewText:'Das "Jedermannsrecht" nach §127 StPO gilt ausdrücklich auch für Privatpersonen, nicht nur die Polizei.'}
+        ]
+      },
+      { kicker:'Ereignis — Parfüm verschwindet in der Tasche', title:'Was versteht man unter "Wegnahme"?',
+        desc:'Du beobachtest im Verkaufsraum, wie eine Kundin ein Parfüm aus dem Regal nimmt und es unauffällig in ihre eigene Tasche steckt, statt es in den Einkaufskorb zu legen. Ein Kollege fragt dich, was im strafrechtlichen Sinn unter "Wegnahme" zu verstehen ist.',
+        options:[
+          {label:'Der Bruch fremden Gewahrsams und die Begründung neuen, eigenen Gewahrsams an der Sache — hier bereits vollzogen durch das Einstecken in die eigene Tasche, unabhängig davon, ob das Geschäft anschließend verlassen wird.', deesk:2, prof:15, score:16,
+            explain:'Korrekt: Wegnahme bedeutet den Bruch fremden und die Begründung neuen, eigenen Gewahrsams. Bereits das Einstecken in die eigene, für den Verkäufer nicht mehr ohne Weiteres zugängliche Tasche begründet regelmäßig neuen Gewahrsam – der Diebstahl ist damit vollendet.',
+            reviewOk:true, reviewText:'Wegnahme = Bruch fremden + Begründung neuen Gewahrsams; das ist bereits beim Einstecken vollzogen, ein Verlassen des Geschäfts ist nicht erforderlich.'},
+          {label:'Wegnahme liegt erst vor, wenn die Person das Geschäft ohne zu bezahlen verlassen hat.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Ein verbreiteter Irrtum – die Wegnahme und damit der vollendete Diebstahl liegen bereits mit dem Gewahrsamswechsel vor, das Verlassen des Geschäfts ist nicht erforderlich.',
+            reviewOk:false, reviewText:'Der Diebstahl ist bereits mit dem Gewahrsamswechsel vollendet, nicht erst beim Verlassen des Geschäfts.'},
+          {label:'Wegnahme bedeutet lediglich das Berühren oder Anfassen der Ware.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Bloßes Anfassen oder Berühren begründet noch keinen Gewahrsamswechsel – die Ware muss in den eigenen Herrschaftsbereich gelangen.',
+            reviewOk:false, reviewText:'Reines Anfassen genügt nicht – es fehlt der tatsächliche Gewahrsamswechsel.'},
+          {label:'Wegnahme setzt voraus, dass ein Mitarbeiter die Handlung tatsächlich bemerkt hat.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die Wegnahme ist unabhängig davon vollendet, ob sie von jemandem beobachtet wird.',
+            reviewOk:false, reviewText:'Ob die Tat beobachtet wird, ist für die Vollendung der Wegnahme unerheblich.'}
+        ]
+      },
+      { kicker:'Ereignis — Kunde stößt Gurkenglas um', title:'Wer haftet für den Schaden — Schadensersatz nach BGB?',
+        desc:'Du beobachtest, wie ein Kunde im Vorbeigehen aus Versehen mit dem Ellbogen ein Glas eingelegter Gurken vom Regal stößt. Das Glas zerbricht auf dem Boden. Der Kunde entschuldigt sich sofort und fragt, ob er dafür aufkommen muss.',
+        options:[
+          {label:'Grundsätzlich ja: Nach §823 Abs. 1 BGB haftet, wer vorsätzlich oder fahrlässig eine fremde Sache beschädigt — bereits leichte Fahrlässigkeit wie ein unachtsamer Stoß genügt für die Schadensersatzpflicht.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: §823 Abs. 1 BGB verpflichtet zum Schadensersatz, wer vorsätzlich oder fahrlässig eine fremde Sache beschädigt. Bereits leichte Fahrlässigkeit reicht aus – der Kunde muss grundsätzlich für den Schaden aufkommen, in der Praxis oft über seine private Haftpflichtversicherung.',
+            reviewOk:true, reviewText:'§823 Abs. 1 BGB: Bereits leichte Fahrlässigkeit begründet die Schadensersatzpflicht für die beschädigte Sache.'},
+          {label:'Nein, ein Schadensersatzanspruch besteht nur bei Vorsatz, nicht bei einem bloßen Versehen.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Für §823 Abs. 1 BGB genügt bereits Fahrlässigkeit – ein unachtsamer, versehentlicher Stoß reicht für die Haftung aus, Vorsatz ist nicht erforderlich.',
+            reviewOk:false, reviewText:'Schon leichte Fahrlässigkeit genügt für die Haftung nach §823 BGB – Vorsatz ist keine Voraussetzung.'},
+          {label:'Nein, das Geschäft trägt als Ladeninhaber das allgemeine Risiko für alle im Laden entstehenden Schäden, unabhängig vom Verursacher.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Es gibt keine solche generelle Risikotragung des Geschäfts – wer schuldhaft einen Schaden verursacht, haftet dafür grundsätzlich selbst.',
+            reviewOk:false, reviewText:'Eine pauschale Risikotragung durch das Geschäft für jeden Schaden im Laden gibt es nicht.'},
+          {label:'Ja, aber nur wenn der Kunde die Ware vorher bereits bezahlt hatte.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die Haftung nach §823 BGB knüpft an das schuldhafte Beschädigen einer fremden Sache an, nicht daran, ob die Ware bereits bezahlt wurde.',
+            reviewOk:false, reviewText:'Ob die Ware schon bezahlt war, spielt für die Schadensersatzpflicht nach §823 BGB keine Rolle.'}
+        ]
+      }
+    ]
+  },
+
+  bahnhof: {
+    title:'Bahnhof', sub:'Revierdienst · Personenkontrolle · Erste Hilfe', icon:'🚉',
+    briefing:'Zentrale an alle Kräfte: Revierdienst Hauptbahnhof. Melde Auffälligkeiten auf dem Bahnsteig und an den Zugängen.',
+    requiredEquip:[{key:'erstehilfe', label:'Erste-Hilfe-Tasche', penalty:15,
+      missingText:'Ohne Erste-Hilfe-Tasche konnte im Rahmen der Hilfeleistungspflicht (§323c StGB) nur eingeschränkt geholfen werden – für einen Einsatz mit Publikumsverkehr ein vermeidbarer Mangel.',
+      presentText:'Die Erste-Hilfe-Tasche war einsatzbereit vorhanden – wichtig für Revierdienst mit Publikumsverkehr.'}],
+    theme:{bg:'#0e1319', zoneFill:'#1b232c', zoneStroke:'#31404f', labelColor:'#7891a3', texture:'concrete', gridColor:'rgba(120,150,180,0.05)', wallColor:'#2e3b47', wallHighlight:'rgba(200,225,240,0.10)'},
+    playerStart:{x:100,y:110},
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:220,h:16},{x:220,y:20,w:16,h:200},
+      {x:20,y:380,w:320,h:16},{x:420,y:380,w:280,h:16},{x:520,y:20,w:16,h:150}],
+    doors:[{x:340,y:380,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:180,h:170,label:'Eingangshalle',icon:'🚉'},
+      {x:250,y:40,w:250,h:330,label:'Bahnsteig 1',icon:'🚆',feature:'tracks'},
+      {x:520,y:40,w:170,h:120,label:'Kiosk',icon:'🥪'},
+      {x:20,y:400,w:680,h:120,label:'Unterführung / Ausgang',icon:'🚪'}
+    ],
+    npcStart:{x:400,y:150}, npcRoam:{minx:390,maxx:410,miny:145,maxy:155},
+    npcTargets:[{x:650,y:460},{x:420,y:340},{x:320,y:200},{x:150,y:170}],
+    events:[
+      { kicker:'Ereignis — hilflose Person', title:'Eine Person liegt reglos auf dem Bahnsteig',
+        desc:'Du entdeckst eine Person, die auf dem Bahnsteig zusammengesackt ist und nicht reagiert. Reisende gehen achtlos vorbei.',
+        options:[
+          {label:'Ansprechen, Bewusstsein prüfen, Rettungsdienst über Zentrale/112 alarmieren und im Rahmen deiner Kenntnisse Erste Hilfe leisten.', deesk:6, prof:12, score:12,
+            explain:'Vorbildliches Verhalten: Absicherung, Ansprache, Notruf und Erste Hilfe im Rahmen der eigenen Fähigkeiten entsprechen §323c StGB und guter fachlicher Praxis.',
+            reviewOk:true, reviewText:'Ansprache, Notruf und angemessene Erste-Hilfe-Maßnahmen sind hier die richtige Reihenfolge.'},
+          {label:'Weitergehen, da Erste Hilfe nicht zu deinen Aufgaben gehört.', deesk:-5, prof:-15, score:-5,
+            explain:'Untätigkeit bei einem erkennbaren Unglücksfall ist problematisch – es folgt eine Rechtsfrage zu §323c StGB.',
+            reviewOk:false, reviewText:'Auch SMA sind als "jedermann" grundsätzlich zur zumutbaren Hilfeleistung verpflichtet.',
+            legal:{ kicker:'Rechtsfrage — §323c StGB', title:'Besteht eine Pflicht zur Hilfeleistung?',
+              desc:'§323c StGB (unterlassene Hilfeleistung) verpflichtet grundsätzlich jede Person, bei Unglücksfällen im Rahmen des Zumutbaren Hilfe zu leisten.',
+              options:[
+                {label:'Ja — auch SMA sind als "jedermann" zur zumutbaren Hilfeleistung verpflichtet (z. B. Notruf absetzen, einfache Erste-Hilfe-Maßnahmen).', correct:true},
+                {label:'Nein — nur Rettungsdienst und Polizei sind zur Hilfeleistung verpflichtet.', correct:false}
+              ],
+              explain:'§323c StGB gilt für jede Person unabhängig vom Beruf. Zumutbar bedeutet: eigene Gefährdung vermeiden, aber Notruf absetzen und einfache Hilfe (z. B. stabile Seitenlage, Absicherung der Unglücksstelle) sind grundsätzlich zumutbar.',
+              reviewQ:'Rechtsfrage: Unterlassene Hilfeleistung §323c StGB',
+              reviewText:'Die Hilfeleistungspflicht nach §323c StGB gilt für jedermann im Rahmen des Zumutbaren – auch für SMA im Dienst.' }},
+          {label:'Nur ein Foto für den Einsatzbericht machen und dann Kollegen informieren.', deesk:-2, prof:-8, score:-2,
+            explain:'Fotografieren ersetzt keine Hilfeleistung – zuerst Ansprache, Prüfung und Notruf, danach Dokumentation.',
+            reviewOk:false, reviewText:'Dokumentation ist wichtig, darf aber die unmittelbare Hilfeleistung nicht verzögern.'}
+        ]
+      },
+      { kicker:'Ereignis — tätlicher Angriff', title:'Ein Fahrgast schlägt zu — wie begründest du dein Handeln?',
+        desc:'Ein zuvor ohne Fahrschein angetroffener Fahrgast wird plötzlich handgreiflich und schlägt dir unvermittelt mit der Faust ins Gesicht. Du wehrst dich mit einem Abwehrblock und einem Gegenschlag, um weitere Treffer zu verhindern. Dein Kollege bittet dich anschließend, dein Handeln korrekt einzuordnen: Welche Aussage gibt die Definition der Notwehr zutreffend wieder?',
+        options:[
+          {label:'Notwehr ist die Verteidigung, die erforderlich ist, um einen gegenwärtigen rechtswidrigen Angriff von sich oder einem anderen abzuwenden (§32 StGB).', deesk:4, prof:14, score:15,
+            explain:'Korrekt – das ist die gesetzliche Definition der Notwehr nach §32 Abs. 2 StGB. Dein Gegenschlag war zur Abwehr des unmittelbar laufenden Angriffs erforderlich und damit gerechtfertigt.',
+            reviewOk:true, reviewText:'Die Notwehrdefinition wurde korrekt wiedergegeben: erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff.'},
+          {label:'Notwehr ist jede Verteidigungshandlung, unabhängig davon, ob der Angriff bereits beendet ist.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Notwehr setzt einen gegenwärtigen, also noch andauernden oder unmittelbar bevorstehenden Angriff voraus. Ist der Angriff bereits beendet, entfällt die Notwehrlage.',
+            reviewOk:false, reviewText:'Das Merkmal "gegenwärtig" wurde ausgelassen – ohne einen noch andauernden Angriff besteht keine Notwehrlage.'},
+          {label:'Notwehr erlaubt die Abwehr auch erst künftiger, lediglich angekündigter Angriffe.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Ein bloß angekündigter, noch nicht begonnener Angriff ist nicht gegenwärtig. Notwehr rechtfertigt keine vorbeugende Abwehr zukünftiger Angriffe.',
+            reviewOk:false, reviewText:'Ein erst angekündigter, noch nicht laufender Angriff erfüllt das Merkmal der Gegenwärtigkeit nicht.'},
+          {label:'Notwehr ist die Rechtfertigung einer Gefahrenlage für ein Rechtsgut, unabhängig von einem menschlichen Angriff.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt eher den rechtfertigenden Notstand (§34 StGB), der auch bei nicht-menschlichen Gefahrenquellen greift. Notwehr setzt zwingend einen menschlichen, rechtswidrigen Angriff voraus.',
+            reviewOk:false, reviewText:'Diese Antwort vermischt Notwehr (§32 StGB) mit dem allgemeineren rechtfertigenden Notstand (§34 StGB).'}
+        ]
+      },
+      { kicker:'Ereignis — herrenloses Gepäckstück', title:'Ein unbeaufsichtigter Koffer steht auf dem Bahnsteig',
+        desc:'Am Rand von Bahnsteig 1 steht seit längerer Zeit ein Koffer, ohne dass ein Besitzer erkennbar ist.',
+        options:[
+          {label:'Bereich weiträumig absperren, Abstand halten, den Gegenstand nicht berühren und sofort Bundespolizei/Zentrale informieren.', deesk:8, prof:14, score:14,
+            explain:'Der Grundsatz "nicht berühren, Abstand halten, Fachkräfte rufen" ist bei unbeaufsichtigten Gegenständen die richtige und sichere Vorgehensweise.',
+            reviewOk:true, reviewText:'Absperrung, Nichtberührung und Polizeiruf entsprechen dem korrekten Umgang mit verdächtigen Gegenständen.'},
+          {label:'Den Koffer selbst öffnen, um anhand der Papiere den Besitzer zu ermitteln.', deesk:-6, prof:-10, score:-6,
+            explain:'Ein eigenständiges Öffnen unbekannter Gegenstände ist riskant und nicht Aufgabe eines SMA – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Das eigenständige Öffnen unbeaufsichtigter Gegenstände widerspricht dem Grundsatz der Eigensicherung.',
+            legal:{ kicker:'Rechtsfrage — Umgang mit verdächtigen Gegenständen', title:'Darf ein SMA einen unbeaufsichtigten Gegenstand selbst untersuchen?',
+              desc:'Bei einem herrenlosen Gegenstand gilt der Grundsatz der Eigensicherung, bis eine Gefährdung sicher ausgeschlossen werden kann.',
+              options:[
+                {label:'Nein — der Gegenstand darf nicht berührt oder geöffnet werden; stattdessen Abstand halten, Bereich sichern und Fachkräfte (Polizei) hinzuziehen.', correct:true},
+                {label:'Ja — SMA dürfen verdächtige Gegenstände jederzeit eigenständig untersuchen und öffnen.', correct:false}
+              ],
+              explain:'"Nicht berühren, Abstand halten, Fachkräfte rufen" schützt vor unkalkulierbaren Risiken. Eine eigenständige Untersuchung ist SMA nicht gestattet.',
+              reviewQ:'Rechtsfrage: Umgang mit unbeaufsichtigten Gegenständen',
+              reviewText:'Verdächtige Gegenstände werden nicht selbst untersucht – Absicherung und Hinzuziehung der Polizei sind der richtige Weg.' }},
+          {label:'Ignorieren, da es sich vermutlich um vergessenes Gepäck handelt.', deesk:-2, prof:-8, score:-3,
+            explain:'Ohne Prüfung von einem harmlosen Fall auszugehen, ist keine sichere Grundlage für eine Entscheidung.',
+            reviewOk:false, reviewText:'Ein unbeaufsichtigter Gegenstand sollte nie ungeprüft als harmlos abgetan werden.'}
+        ]
+      },
+      { kicker:'Ereignis — Fahrgast ohne Fahrschein', title:'Welche Straftat liegt beim Schwarzfahren vor?',
+        desc:'Bei einer Kontrolle auf dem Bahnsteig wird ein Fahrgast ohne gültigen Fahrschein angetroffen. Er gibt unumwunden zu, bewusst ohne Ticket eingestiegen zu sein, um die Fahrt zu "erschleichen". Welche Straftat liegt hier typischerweise vor?',
+        options:[
+          {label:'Erschleichen von Leistungen (§265a StGB), da er die Beförderungsleistung durch Täuschung in Anspruch genommen hat, ohne dafür zu bezahlen.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: §265a StGB ist der einschlägige Auffangtatbestand für das sogenannte "Schwarzfahren" – die Beförderungsleistung wird in Anspruch genommen, ohne das Entgelt zu entrichten.',
+            reviewOk:true, reviewText:'Schwarzfahren ist der klassische Anwendungsfall von §265a StGB (Erschleichen von Leistungen).'},
+          {label:'Betrug (§263 StGB), da stets eine Täuschung gegenüber einer Person vorliegen muss.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Ein klassischer Betrug scheidet beim einfachen Schwarzfahren meist aus, da regelmäßig keine Täuschung gegenüber einer konkreten Person mit anschließender Vermögensverfügung vorliegt – dafür greift der speziellere §265a StGB.',
+            reviewOk:false, reviewText:'Ohne getäuschte Person und Vermögensverfügung ist es kein klassischer Betrug, sondern Erschleichen von Leistungen.'},
+          {label:'Diebstahl (§242 StGB), da eine Beförderungsleistung als Sache im Sinne des Diebstahls gilt.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine Beförderungsleistung ist keine "Sache" im Sinne des Diebstahlstatbestands – Diebstahl setzt die Wegnahme einer beweglichen Sache voraus.',
+            reviewOk:false, reviewText:'Dienstleistungen sind keine Sachen – Diebstahl passt hier nicht.'},
+          {label:'Hausfriedensbruch (§123 StGB), da der Zug ohne Berechtigung betreten wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Das Betreten eines öffentlichen Verkehrsmittels ist grundsätzlich kein Hausfriedensbruch. Das eigentliche Problem ist die fehlende Bezahlung der Beförderungsleistung, nicht das Betreten selbst.',
+            reviewOk:false, reviewText:'Der Zug darf grundsätzlich betreten werden – das Problem ist die fehlende Bezahlung, nicht das unbefugte Betreten.'}
+        ]
+      },
+      { kicker:'Ereignis — verwirrte ältere Dame', title:'Wie sprichst du eine orientierungslose Seniorin richtig an?',
+        desc:'Am Bahnsteig triffst du auf eine ältere Dame, die verwirrt wirkt, offenbar ihren Zug verpasst hat und nicht mehr genau weiß, wohin sie eigentlich wollte.',
+        options:[
+          {label:'Sich langsam und von vorne nähern, in ruhigem Ton mit einfachen, kurzen Sätzen sprechen, ihr ausreichend Zeit lassen, Blickkontakt halten und respektvoll nach Namen und Ziel fragen.', deesk:10, prof:14, score:15,
+            explain:'Vorbildliche Kommunikation: Bei älteren, möglicherweise verwirrten Menschen sind Ruhe, einfache klare Sprache, Geduld und ein respektvoller, nicht bevormundender Umgangston entscheidend, um Vertrauen aufzubauen und die Situation zu klären.',
+            reviewOk:true, reviewText:'Ruhiges Herangehen, einfache Sprache, Geduld und Respekt sind die richtige Gesprächstechnik im Umgang mit verwirrten Senioren.'},
+          {label:'Laut, bestimmt und in kurzen Befehlen sprechen, damit sie sofort reagiert.', deesk:-8, prof:-10, score:-6,
+            explain:'Nicht angemessen: Ein lauter, befehlender Ton wirkt auf viele ältere Menschen einschüchternd und kann Verwirrung und Stress zusätzlich verstärken, statt zu helfen.',
+            reviewOk:false, reviewText:'Ein befehlender, lauter Ton erschwert die Verständigung mit verwirrten älteren Menschen und wirkt einschüchternd.'},
+          {label:'Schnell und mit vielen Fachbegriffen erklären, was sie jetzt zu tun hat, damit es zügig weitergeht.', deesk:-4, prof:-8, score:-5,
+            explain:'Nicht angemessen: Schnelles Sprechen mit Fachbegriffen überfordert gerade ältere oder orientierungslose Menschen zusätzlich.',
+            reviewOk:false, reviewText:'Fachjargon und Zeitdruck überfordern eine bereits verwirrte Person zusätzlich, statt ihr zu helfen.'},
+          {label:'Sie unbeachtet lassen, da die Betreuung verwirrter Personen nicht Aufgabe eines SMA sei.', deesk:-6, prof:-12, score:-6,
+            explain:'Nicht angemessen: Eine erkennbar hilfsbedürftige, orientierungslose Person darf nicht einfach ignoriert werden – im Rahmen des Zumutbaren besteht auch hier eine Fürsorge- und ggf. Hilfeleistungspflicht (§323c StGB), zumindest um Hilfe zu organisieren.',
+            reviewOk:false, reviewText:'Eine erkennbar hilfsbedürftige Person zu ignorieren, widerspricht der Hilfeleistungspflicht nach §323c StGB.'}
+        ]
+      }
+    ]
+  },
+
+  baustelle: {
+    title:'Baustelle', sub:'Baustellenbewachung · Nachtstreife · Objektschutz', icon:'🏗️',
+    briefing:'Zentrale an alle Kräfte: Baustellenbewachung Nachtschicht. Wiederholt Materialdiebstahl in der Umgebung gemeldet.',
+    requiredEquip:[{key:'warnweste', label:'Warnweste', penalty:15,
+      missingText:'Ohne Warnweste bestand auf der Baustelle bei Dunkelheit und Baustellenverkehr ein erhöhtes Eigenrisiko – die PSA-Pflicht wurde nicht erfüllt.',
+      presentText:'Die Warnweste war getragen – PSA-Pflicht auf der Baustelle erfüllt.'}],
+    theme:{bg:'#1a140d', zoneFill:'#2b2015', zoneStroke:'#4a3826', labelColor:'#a08a63', texture:'dirt', speckleDark:'#241b11', speckleLight:'#4a3a24', wallColor:'#5a4530', wallHighlight:'rgba(255,225,170,0.12)'},
+    playerStart:{x:100,y:120},
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:250,h:16},{x:270,y:20,w:16,h:220},
+      {x:20,y:400,w:400,h:16},{x:450,y:20,w:16,h:260}],
+    doors:[{x:420,y:400,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:220,h:190,label:'Zaun / Tor',icon:'🚧'},
+      {x:290,y:40,w:250,h:340,label:'Rohbau / Kranbereich',icon:'🏗️'},
+      {x:470,y:40,w:220,h:230,label:'Materiallager',icon:'📦'},
+      {x:20,y:420,w:420,h:100,label:'Baucontainer',icon:'🛠️'}
+    ],
+    npcStart:{x:150,y:120}, npcRoam:{minx:100,maxx:220,miny:80,maxy:180},
+    npcTargets:[{x:600,y:150},{x:150,y:460}],
+    events:[
+      { kicker:'Ereignis — Personen am Zaun', title:'Verdächtige Bewegung am Baustellenzaun',
+        desc:'Nachts bemerkst du zwei Personen, die ein Loch in den Bauzaun schneiden und Werkzeug/Kabel entwenden wollen.',
+        options:[
+          {label:'Aus sicherer Entfernung beobachten, Beweise sichern (Notizen/Foto) und sofort Polizei sowie Zentrale informieren.', deesk:8, prof:12, score:12,
+            explain:'Bei mehreren Tätern und Dunkelheit hat die Eigensicherung Vorrang – Beobachtung und Polizeiruf sind das professionelle Vorgehen.',
+            reviewOk:true, reviewText:'Dokumentation und Polizeiruf statt Alleingang entsprechen dem Grundsatz der Eigensicherung.'},
+          {label:'Allein eingreifen und die beiden Personen körperlich stellen.', deesk:-10, prof:-12, score:-8,
+            explain:'Ein Alleingang bei Unterzahl und Dunkelheit ist riskant – es folgt eine Rechtsfrage zur Verhältnismäßigkeit.',
+            reviewOk:false, reviewText:'Eigensicherung genießt Vorrang vor eigenmächtigem Eingreifen bei unklarer Gefahrenlage.',
+            legal:{ kicker:'Rechtsfrage — Verhältnismäßigkeit & Eigensicherung', title:'War das Alleineingreifen verhältnismäßig?',
+              desc:'SMA sind bei der Wahl ihrer Mittel an den Grundsatz der Verhältnismäßigkeit gebunden und müssen die eigene Sicherheit berücksichtigen.',
+              options:[
+                {label:'Nein — bei Unterzahl, Dunkelheit und unklarer Gefahrenlage ist das Risiko für die eigene Sicherheit unverhältnismäßig hoch; Beobachtung und Polizeiruf sind vorzugswürdig.', correct:true},
+                {label:'Ja — SMA müssen jede Straftat notfalls im Alleingang unterbinden.', correct:false}
+              ],
+              explain:'Es gibt keine Pflicht zum "Heldentum". Der Grundsatz der Verhältnismäßigkeit und die eigene Sicherheit gehen vor – bei Unterzahl und unklarer Lage ist Beobachten, Dokumentieren und Polizeiruf die richtige Wahl.',
+              reviewQ:'Rechtsfrage: Verhältnismäßigkeit beim Alleineingreifen',
+              reviewText:'Eigensicherung genießt Vorrang; SMA sind nicht verpflichtet, sich bei Unterzahl in Gefahr zu bringen.' }},
+          {label:'Laut rufen, um die Täter zu vertreiben, und danach die Polizei informieren.', deesk:2, prof:4, score:4,
+            explain:'Vertreiben kann wirksam sein, birgt aber eigene Risiken durch Konfrontation – die Polizei sollte in jedem Fall informiert werden.',
+            reviewOk:true, reviewText:'Ein Mittelweg, der aber weniger sicher ist als reine Beobachtung aus der Distanz.'}
+        ]
+      },
+      { kicker:'Ereignis — Meldung der Bauleitung', title:'Welche Voraussetzungen erfüllt eine Sachbeschädigung?',
+        desc:'Am Morgen entdeckst du frische Farbschmierereien und ein eingeschlagenes Fenster am Baucontainer. Die Bauleiterin möchte Anzeige erstatten und fragt dich, was für den Tatbestand der Sachbeschädigung (§303 StGB) vorliegen muss.',
+        options:[
+          {label:'Das rechtswidrige Beschädigen oder Zerstören einer fremden Sache.', deesk:2, prof:14, score:15,
+            explain:'Korrekt – §303 StGB erfasst das rechtswidrige Beschädigen oder Zerstören einer fremden Sache. Anders als beim Diebstahl kommt es nicht auf eine Zueignungsabsicht an, sondern auf die Substanzverletzung der Sache.',
+            reviewOk:true, reviewText:'Sachbeschädigung (§303 StGB) setzt die rechtswidrige Beschädigung/Zerstörung einer fremden Sache voraus – ohne Zueignungsabsicht, das unterscheidet sie vom Diebstahl.'},
+          {label:'Die Wegnahme einer fremden beweglichen Sache in der Absicht, sie sich rechtswidrig zuzueignen.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt Diebstahl (§242 StGB), nicht Sachbeschädigung. Bei der Sachbeschädigung wird nichts weggenommen, sondern die Sache beschädigt oder zerstört.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt den Diebstahlstatbestand (§242 StGB), nicht die Sachbeschädigung (§303 StGB).'},
+          {label:'Das unbefugte Betreten eines fremden befriedeten Besitztums.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt Hausfriedensbruch (§123 StGB). Für eine Sachbeschädigung ist eine Substanzverletzung der Sache erforderlich, das bloße Betreten genügt nicht.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt Hausfriedensbruch (§123 StGB) – ohne Substanzverletzung liegt keine Sachbeschädigung vor.'},
+          {label:'Jede fahrlässige Beschädigung einer eigenen Sache.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Sachbeschädigung erfordert Vorsatz und eine fremde Sache – die fahrlässige Beschädigung eigener Sachen ist strafrechtlich ohne Belang.',
+            reviewOk:false, reviewText:'Es fehlen zwei zentrale Merkmale: Vorsatz und "fremde" Sache – Fahrlässigkeit an eigenen Sachen ist nicht strafbar.'}
+        ]
+      },
+      { kicker:'Ereignis — Zutritt ohne gültigen Ausweis', title:'Ein Techniker will ohne Berechtigungsausweis auf die Baustelle',
+        desc:'Ein Mann in Arbeitskleidung gibt sich als Alarmanlagen-Techniker aus und möchte den Baucontainer betreten. Er hat keinen aktuellen Berechtigungsausweis dabei und steht nicht auf deiner Zutrittsliste.',
+        options:[
+          {label:'Zutritt vorerst verweigern, Identität und Auftrag über Zentrale/Objektleitung verifizieren und erst bei bestätigter Berechtigung einlassen.', deesk:6, prof:14, score:14,
+            explain:'Korrektes Vorgehen: Zutrittskontrolle stützt sich auf nachprüfbare Kriterien, nicht auf einen plausiblen Eindruck.',
+            reviewOk:true, reviewText:'Verifikation über die Zentrale/Objektleitung vor Zutrittsgewährung ist der sichere und korrekte Ablauf.'},
+          {label:'Ihm sofort Zutritt gewähren, da er fachkundig wirkt und Werkzeug dabei hat.', deesk:-8, prof:-12, score:-8,
+            explain:'Zutritt allein aufgrund eines plausiblen Auftretens zu gewähren, ist ein grundlegender Fehler in der Zutrittskontrolle – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Ein plausibles Auftreten ersetzt keine Berechtigungsprüfung – klassischer Fehler bei der Zutrittskontrolle.',
+            legal:{ kicker:'Rechtsfrage — Zutrittskontrolle & Sicherheitstechnik', title:'Worauf kommt es bei der Zutrittskontrolle an?',
+              desc:'Sicherheitstechnische Zutrittskontrolle beruht nicht auf einem plausiblen Auftreten, sondern auf nachprüfbaren Kriterien.',
+              options:[
+                {label:'Der Zutritt darf nur nach Abgleich mit einer aktuellen Berechtigungsliste bzw. Rücksprache mit der Objektleitung und mit Dokumentation des Vorgangs (wer, wann, wozu) gewährt werden.', correct:true},
+                {label:'Ein selbstbewusstes Auftreten mit Werkzeug genügt als Nachweis der Berechtigung.', correct:false}
+              ],
+              explain:'Zutrittskontrolle darf sich nicht auf einen plausiblen Eindruck stützen. Maßgeblich sind der Abgleich mit der Berechtigungsliste bzw. Rücksprache mit der Objektleitung/dem Auftraggeber sowie eine lückenlose Dokumentation – Grundprinzipien der Sicherheitstechnik und Zutrittskontrolle.',
+              reviewQ:'Rechtsfrage: Zutrittskontrolle & Sicherheitstechnik',
+              reviewText:'Berechtigungsliste, Rücksprache und Dokumentation ersetzen den bloßen Eindruck – Grundprinzip jeder Zutrittskontrolle.' }},
+          {label:'Zutritt kategorisch verweigern und ihn ohne jede Rücksprache wegschicken.', deesk:-2, prof:-4, score:-3,
+            explain:'Auch eine berechtigte Person hätte so keine Chance, ihren Auftrag nachzuweisen – eine kurze Verifikation wäre der bessere, ausgewogene Weg gewesen.',
+            reviewOk:false, reviewText:'Reflexhafte Verweigerung ohne Verifikationsversuch ist unpraktikabel, wenn die Person tatsächlich berechtigt sein könnte.'}
+        ]
+      }
+    ]
+  },
+
+  club: {
+    title:'Club', sub:'Einlasskontrolle · Türsteherdienst · Gästemanagement', icon:'🎶',
+    briefing:'Zentrale an alle Kräfte: Einlassdienst Club "Nachtwerk". Verschiedene Gäste erwarten Einlasskontrolle am Eingang.',
+    requiredEquip:[{key:'handschuhe', label:'Handschuhe', penalty:15,
+      missingText:'Ohne Handschuhe bestand beim direkten Personenkontakt im Einlass- und Türsteherdienst (z. B. bei Rangeleien oder dem Sichern verletzungsträchtiger Gegenstände wie Scherben) ein vermeidbares Eigenrisiko.',
+      presentText:'Handschuhe waren griffbereit mitgeführt – sinnvoller Eigenschutz bei direktem Personenkontakt im Türsteherdienst.'}],
+    theme:{bg:'#120a1a', zoneFill:'#1f1330', zoneStroke:'#4a2d66', labelColor:'#b98fe0', texture:'tile', gridColor:'rgba(200,130,240,0.06)', wallColor:'#3a2050', wallHighlight:'rgba(255,140,220,0.16)'},
+    playerStart:{x:100,y:100},
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:200,h:16},{x:220,y:20,w:16,h:180},
+      {x:20,y:380,w:400,h:16},{x:500,y:20,w:16,h:300}],
+    doors:[{x:420,y:380,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:180,h:150,label:'Einlassbereich',icon:'🚪'},
+      {x:250,y:40,w:240,h:330,label:'Tanzfläche',icon:'🕺'},
+      {x:520,y:40,w:170,h:260,label:'Garderobe',icon:'🧥'},
+      {x:250,y:400,w:440,h:140,label:'Bar / Lounge',icon:'🍸'}
+    ],
+    npcStart:{x:190,y:150}, npcRoam:{minx:170,maxx:210,miny:130,maxy:170},
+    npcTargets:[{x:160,y:90},{x:190,y:185},{x:400,y:460}],
+    events:[
+      { kicker:'Ereignis — Einlasskontrolle: verbotenes Messer', title:'Ein Gast trägt ein auffälliges Messer bei sich',
+        desc:'Bei der Sichtkontrolle am Einlass entdeckst du bei einem Gast ein Einhandmesser mit automatischem Klingenöffner (Springmesser) in der Jackentasche.',
+        options:[
+          {label:'Zutritt verweigern (Hausrecht), das Mitführen als Verstoß gegen das Waffengesetz werten (Automatikmesser sind nach §42a WaffG grundsätzlich verboten) und die Polizei informieren.', deesk:8, prof:14, score:14,
+            explain:'Korrekt: Automatikmesser (Springmesser mit einseitiger Feststellung) zählen zu den nach §42a WaffG verbotenen Gegenständen. Zutrittsverweigerung und Information der Polizei sind der richtige Weg.',
+            reviewOk:true, reviewText:'Springmesser mit automatischem Öffner fallen unter das Führungsverbot des §42a WaffG – Zutrittsverweigerung und Polizeimeldung sind korrekt.'},
+          {label:'Das Messer wegnehmen und es dem Gast bis zum Ende der Veranstaltung selbst verwahren.', deesk:-4, prof:-8, score:-4,
+            explain:'Eine eigenmächtige, dauerhafte Einbehaltung ist rechtlich nicht gedeckt – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'SMA dürfen verbotene Gegenstände nicht wie die Polizei sicherstellen oder dauerhaft einbehalten.',
+            legal:{ kicker:'Rechtsfrage — Umgang mit verbotenen Gegenständen', title:'Dürfen SMA verbotene Gegenstände eigenmächtig einbehalten?',
+              desc:'Nach dem Waffengesetz verbotene Gegenstände (z. B. Anlage 2 WaffG: Automatikmesser, Butterflymesser, Schlagringe) begründen eine Straftat bzw. Ordnungswidrigkeit nach dem WaffG.',
+              options:[
+                {label:'Nein — SMA dürfen den Zutritt mit dem verbotenen Gegenstand verweigern (Hausrecht) und sollten die Polizei informieren; eine eigenmächtige, dauerhafte Einbehaltung/Beschlagnahme ist rechtlich nicht gedeckt.', correct:true},
+                {label:'Ja — SMA dürfen verbotene Gegenstände wie die Polizei sicherstellen und nach eigenem Ermessen verwahren.', correct:false}
+              ],
+              explain:'Eine hoheitliche Sicherstellung ist der Polizei vorbehalten. SMA können lediglich den Zutritt mit dem Gegenstand verweigern (Hausrecht) und die Polizei hinzuziehen, wenn ein nach WaffG verbotener Gegenstand vorliegt.',
+              reviewQ:'Rechtsfrage: Umgang mit verbotenen Gegenständen (WaffG)',
+              reviewText:'Zutrittsverweigerung und Polizeimeldung sind gedeckt, eine eigenmächtige Beschlagnahme/Verwahrung dagegen nicht.' }},
+          {label:'Den Gast ohne Messer hereinlassen und das Messer ignorieren, solange er es nicht offen zeigt.', deesk:-6, prof:-10, score:-6,
+            explain:'Ein erkanntes, nach WaffG verbotenes Führen eines Messers darf nicht folgenlos bleiben, auch wenn es aktuell nicht offen gezeigt wird.',
+            reviewOk:false, reviewText:'Das Ignorieren eines erkannten Verstoßes gegen das Waffengesetz ist keine vertretbare Option für die Einlasskontrolle.'}
+        ]
+      },
+      { kicker:'Ereignis — Zutritt trotz Hausverbot', title:'Ein Gast mit bestehendem Hausverbot möchte hinein',
+        desc:'Ein Stammgast, der vor zwei Wochen wegen einer Schlägerei ein schriftliches Hausverbot erhalten hat, steht erneut an der Tür und möchte eingelassen werden.',
+        options:[
+          {label:'Zutritt unter Verweis auf das bestehende Hausrecht (§903 BGB) höflich, aber bestimmt verweigern und den Vorgang dokumentieren.', deesk:8, prof:14, score:14,
+            explain:'Korrekt: Ein ausgesprochenes Hausverbot stützt sich auf das Hausrecht und bleibt wirksam, bis es ausdrücklich aufgehoben wird.',
+            reviewOk:true, reviewText:'Konsequente, aber sachliche Durchsetzung eines bestehenden Hausverbots entspricht dem Hausrecht.'},
+          {label:'Ihn trotzdem hereinlassen, weil er sich seitdem ruhig verhalten hat.', deesk:-6, prof:-10, score:-5,
+            explain:'Gutes Verhalten in der Zwischenzeit hebt ein ausgesprochenes Hausverbot nicht automatisch auf – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Ein Hausverbot gilt fort, bis es der Berechtigte ausdrücklich aufhebt – eigenmächtiges Aufweichen ist nicht vorgesehen.',
+            legal:{ kicker:'Rechtsfrage — Wirkung des Hausrechts', title:'Wie lange gilt ein ausgesprochenes Hausverbot?',
+              desc:'Das Hausrecht (§903, §1004 BGB) erlaubt dem Berechtigten, den Zutritt zu bestimmen und ein Hausverbot auszusprechen.',
+              options:[
+                {label:'Ein Hausverbot gilt grundsätzlich zeitlich unbefristet fort, bis es ausdrücklich durch den Berechtigten aufgehoben wird – gutes Verhalten in der Zwischenzeit hebt es nicht automatisch auf.', correct:true},
+                {label:'Ein Hausverbot erlischt automatisch nach guter Führung, unabhängig von einer Aufhebung durch den Berechtigten.', correct:false}
+              ],
+              explain:'Ein Hausverbot bleibt so lange wirksam, bis der Berechtigte (z. B. Betreiber/Auftraggeber) es ausdrücklich aufhebt. SMA dürfen ein bestehendes Hausverbot nicht eigenmächtig für beendet erklären.',
+              reviewQ:'Rechtsfrage: Wirkung und Dauer eines Hausverbots',
+              reviewText:'Ein Hausverbot wirkt fort, bis es ausdrücklich aufgehoben wird – nicht automatisch durch Zeitablauf oder Wohlverhalten.' }},
+          {label:'Zutritt verweigern und ihn dabei grob anpacken und wegschieben, um ihn schnell loszuwerden.', deesk:-12, prof:-8, score:-6,
+            explain:'Die Durchsetzung des Hausverbots war richtig, die Art der Umsetzung mit grobem körperlichem Zwang jedoch unverhältnismäßig.',
+            reviewOk:false, reviewText:'Auch bei berechtigter Zutrittsverweigerung muss die Umsetzung verhältnismäßig bleiben.'}
+        ]
+      },
+      { kicker:'Ereignis — reguläre Einlasskontrolle', title:'Ein Gast erfüllt alle Einlassvoraussetzungen',
+        desc:'Ein Gast zeigt bereitwillig seinen gültigen Ausweis (Alter erfüllt), trägt keine verbotenen Gegenstände und verhält sich ruhig und kooperativ. Es liegt kein Hausverbot vor.',
+        options:[
+          {label:'Den Gast freundlich einlassen, da alle Einlassvoraussetzungen erfüllt sind.', deesk:10, prof:12, score:14,
+            explain:'Korrekt: Sind Alter, fehlende verbotene Gegenstände und kein Hausverbot gegeben, besteht kein sachlicher Grund für eine Zutrittsverweigerung.',
+            reviewOk:true, reviewText:'Bei erfüllten Einlassvoraussetzungen ist zügiger, freundlicher Einlass die angemessene und faire Reaktion.'},
+          {label:'Den Zutritt ohne nachvollziehbaren Grund verweigern, weil "er einem nicht gefällt".', deesk:-10, prof:-12, score:-8,
+            explain:'Eine grundlose, willkürliche Zutrittsverweigerung ist rechtlich problematisch – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Ohne sachlichen Grund zu verweigern, ist mit den Grenzen des Hausrechts nicht vereinbar.',
+            legal:{ kicker:'Rechtsfrage — Grenzen des Hausrechts', title:'Darf der Zutritt willkürlich, ohne sachlichen Grund, verweigert werden?',
+              desc:'Das Hausrecht ist weitreichend, unterliegt bei öffentlich zugänglichen Einrichtungen wie einem Club aber Grenzen (z. B. Diskriminierungs- und Willkürverbot).',
+              options:[
+                {label:'Nein — bei allgemein zugänglichen Einrichtungen darf der Zutritt nicht willkürlich oder diskriminierend, sondern nur aus sachlichen Gründen verweigert werden.', correct:true},
+                {label:'Ja — das Hausrecht erlaubt es, jeden Gast ohne Angabe von Gründen abzuweisen, auch bei öffentlich zugänglichen Veranstaltungen.', correct:false}
+              ],
+              explain:'Bei öffentlich zugänglichen Einrichtungen ist das Hausrecht nicht grenzenlos: Der Zutritt darf nicht willkürlich oder aus diskriminierenden Gründen verweigert werden, sondern erfordert einen sachlichen Anlass.',
+              reviewQ:'Rechtsfrage: Grenzen des Hausrechts bei öffentlich zugänglichen Einrichtungen',
+              reviewText:'Auch das Hausrecht kennt Grenzen – Willkür und Diskriminierung sind bei allgemein zugänglichen Einrichtungen keine zulässigen Gründe.' }},
+          {label:'Ihn ohne erkennbaren Anlass ungewöhnlich lange warten lassen, obwohl alles in Ordnung ist.', deesk:-4, prof:-6, score:-3,
+            explain:'Sind alle Voraussetzungen erfüllt, ist eine grundlose Verzögerung unangemessen und wirkt unprofessionell.',
+            reviewOk:false, reviewText:'Unnötige Verzögerung ohne sachlichen Anlass ist bei erfüllten Voraussetzungen nicht gerechtfertigt.'}
+        ]
+      },
+      { kicker:'Ereignis — Schlägerei an der Bar', title:'Ein Gast schlägt mit einem Maßkrug zu — welche Straftat liegt vor?',
+        desc:'An der Bar eskaliert ein Streit zwischen zwei Gästen. Einer schlägt dem anderen unvermittelt mit einem schweren Maßkrug gegen den Kopf, sodass eine stark blutende Wunde entsteht. Die eintreffende Polizei bittet dich um eine erste rechtliche Einschätzung: Welche Straftat liegt hier typischerweise vor?',
+        options:[
+          {label:'Gefährliche Körperverletzung (§224 StGB), da die Tat mittels eines gefährlichen Werkzeugs (Maßkrug) begangen wurde, das nach Art der Verwendung erhebliche Verletzungen verursachen kann.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Der Einsatz eines gefährlichen Werkzeugs wie eines schweren Maßkrugs bei einem Schlag gegen den Kopf begründet regelmäßig eine gefährliche Körperverletzung nach §224 Abs. 1 Nr. 2 StGB – unabhängig davon, dass es "nur" ein Schlag war.',
+            reviewOk:true, reviewText:'Das gefährliche Werkzeug macht die Tat gefährlich (§224 StGB), nicht die Anzahl der Schläge.'},
+          {label:'Einfache Körperverletzung (§223 StGB), da es sich nur um einen einzelnen Schlag handelte.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die Anzahl der Schläge ist nicht entscheidend. Ausschlaggebend ist die Verwendung eines gefährlichen Werkzeugs, das den Tatbestand zur gefährlichen Körperverletzung (§224 StGB) qualifiziert.',
+            reviewOk:false, reviewText:'Ein einzelner Schlag mit einem gefährlichen Werkzeug bleibt keine einfache, sondern wird zur gefährlichen Körperverletzung.'},
+          {label:'Fahrlässige Körperverletzung (§229 StGB), da eine Eskalation im Streit meist ungewollt geschieht.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Ein gezielter Schlag mit einem Maßkrug gegen den Kopf ist eine vorsätzliche Handlung, keine bloße Fahrlässigkeit.',
+            reviewOk:false, reviewText:'Ein gezielter Schlag ist vorsätzlich – Fahrlässigkeit scheidet hier aus.'},
+          {label:'Nötigung (§240 StGB), da der Angreifer sein Gegenüber zu einer Handlung zwingen wollte.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Nötigung erfasst das Zwingen zu einem Tun, Dulden oder Unterlassen durch Gewalt oder Drohung – hier geht es um die durch den Schlag verursachte Verletzung, nicht um eine erzwungene Handlung.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt nicht die eigentliche Verletzungshandlung, sondern verwechselt sie mit dem Nötigungstatbestand.'}
+        ]
+      }
+    ]
+  },
+
+  werkschutz: {
+    title:'Werkschutz', sub:'Objektschutz · Zaunkontrolle · Sicherheitstechnik', icon:'🏭',
+    briefing:'Zentrale an alle Kräfte: Werkschutz Industriegelände "Rheinwerk". Erhöhte Wachsamkeit an der Umzäunung, technische Sicherungseinrichtungen sind aktiv.',
+    requiredEquip:[{key:'funkgeraet', label:'Funkgerät', penalty:15,
+      missingText:'Ohne Funkgerät konnte ein entdeckter Zauneinbruch nicht unverzüglich an die Zentrale gemeldet werden – gerade im Werkschutz mit weitläufigem Gelände ein vermeidbarer Ausrüstungsmangel.',
+      presentText:'Das Funkgerät war einsatzbereit vorhanden – unverzichtbar, um sicherheitsrelevante Feststellungen sofort zu melden.'}],
+    theme:{bg:'#12171a', zoneFill:'#1c2427', zoneStroke:'#3a4a4a', labelColor:'#8aa39c', texture:'concrete', gridColor:'rgba(140,180,165,0.05)', wallColor:'#455049', wallHighlight:'rgba(200,230,210,0.10)'},
+    playerStart:{x:100,y:100},
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:200,h:16},{x:220,y:20,w:16,h:180},
+      {x:20,y:380,w:400,h:16},{x:500,y:20,w:16,h:300}],
+    doors:[{x:420,y:380,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:180,h:150,label:'Werkstor / Zaun',icon:'🚧'},
+      {x:250,y:40,w:240,h:330,label:'Werkshalle',icon:'🏭'},
+      {x:520,y:40,w:170,h:260,label:'Verwaltungsgebäude',icon:'🏢'},
+      {x:250,y:400,w:440,h:140,label:'Lagerhof',icon:'📦'}
+    ],
+    npcStart:{x:150,y:100}, npcRoam:{minx:130,maxx:180,miny:80,maxy:130},
+    npcTargets:[{x:350,y:200},{x:400,y:300}],
+    events:[
+      { kicker:'Ereignis — Loch im Zaun entdeckt', title:'Wie reagierst du auf den entdeckten Zauneinbruch?',
+        desc:'Bei deinem Streifengang entdeckst du am Werkstor ein frisch geschnittenes Loch im Maschendrahtzaun, groß genug, um hindurchzupassen.',
+        options:[
+          {label:'Sofort Meldung an die Zentrale/Objektleitung machen, die Fundstelle dokumentieren (Foto/Notizen), die Umgebung beobachten und keine eigenmächtige Reparatur vornehmen.', deesk:8, prof:14, score:14,
+            explain:'Korrektes Vorgehen: Sicherheitsrelevante Feststellungen wie ein Zauneinbruch müssen unverzüglich gemeldet und dokumentiert werden, damit Ursache und mögliches Risiko fachgerecht geklärt werden können.',
+            reviewOk:true, reviewText:'Melden, Dokumentieren, Beobachten statt Eigenmächtigkeit ist das korrekte Vorgehen bei sicherheitsrelevanten Feststellungen.'},
+          {label:'Das Loch selbst notdürftig reparieren/verschließen, ohne es zu melden.', deesk:-4, prof:-10, score:-6,
+            explain:'Eine eigenmächtige Reparatur ohne Meldung ist problematisch – es folgt eine Rechtsfrage zur Melde- und Dokumentationspflicht.',
+            reviewOk:false, reviewText:'Eigenmächtiges Reparieren ohne Meldung kann mögliche Tatspuren verändern und verhindert eine fachgerechte Bewertung des Vorfalls.',
+            legal:{ kicker:'Rechtsfrage — Melde- und Dokumentationspflicht', title:'Warum muss ein Zauneinbruch gemeldet statt eigenmächtig repariert werden?',
+              desc:'Bauliche Mängel oder Einbruchspuren an der Umzäunung sind sicherheitsrelevante Feststellungen im Objektschutz.',
+              options:[
+                {label:'Weil jede sicherheitsrelevante Feststellung unverzüglich an die Zentrale/den Auftraggeber gemeldet und dokumentiert werden muss, damit Ursache und mögliches Sicherheitsrisiko (z. B. ein bereits erfolgter Einbruch) fachgerecht geklärt werden können.', correct:true},
+                {label:'Weil SMA gesetzlich verpflichtet sind, bauliche Mängel eigenständig zu beheben, bevor sie einen Bericht schreiben dürfen.', correct:false}
+              ],
+              explain:'Melde- und Dokumentationspflichten laut Dienstanweisung stellen sicher, dass sicherheitsrelevante Feststellungen fachgerecht bewertet werden und mögliche Spuren nicht durch eigenmächtiges Handeln verändert werden. Die Reparatur ist Sache der Objektleitung/des Auftraggebers, nicht des SMA.',
+              reviewQ:'Rechtsfrage: Melde- und Dokumentationspflicht bei sicherheitsrelevanten Feststellungen',
+              reviewText:'Sicherheitsrelevante Feststellungen müssen gemeldet und dokumentiert, nicht eigenmächtig behoben werden.' }},
+          {label:'Ignorieren, da es sich vermutlich nur um normalen Verschleiß handelt.', deesk:-2, prof:-8, score:-4,
+            explain:'Ein frisch geschnittenes Loch im Zaun ohne Prüfung als harmlosen Verschleiß abzutun, ist keine sichere Einschätzung.',
+            reviewOk:false, reviewText:'Ein plötzlicher Zaundurchbruch sollte nie ungeprüft als harmlos abgetan werden.'}
+        ]
+      },
+      { kicker:'Ereignis — unbefugte Person auf dem Gelände', title:'Welche Voraussetzungen erfüllt ein Hausfriedensbruch?',
+        desc:'Am durchbrochenen Zaun triffst du auf eine fremde Person, die sich ohne Erlaubnis auf dem eingefriedeten Werksgelände aufhält. Die Objektleitung möchte wissen, welche Voraussetzungen für den Tatbestand des Hausfriedensbruchs (§123 StGB) erfüllt sein müssen.',
+        options:[
+          {label:'Das widerrechtliche Eindringen in oder Verweilen auf einem befriedeten Besitztum (z. B. ein eingezäuntes Werksgelände) gegen den Willen des Berechtigten.', deesk:2, prof:14, score:15,
+            explain:'Korrekt – §123 StGB erfasst das unbefugte Eindringen oder Verweilen auf befriedetem Besitztum gegen den Willen des Berechtigten. Ein eingezäuntes Werksgelände zählt als befriedetes Besitztum.',
+            reviewOk:true, reviewText:'Hausfriedensbruch (§123 StGB) setzt das unbefugte Eindringen/Verweilen auf befriedetem Besitztum voraus – exakt die richtige Definition.'},
+          {label:'Die Wegnahme einer fremden beweglichen Sache in der Absicht, sie sich rechtswidrig zuzueignen.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt Diebstahl (§242 StGB), nicht Hausfriedensbruch. Beim Hausfriedensbruch geht es um das unbefugte Betreten, nicht um eine Wegnahme.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt den Diebstahlstatbestand (§242 StGB), nicht den Hausfriedensbruch (§123 StGB).'},
+          {label:'Das rechtswidrige Beschädigen oder Zerstören einer fremden Sache.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt Sachbeschädigung (§303 StGB). Für einen Hausfriedensbruch ist keine Substanzverletzung nötig, sondern das unbefugte Betreten/Verweilen.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt Sachbeschädigung (§303 StGB), nicht Hausfriedensbruch.'},
+          {label:'Das Zwingen einer Person zu einer Handlung durch Gewalt oder Drohung.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt Nötigung (§240 StGB). Hausfriedensbruch erfordert keine Zwangshandlung gegenüber einer Person, sondern das unbefugte Betreten eines befriedeten Bereichs.',
+            reviewOk:false, reviewText:'Diese Antwort beschreibt Nötigung (§240 StGB), nicht Hausfriedensbruch.'}
+        ]
+      },
+      { kicker:'Ereignis — Alarm der Einbruchmeldeanlage', title:'Welche Bestandteile gehören zu einer Einbruchmeldeanlage?',
+        desc:'In der Werkshalle löst plötzlich die Einbruchmeldeanlage (EMA) Alarm aus. Bevor du den Bereich kontrollierst, fragt dich ein neuer Kollege, aus welchen Bestandteilen eine typische Einbruchmeldeanlage besteht.',
+        options:[
+          {label:'Melder (z. B. Bewegungsmelder, Öffnungskontakte), eine auswertende Alarmzentrale, Bedienteile sowie eine Alarmierungseinrichtung (z. B. Sirene oder Aufschaltung auf eine Notrufleitstelle).', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Eine EMA besteht typischerweise aus Meldern, einer Zentrale zur Auswertung, Bedienteilen zur Scharf-/Unscharfschaltung und einer Alarmierungseinrichtung.',
+            reviewOk:true, reviewText:'Melder, Zentrale, Bedienteil und Alarmierungseinrichtung sind die klassischen Bestandteile einer Einbruchmeldeanlage.'},
+          {label:'Ausschließlich eine Kamera, die alle Bewegungen dauerhaft aufzeichnet.', deesk:0, prof:-6, score:-5,
+            explain:'Eine Kamera allein ist keine Einbruchmeldeanlage, sondern ein Videoüberwachungssystem – beide Systeme erfüllen unterschiedliche Funktionen und werden oft ergänzend eingesetzt.',
+            reviewOk:false, reviewText:'Eine reine Kamera ersetzt keine EMA – ihr fehlen Melder, Zentrale und Alarmierungseinrichtung.'},
+          {label:'Nur ein Schließsystem mit mechanischen Schlössern, ohne elektronische Komponenten.', deesk:0, prof:-6, score:-5,
+            explain:'Ein rein mechanisches Schließsystem ist keine Einbruchmeldeanlage – eine EMA ist ein elektronisches System zur Detektion und Meldung von Einbrüchen.',
+            reviewOk:false, reviewText:'Mechanische Schließsysteme sind eine eigene Sicherungsart, aber keine EMA.'},
+          {label:'Ein einzelner Knopf, den nur die Geschäftsführung im Notfall betätigen kann.', deesk:0, prof:-6, score:-5,
+            explain:'Das beschreibt einen Überfallmelder, nicht eine vollständige Einbruchmeldeanlage mit Meldern, Zentrale und Alarmierungseinrichtung.',
+            reviewOk:false, reviewText:'Das beschreibt lediglich einen einzelnen Überfallmelder, nicht die gesamte EMA.'}
+        ]
+      }
+    ]
+  },
+
+  konzert: {
+    title:'Konzert', sub:'Veranstaltungsschutz · Einlass · Crowd-Management', icon:'🎸',
+    briefing:'Zentrale an alle Kräfte: Veranstaltungsschutz Open-Air-Konzert. Einlass am hinteren Geländeende, Bühne und Zuschauerbereich (Welle 1–3) davor.',
+    requiredEquip:[{key:'bodycam', label:'Bodycam', penalty:15,
+      missingText:'Ohne Bodycam fehlte bei einer großen, unübersichtlichen Veranstaltung ein wichtiges Mittel zur Beweissicherung bei Vorfällen wie Streitigkeiten oder Zutrittsverweigerungen.',
+      presentText:'Die Bodycam war einsatzbereit vorhanden – wichtig zur Beweissicherung bei einer großen, publikumsintensiven Veranstaltung.'}],
+    theme:{bg:'#0a1a1c', zoneFill:'#122428', zoneStroke:'#2a5058', labelColor:'#7fd4d8', texture:'tile', gridColor:'rgba(120,220,220,0.06)', wallColor:'#1f4448', wallHighlight:'rgba(120,240,220,0.20)', decor:'lights'},
+    playerStart:{x:360,y:480},
+    walls:[...OUTER_WALLS],
+    zones:[
+      {x:20,y:20,w:680,h:90,label:'Bühne',icon:'🎤',feature:'stage'},
+      {x:20,y:110,w:680,h:105,label:'Welle 1',icon:'🙌'},
+      {x:20,y:215,w:680,h:105,label:'Welle 2',icon:'🙌'},
+      {x:20,y:320,w:680,h:105,label:'Welle 3',icon:'🙌'},
+      {x:20,y:425,w:680,h:115,label:'Einlass',icon:'🎫'}
+    ],
+    npcStart:{x:300,y:470}, npcRoam:{minx:280,maxx:320,miny:455,maxy:495},
+    npcTargets:[{x:120,y:370},{x:550,y:270}],
+    events:[
+      { kicker:'Ereignis — Einlasskontrolle: stark alkoholisierter Gast', title:'Ein sichtlich betrunkener Besucher möchte zum Konzert',
+        desc:'Am Einlass steht ein Besucher, der deutlich alkoholisiert ist: Er lallt, kann kaum noch gerade stehen und riecht stark nach Alkohol.',
+        options:[
+          {label:'Zutritt verweigern, da eine erhebliche Alkoholisierung ein Sicherheitsrisiko für ihn selbst und andere darstellt, ihn dabei aber nicht einfach wegschicken, sondern Hilfe vermitteln (z. B. Sanitätsdienst, Angehörige, Taxi).', deesk:8, prof:14, score:14,
+            explain:'Korrekt: Das Hausrecht erlaubt die Zutrittsverweigerung bei erheblicher Alkoholisierung als Sicherheitsrisiko. Fürsorgepflicht bedeutet dabei, für eine sichere Weiterreise zu sorgen, statt die Person einfach sich selbst zu überlassen.',
+            reviewOk:true, reviewText:'Zutrittsverweigerung aus Sicherheitsgründen plus Fürsorge (Hilfe vermitteln) ist die angemessene Kombination.'},
+          {label:'Ihn trotzdem einlassen, da er schließlich ein gültiges Ticket besitzt.', deesk:-6, prof:-10, score:-5,
+            explain:'Ein Ticket verdrängt nicht das Hausrecht des Veranstalters bei einem konkreten Sicherheitsrisiko – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Ein gültiges Ticket hebt das Hausrecht bei Sicherheitsrisiken nicht auf.',
+            legal:{ kicker:'Rechtsfrage — Ticket vs. Hausrecht', title:'Verdrängt ein gültiges Ticket das Hausrecht des Veranstalters?',
+              desc:'Ein Ticket berechtigt grundsätzlich zum Zutritt, wird aber durch das Hausrecht des Veranstalters begrenzt.',
+              options:[
+                {label:'Nein — auch mit gültigem Ticket kann der Zutritt aus Sicherheitsgründen (z. B. erhebliche Alkoholisierung) auf Grundlage des Hausrechts verweigert werden.', correct:true},
+                {label:'Ja — ein gültiges Ticket verpflichtet den Veranstalter, jede Person unabhängig von ihrem Zustand einzulassen.', correct:false}
+              ],
+              explain:'Ein Ticket begründet einen zivilrechtlichen Anspruch, der durch das Hausrecht (Sicherheits- und Ordnungsinteressen des Veranstalters) begrenzt wird. Bei konkreter Gefährdung kann der Zutritt trotz gültigen Tickets verweigert werden.',
+              reviewQ:'Rechtsfrage: Verhältnis von Ticket und Hausrecht',
+              reviewText:'Das Hausrecht geht bei konkreter Gefährdung einem bereits erworbenen Ticket vor.' }},
+          {label:'Ihn grob wegschicken und allein und unbeaufsichtigt auf der Straße stehen lassen.', deesk:-10, prof:-10, score:-6,
+            explain:'Die Zutrittsverweigerung wäre vertretbar gewesen, die Art der Umsetzung ohne jede Fürsorge ist jedoch unangemessen.',
+            reviewOk:false, reviewText:'Auch bei berechtigter Zutrittsverweigerung darf die Fürsorgepflicht gegenüber einer hilfsbedürftigen Person nicht ignoriert werden.'}
+        ]
+      },
+      { kicker:'Ereignis — Person ohne Ticket auf dem Gelände', title:'Ein Zuschauer ist ohne Ticket über den Zaun geklettert — welche Straftaten liegen vor?',
+        desc:'Bei Welle 3 entdeckst du eine Person ohne Ticket bzw. Bändchen, die zugibt, über den Absperrzaun geklettert zu sein, um sich das Konzert kostenlos anzusehen.',
+        options:[
+          {label:'Sowohl Hausfriedensbruch (§123 StGB), da das eingezäunte Veranstaltungsgelände unbefugt betreten wurde, als auch Erschleichen von Leistungen (§265a StGB), da die Konzertleistung ohne Bezahlung in Anspruch genommen werden sollte.', deesk:2, prof:15, score:16,
+            explain:'Korrekt: Beide Tatbestände liegen nebeneinander vor. Das unbefugte Betreten des befriedeten, eingezäunten Geländes erfüllt Hausfriedensbruch, die unbezahlte Inanspruchnahme der Konzertleistung erfüllt Erschleichen von Leistungen.',
+            reviewOk:true, reviewText:'Zaunüberkletterung + unbezahlter Konzertbesuch erfüllen zwei eigenständige Tatbestände nebeneinander: §123 StGB und §265a StGB.'},
+          {label:'Nur Diebstahl (§242 StGB), da der Konzerteintritt als Sache im Sinne des Diebstahls gilt.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine Konzertleistung ist keine "Sache" im Sinne des Diebstahlstatbestands – hierfür ist §265a StGB (Erschleichen von Leistungen) der einschlägige Tatbestand.',
+            reviewOk:false, reviewText:'Leistungen sind keine Sachen – Diebstahl passt hier nicht.'},
+          {label:'Nur Hausfriedensbruch (§123 StGB); das Nichtbezahlen des Eintritts ist strafrechtlich ohne Bedeutung.', deesk:0, prof:-6, score:-5,
+            explain:'Unvollständig: Neben dem unbefugten Betreten liegt zusätzlich Erschleichen von Leistungen (§265a StGB) vor, da die Konzertleistung ohne Bezahlung in Anspruch genommen wurde.',
+            reviewOk:false, reviewText:'Diese Antwort übersieht den zusätzlichen Tatbestand des Erschleichens von Leistungen (§265a StGB).'},
+          {label:'Nur Erschleichen von Leistungen (§265a StGB); das Überklettern des Zauns ist strafrechtlich ohne Bedeutung.', deesk:0, prof:-6, score:-5,
+            explain:'Unvollständig: Neben dem Erschleichen der Leistung liegt zusätzlich Hausfriedensbruch (§123 StGB) vor, da das eingezäunte Gelände unbefugt betreten wurde.',
+            reviewOk:false, reviewText:'Diese Antwort übersieht den zusätzlichen Tatbestand des Hausfriedensbruchs (§123 StGB).'}
+        ]
+      },
+      { kicker:'Ereignis — Streit zwischen Zuschauern', title:'Zwei Zuschauer geraten in der Menge aneinander',
+        desc:'In Welle 2 drängen sich zwei Zuschauer wegen eines Platzes aneinander, es kommt zu lautstarkem Streit, Schubsen und gegenseitigen Beleidigungen. Die Menge um sie herum wird unruhig.',
+        options:[
+          {label:'Ruhig und bestimmt dazwischengehen, körperlichen Abstand zwischen den Streitenden schaffen, deeskalierend auf beide einwirken und bei Bedarf einen der beiden in einen ruhigeren Bereich begleiten.', deesk:12, prof:12, score:14,
+            explain:'Korrekt: Deeskalation und das Schaffen von Abstand vor körperlichem Zwang entsprechen dem Grundsatz des mildesten geeigneten Mittels.',
+            reviewOk:true, reviewText:'Deeskalierendes Dazwischengehen mit Abstand schaffen ist bei einem Streit in der Menge das richtige Vorgehen.'},
+          {label:'Sofort einen der beiden Zuschauer grob aus der Menge zerren, ohne vorherige Deeskalation.', deesk:-10, prof:-10, score:-6,
+            explain:'Sofortiger körperlicher Zwang ohne vorherigen Deeskalationsversuch ist unverhältnismäßig – es folgt eine Rechtsfrage.',
+            reviewOk:false, reviewText:'Körperlicher Zwang ohne vorherige Deeskalation verstößt gegen den Verhältnismäßigkeitsgrundsatz.',
+            legal:{ kicker:'Rechtsfrage — Verhältnismäßigkeit bei Streitschlichtung', title:'War das sofortige, grobe Herausziehen verhältnismäßig?',
+              desc:'Auch bei der Schlichtung von Streitigkeiten sind SMA an den Grundsatz der Verhältnismäßigkeit gebunden.',
+              options:[
+                {label:'Nein — vor körperlichem Eingreifen ist zunächst verbale Deeskalation zu versuchen; ein kontrolliertes Eingreifen ist erst bei fortbestehender Gefahr gerechtfertigt.', correct:true},
+                {label:'Ja — bei jedem Streit in einer Menschenmenge darf sofort mit körperlicher Gewalt reagiert werden.', correct:false}
+              ],
+              explain:'Der Grundsatz "mildestes Mittel zuerst" gilt auch bei Streitschlichtung: Deeskalation vor Zwang, Zwang nur wenn erforderlich und angemessen.',
+              reviewQ:'Rechtsfrage: Verhältnismäßigkeit bei der Schlichtung von Zuschauerstreit',
+              reviewText:'Deeskalation muss vor körperlichem Zwang versucht werden – nur bei fortbestehender Gefahr ist Eingreifen mit Zwang gerechtfertigt.' }},
+          {label:'Den Streit ignorieren, da sich so etwas in der Menge meist von selbst regelt.', deesk:-8, prof:-8, score:-5,
+            explain:'Ein eskalierender Streit in einer dichten Menschenmenge birgt erhebliches Risiko für Umstehende und sollte nicht ignoriert werden.',
+            reviewOk:false, reviewText:'Ein Streit in dichter Menschenmenge kann schnell eskalieren und Umstehende gefährden – Ignorieren ist keine sichere Option.'}
+        ]
+      }
+    ]
+  },
+
+  fluechtlingsheim: {
+    title:'Flüchtlingsheim', sub:'Objektschutz · Gemeinschaftsunterkunft · Deeskalation', icon:'🏠',
+    briefing:'Zentrale an alle Kräfte: Objektschutz Gemeinschaftsunterkunft "Rheinblick". Umgang mit Bewohnern verschiedenster Herkunft erfordert besonderes Fingerspitzengefühl.',
+    requiredEquip:[{key:'dokumappe', label:'Dokumentenmappe', penalty:15,
+      missingText:'Ohne Dokumentenmappe konnten Vorfälle und Gespräche in der Unterkunft nicht ordnungsgemäß nach Dienstanweisung dokumentiert werden.',
+      presentText:'Die Dokumentenmappe war einsatzbereit vorhanden – wichtig für die ordnungsgemäße Dokumentation in einer Gemeinschaftsunterkunft.'}],
+    theme:{bg:'#161c16', zoneFill:'#212a20', zoneStroke:'#3a4a38', labelColor:'#a8c4a0', texture:'tile', gridColor:'rgba(160,200,150,0.05)', wallColor:'#3a4a38', wallHighlight:'rgba(190,230,170,0.14)'},
+    playerStart:{x:100,y:100},
+    walls:[...OUTER_WALLS,
+      {x:20,y:20,w:200,h:16},{x:220,y:20,w:16,h:180},
+      {x:20,y:380,w:400,h:16},{x:500,y:20,w:16,h:300}],
+    doors:[{x:420,y:380,w:80,h:16}],
+    zones:[
+      {x:30,y:40,w:180,h:150,label:'Aufnahme',icon:'🛎️'},
+      {x:250,y:40,w:240,h:330,label:'Gemeinschaftsküche',icon:'🍲'},
+      {x:520,y:40,w:170,h:260,label:'Wohnbereich',icon:'🛏️'},
+      {x:250,y:400,w:440,h:140,label:'Sozialraum / Büro',icon:'🗂️'}
+    ],
+    npcStart:{x:350,y:150}, npcRoam:{minx:320,maxx:400,miny:120,maxy:200},
+    npcTargets:[{x:150,y:100},{x:600,y:150}],
+    events:[
+      { kicker:'Ereignis — Streit zwischen zwei Bewohnern unterschiedlicher Herkunft', title:'Was ist interkulturelle Kompetenz?',
+        desc:'In der Gemeinschaftsküche geraten zwei Bewohner unterschiedlicher Herkunft wegen einer Alltagssituation aneinander und werden zunehmend lauter. Ein Kollege fragt dich, was unter "interkultureller Kompetenz" zu verstehen ist, bevor ihr eingreift.',
+        options:[
+          {label:'Die Fähigkeit, respektvoll, vorurteilsfrei und situationsangemessen mit Menschen unterschiedlicher kultureller Hintergründe zu kommunizieren und dabei eigene sowie fremde kulturelle Prägungen zu erkennen und einzuordnen.', deesk:4, prof:14, score:15,
+            explain:'Korrekt: Interkulturelle Kompetenz umfasst Wahrnehmung eigener und fremder kultureller Muster, Empathie und angepasste, respektvolle Kommunikation – nicht das Ignorieren oder Vermeiden von Unterschieden.',
+            reviewOk:true, reviewText:'Interkulturelle Kompetenz bedeutet respektvollen, reflektierten Umgang mit kultureller Vielfalt, nicht bloße Sprachkenntnis oder Vermeidung.'},
+          {label:'Möglichst viele Sprachen fließend sprechen zu können.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Sprachkenntnisse können hilfreich sein, sind aber nicht die Definition interkultureller Kompetenz, die deutlich umfassender ist.',
+            reviewOk:false, reviewText:'Sprachkenntnisse allein sind nicht gleichbedeutend mit interkultureller Kompetenz.'},
+          {label:'Alle Beteiligten unabhängig von der Situation gleich zu behandeln, ohne auf kulturelle Unterschiede einzugehen.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Gleichbehandlung ist wichtig, interkulturelle Kompetenz bedeutet aber gerade, kulturelle Unterschiede wahrzunehmen und angemessen zu berücksichtigen, statt sie auszublenden.',
+            reviewOk:false, reviewText:'Kulturelle Unterschiede zu ignorieren ist das Gegenteil von interkultureller Kompetenz.'},
+          {label:'Konflikte zwischen Bewohnern unterschiedlicher Herkunft grundsätzlich zu vermeiden, indem man nicht eingreift.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Nichteingreifen ist keine Kompetenz, sondern das Vermeiden der eigentlichen Aufgabe der Deeskalation.',
+            reviewOk:false, reviewText:'Konflikte zu vermeiden, indem man nicht eingreift, ist keine interkulturelle Kompetenz, sondern Aufgabenvermeidung.'}
+        ]
+      },
+      { kicker:'Ereignis — Bewohner mit geringen Deutschkenntnissen', title:'Was ist in dieser Situation kommunikativ wichtig?',
+        desc:'Ein Bewohner mit nur wenigen Deutschkenntnissen kommt aufgeregt zu dir und versucht, dir mit einfachen Worten und Gesten etwas Wichtiges zu erklären. Du verstehst nur einen Teil.',
+        options:[
+          {label:'Ruhig bleiben, einfache Sprache und kurze Sätze verwenden, aktiv zuhören, Gestik/Mimik einbeziehen und bei Bedarf eine dritte Person oder einen Sprachmittler/Dolmetscher hinzuziehen.', deesk:8, prof:14, score:15,
+            explain:'Korrekt: Kommunikation bei Sprachbarrieren gelingt am besten durch Ruhe, einfache Sprache, aktives Zuhören und ggf. Hinzuziehung eines Sprachmittlers, um Missverständnisse zu vermeiden.',
+            reviewOk:true, reviewText:'Ruhe, einfache Sprache, aktives Zuhören und ggf. Sprachmittler sind der richtige Weg bei Sprachbarrieren.'},
+          {label:'Schnell und in vollständigen, komplexen Sätzen sprechen, damit die Situation zügig geklärt wird.', deesk:-6, prof:-8, score:-5,
+            explain:'Nicht angemessen: Schnelles, komplexes Sprechen erschwert die Verständigung bei Sprachbarrieren zusätzlich.',
+            reviewOk:false, reviewText:'Komplexe, schnelle Sprache überfordert bei einer Sprachbarriere zusätzlich, statt zu helfen.'},
+          {label:'Das Anliegen ignorieren, bis die Person besser Deutsch spricht.', deesk:-8, prof:-12, score:-6,
+            explain:'Nicht angemessen: Ein erkennbar wichtiges, aufgeregt vorgetragenes Anliegen darf nicht wegen einer Sprachbarriere ignoriert werden.',
+            reviewOk:false, reviewText:'Ein Anliegen wegen einer Sprachbarriere zu ignorieren, ist keine professionelle Kommunikation.'},
+          {label:'Ausschließlich schriftlich kommunizieren, da gesprochene Sprache bei Sprachbarrieren generell nicht hilft.', deesk:-2, prof:-6, score:-4,
+            explain:'Nicht korrekt: Schriftliche Kommunikation hilft nicht immer weiter, insbesondere wenn auch die Lese-/Schreibkenntnisse gering sind – einfache mündliche Sprache plus Gestik ist oft wirksamer.',
+            reviewOk:false, reviewText:'Rein schriftliche Kommunikation ist keine verlässliche pauschale Lösung bei Sprachbarrieren.'}
+        ]
+      },
+      { kicker:'Ereignis — Beleidigung zwischen zwei Bewohnern', title:'Auf welche Arten kann eine Beleidigung begangen werden?',
+        desc:'Zwischen zwei Bewohnern kommt es zu einem verbalen Streit, bei dem sich beide gegenseitig beleidigen. Ein Kollege fragt dich, auf welche Arten eine Beleidigung (§185 StGB) überhaupt begangen werden kann.',
+        options:[
+          {label:'Eine Beleidigung kann verbal (mündlich), schriftlich, durch Gesten oder Mimik (z. B. eine bestimmte Handbewegung) sowie durch schlüssiges Verhalten (z. B. Anspucken) begangen werden.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: §185 StGB erfasst verschiedene Begehungsformen – mündlich, schriftlich, durch Gesten/Mimik oder durch tätliches, schlüssiges Verhalten wie Anspucken.',
+            reviewOk:true, reviewText:'Beleidigung kann auf ganz unterschiedliche Arten begangen werden: Wort, Schrift, Geste/Mimik oder Tätlichkeit.'},
+          {label:'Eine Beleidigung ist ausschließlich in schriftlicher Form strafbar.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Auch mündliche Äußerungen, Gesten oder Tätlichkeiten können eine Beleidigung darstellen – nicht nur die schriftliche Form.',
+            reviewOk:false, reviewText:'Die Beschränkung auf die schriftliche Form ist falsch – Beleidigung kann auf viele Arten erfolgen.'},
+          {label:'Eine Beleidigung liegt nur vor, wenn sie öffentlich vor mindestens drei Zeugen ausgesprochen wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine Beleidigung setzt keine Öffentlichkeit oder eine bestimmte Zeugenzahl voraus, sie kann auch unter vier Augen begangen werden.',
+            reviewOk:false, reviewText:'Öffentlichkeit oder eine Mindestzahl an Zeugen ist keine Voraussetzung für eine Beleidigung.'},
+          {label:'Eine Beleidigung erfordert immer körperliche Gewalt.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Das beschreibt eher eine Körperverletzung. Beleidigung ist ein Ehrdelikt und erfordert keine körperliche Gewalt.',
+            reviewOk:false, reviewText:'Diese Antwort verwechselt Beleidigung mit Körperverletzung – körperliche Gewalt ist keine Voraussetzung.'}
+        ]
+      }
+    ]
+  },
+
+  citystreife: {
+    title:'Citystreife', sub:'Nachtstreife mit Praktikant · Innenstadt', icon:'🌃',
+    briefing:'Zentrale an alle Kräfte: Citystreife Innenstadt, Nachtschicht. Du führst heute einen Praktikanten mit — erkläre ihm dein Vorgehen und die rechtliche Einordnung an jeder Station.',
+    requiredEquip:[{key:'taschenlampe', label:'Taschenlampe', penalty:15,
+      missingText:'Ohne Taschenlampe war die nächtliche Streife durch dunkle Gassen und Hauseingänge erheblich erschwert und riskanter für dich und den Praktikanten.',
+      presentText:'Die Taschenlampe war einsatzbereit vorhanden – unverzichtbar für den nächtlichen Streifengang.'}],
+    theme:{bg:'#0a0c12', zoneFill:'#14161e', zoneStroke:'#2a2e3a', labelColor:'#8892a8', texture:'concrete', gridColor:'rgba(140,150,180,0.05)', wallColor:'#20232e', wallHighlight:'rgba(255,220,150,0.10)'},
+    playerStart:{x:360,y:210},
+    walls:[...OUTER_WALLS],
+    zones:[
+      {x:20,y:20,w:680,h:130,label:'Ladenzeile Nord',icon:'🏬',feature:'shops'},
+      {x:20,y:150,w:680,h:120,label:'Hauptstraße',icon:'🚦',feature:'streetlights'},
+      {x:20,y:270,w:680,h:130,label:'Ladenzeile Süd',icon:'🏪',feature:'shops'},
+      {x:20,y:400,w:680,h:80,label:'Seitengasse',icon:'🌆'},
+      {x:20,y:480,w:680,h:60,label:'Hinterhof',icon:'🚮'}
+    ],
+    npcStart:{x:60,y:190}, npcRoam:{minx:60,maxx:60,miny:190,maxy:190},
+    npcTargets:[{x:150,y:440},{x:400,y:510},{x:550,y:330},{x:250,y:80}],
+    events:[
+      { kicker:'Ereignis — frisches Graffiti an der Hauswand', title:'Ihr entdeckt ein frisches Graffiti — welche Straftat liegt vor?',
+        marker:'graffiti',
+        desc:'Bei eurem nächtlichen Streifengang entdeckt ihr an einer Hauswand ein frisch gesprühtes, großflächiges Graffiti-Tag, das offensichtlich erst vor kurzem entstanden ist. Der Praktikant fragt dich, welche Straftat hier vorliegt.',
+        options:[
+          {label:'Sachbeschädigung (§303 StGB), da die Fassade durch das Aufsprühen der Farbe rechtswidrig und dauerhaft in ihrem äußeren Erscheinungsbild verändert bzw. beschädigt wurde.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Das unerlaubte Besprühen einer fremden Fassade verändert deren Erscheinungsbild nachhaltig und erfüllt damit Sachbeschädigung (§303 StGB) – unabhängig davon, ob die Wand tatsächlich betreten wurde.',
+            reviewOk:true, reviewText:'Graffiti auf einer fremden Fassade ist der klassische Anwendungsfall der Sachbeschädigung (§303 StGB).'},
+          {label:'Hausfriedensbruch (§123 StGB), da die Hauswand unbefugt betreten wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Graffiti wird meist vom öffentlich zugänglichen Gehweg aus gesprüht, ohne ein befriedetes Besitztum zu betreten – Hausfriedensbruch passt hier nicht.',
+            reviewOk:false, reviewText:'Ohne unbefugtes Betreten eines befriedeten Besitztums liegt kein Hausfriedensbruch vor.'},
+          {label:'Diebstahl (§242 StGB), da Farbe auf der Wand "weggenommen" wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Es wurde nichts weggenommen, sondern etwas hinzugefügt – Diebstahl passt hier tatbestandlich nicht.',
+            reviewOk:false, reviewText:'Beim Graffiti wird nichts weggenommen – der Diebstahlstatbestand passt nicht.'},
+          {label:'Es liegt keine Straftat vor, da nur eine Fassade und keine Person betroffen ist.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Sachbeschädigung schützt auch Eigentum ohne unmittelbare Personenbetroffenheit und ist eine eigenständige Straftat.',
+            reviewOk:false, reviewText:'Auch reine Sachschäden ohne Personenbetroffenheit sind strafbar.'}
+        ]
+      },
+      { kicker:'Ereignis — Fahrrad wird zurückgeholt', title:'Eine Person nimmt einer anderen ihr zuvor gestohlenes Fahrrad wieder ab',
+        desc:'Kurz darauf beobachtet ihr, wie eine Person einer anderen energisch ein Fahrrad entreißt. Auf Nachfrage stellt sich heraus: Die zweite Person hatte das Fahrrad zuvor gestohlen, und der ursprüngliche Besitzer hat sie gerade zufällig auf der Straße wiedererkannt und es sich direkt zurückgeholt. Wie ist das rechtlich einzuordnen?',
+        options:[
+          {label:'Das ist grundsätzlich eine erlaubte Besitzkehr (§859 Abs. 2 BGB): Der frühere Besitzer darf eine ihm durch verbotene Eigenmacht entzogene Sache dem auf frischer Tat betroffenen oder verfolgten Täter sofort wieder abnehmen.', deesk:4, prof:15, score:16,
+            explain:'Korrekt: §859 Abs. 2 BGB erlaubt dem Besitzer, sich eine ihm durch verbotene Eigenmacht (z. B. Diebstahl) entzogene bewegliche Sache sofort zurückzuholen, wenn er den Täter auf frischer Tat betrifft oder verfolgt – das nennt man Besitzkehr.',
+            reviewOk:true, reviewText:'Die sofortige Rücknahme einer gestohlenen Sache vom Täter auf frischer Tat ist als Besitzkehr nach §859 Abs. 2 BGB gedeckt.'},
+          {label:'Das ist strafbarer Diebstahl (§242 StGB), da niemand eigenmächtig eine Sache von einer anderen Person wegnehmen darf.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die Besitzkehr ist ein anerkanntes zivilrechtliches Selbsthilferecht und rechtfertigt die Wegnahme in dieser engen zeitlichen und tatsächlichen Konstellation.',
+            reviewOk:false, reviewText:'Besitzkehr ist ein anerkannter Rechtfertigungsgrund – die Rücknahme ist hier kein Diebstahl.'},
+          {label:'Das ist immer verbotene Eigenmacht, unabhängig davon, wem das Fahrrad ursprünglich gehörte.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Genau das Gegenteil ist der Fall – die vorangegangene Wegnahme durch den Dieb war die verbotene Eigenmacht, die Rücknahme durch den Berechtigten ist gerechtfertigte Besitzkehr.',
+            reviewOk:false, reviewText:'Verbotene Eigenmacht lag beim ursprünglichen Diebstahl vor, nicht bei der berechtigten Rücknahme.'},
+          {label:'Das ist nur erlaubt, wenn vorher die Polizei eingeschaltet wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Besitzkehr setzt gerade sofortiges Handeln "auf frischer Tat" voraus – eine vorherige Einschaltung der Polizei ist keine Voraussetzung.',
+            reviewOk:false, reviewText:'Besitzkehr muss unmittelbar erfolgen; eine vorherige Polizei-Einschaltung ist keine Voraussetzung.'}
+        ]
+      },
+      { kicker:'Ereignis — Schlägerei zwischen zwei Personen', title:'Zwei Personen prügeln sich — welche Straftat liegt vor?',
+        desc:'Ihr beobachtet, wie zwei Personen mitten auf der Straße aufeinander einschlagen und sich gegenseitig sichtbar verletzen.',
+        options:[
+          {label:'Grundsätzlich Körperverletzung (§223 StGB) durch beide Beteiligten gegeneinander; lässt sich der konkrete Tatbeitrag nicht aufklären, kann zusätzlich eine Beteiligung an einer Schlägerei (§231 StGB) infrage kommen.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Gegenseitiges Schlagen erfüllt grundsätzlich beidseitig Körperverletzung (§223 StGB). Lässt sich der Tatbeitrag nicht klären und trat eine schwere Folge ein, kommt ergänzend §231 StGB in Betracht.',
+            reviewOk:true, reviewText:'Beidseitige Körperverletzung, ggf. ergänzt um Beteiligung an einer Schlägerei (§231 StGB), ist die zutreffende Einordnung.'},
+          {label:'Es liegt keine Straftat vor, solange sich beide Personen freiwillig geprügelt haben.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine Einwilligung in Körperverletzung ist nur unter engen Voraussetzungen wirksam und scheidet bei erheblichen Verletzungen regelmäßig aus.',
+            reviewOk:false, reviewText:'"Freiwilligkeit" macht eine Schlägerei nicht automatisch straflos.'},
+          {label:'Ausschließlich Nötigung (§240 StGB), da beide versuchen, sich gegenseitig zum Aufgeben zu zwingen.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Im Vordergrund steht die körperliche Verletzung, nicht das Erzwingen eines bestimmten Verhaltens – Körperverletzung ist der einschlägige Tatbestand.',
+            reviewOk:false, reviewText:'Nötigung passt hier tatbestandlich nicht – die Verletzungshandlung steht im Vordergrund.'},
+          {label:'Ausschließlich Sachbeschädigung, da möglicherweise auch Kleidung beschädigt wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Im Zentrum steht die Verletzung der Personen, nicht eine mögliche Nebenfolge an Kleidungsstücken.',
+            reviewOk:false, reviewText:'Die Verletzung der Personen, nicht eine mögliche Sachbeschädigung an der Kleidung, steht im Vordergrund.'}
+        ]
+      },
+      { kicker:'Ereignis — Bedrohung mit einem Messer', title:'Eine Person bedroht eine andere mit einem Messer — welche Straftat liegt vor?',
+        desc:'Vor einem Geschäft hält eine Person einer anderen ein Messer entgegen und droht laut, sie zu verletzen, wenn sie nicht sofort ihr Portemonnaie herausgibt.',
+        options:[
+          {label:'Bedrohung (§241 StGB), da mit der Begehung eines Verbrechens gedroht wird; da zugleich eine Sache erpresst werden soll, kommt zusätzlich Raub bzw. räuberische Erpressung (§§249, 255 StGB) in Betracht.', deesk:2, prof:15, score:16,
+            explain:'Korrekt: Die Ankündigung, jemanden mit einem Messer zu verletzen, erfüllt als Drohung mit einem Verbrechen bereits §241 StGB. Da zugleich unter Gewalt/Drohung Geld gefordert wird, liegt zusätzlich der schwerere Tatbestand des Raubes/der räuberischen Erpressung nahe.',
+            reviewOk:true, reviewText:'Bedrohung (§241 StGB) plus – wegen der Geldforderung unter Gewaltandrohung – Raub/räuberische Erpressung ist die vollständige Einordnung.'},
+          {label:'Ausschließlich Beleidigung (§185 StGB), da die Äußerung ehrverletzend ist.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Im Vordergrund steht die Ankündigung eines Verbrechens (Verletzung mit dem Messer), nicht eine Ehrverletzung.',
+            reviewOk:false, reviewText:'Die Drohung mit einer Verletzung ist keine bloße Beleidigung, sondern Bedrohung.'},
+          {label:'Es liegt keine Straftat vor, solange das Messer nicht tatsächlich eingesetzt wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die bloße Drohung mit einem empfindlichen Übel (hier: Verletzung mit dem Messer) reicht für §241 StGB bereits aus, ein tatsächlicher Einsatz ist nicht erforderlich.',
+            reviewOk:false, reviewText:'Für Bedrohung genügt die ernstgemeinte Ankündigung – ein tatsächlicher Einsatz des Messers ist nicht nötig.'},
+          {label:'Ausschließlich Sachbeschädigung, da ein Gegenstand (das Messer) verwendet wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Das Messer wird als Drohmittel gegen eine Person eingesetzt, nicht beschädigt oder gegen eine Sache gerichtet.',
+            reviewOk:false, reviewText:'Sachbeschädigung passt hier tatbestandlich nicht – es geht um eine Drohung gegen eine Person.'}
+        ]
+      },
+      { kicker:'Ereignis — Einbruch in ein Schaufenster', title:'Eine Person schlägt eine Schaufensterscheibe ein und flieht mit einem Ring',
+        desc:'Vor einem Juweliergeschäft schlägt eine Person mit einem Gegenstand die Schaufensterscheibe ein, greift hinein, entnimmt einen Ring und flüchtet damit. Welche Straftat liegt vor?',
+        options:[
+          {label:'Diebstahl in einem besonders schweren Fall (§§242, 243 Abs. 1 Nr. 1 StGB), da zur Wegnahme eine Schutzvorrichtung (die Schaufensterscheibe) gewaltsam überwunden wurde.', deesk:2, prof:15, score:16,
+            explain:'Korrekt: Das gewaltsame Überwinden einer Schutzvorrichtung wie einer Schaufensterscheibe, um eine fremde bewegliche Sache wegzunehmen, erfüllt zusätzlich zum Grundtatbestand (§242 StGB) einen besonders schweren Fall des Diebstahls (§243 Abs. 1 Nr. 1 StGB).',
+            reviewOk:true, reviewText:'Diebstahl unter Überwindung einer Schutzvorrichtung (eingeschlagene Scheibe) ist ein besonders schwerer Fall nach §243 StGB.'},
+          {label:'Einfacher Diebstahl (§242 StGB) ohne besondere Erschwerung, da lediglich eine Scheibe zerstört wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Unvollständig: Das gewaltsame Überwinden der Schutzvorrichtung begründet zusätzlich einen besonders schweren Fall nach §243 StGB, nicht nur einfachen Diebstahl.',
+            reviewOk:false, reviewText:'Die Erschwerung durch das Einschlagen der Schutzvorrichtung wird hier übersehen.'},
+          {label:'Ausschließlich Sachbeschädigung (§303 StGB); die Wegnahme des Rings ist strafrechtlich unbedeutend.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Die Wegnahme des Rings ist der eigentliche Kern des Vorfalls und erfüllt Diebstahl – die Scheibe ist "nur" das Mittel zur Tat.',
+            reviewOk:false, reviewText:'Die Wegnahme des Rings darf nicht übersehen werden – das ist der zentrale Diebstahlstatbestand.'},
+          {label:'Raub (§249 StGB), da Gewalt gegen eine Sache angewendet wurde.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Raub erfordert Gewalt gegen eine Person oder eine Drohung mit gegenwärtiger Gefahr für Leib/Leben – Gewalt gegen eine Sache (die Scheibe) genügt dafür nicht.',
+            reviewOk:false, reviewText:'Raub setzt Gewalt gegen eine Person voraus – bloße Gewalt gegen eine Sache erfüllt diesen Tatbestand nicht.'}
+        ]
+      }
+    ]
+  },
+
+  geldtransport: {
+    title:'Geld- und Wertetransport', sub:'Fahrzeugeinsatz · Werttransport · Streckensicherung', icon:'🚚',
+    briefing:'Zentrale an alle Kräfte: Geld- und Wertetransport durch die Siedlung "Feldrain". Diesmal steuerst du das Transportfahrzeug selbst — fahre die markierten Stationen an.',
+    requiredEquip:[{key:'schutzweste', label:'Schutzweste', penalty:15,
+      missingText:'Ohne Schutzweste bestand beim Geld- und Wertetransport ein erhöhtes Verletzungsrisiko im Falle eines bewaffneten Überfalls.',
+      presentText:'Die Schutzweste war getragen – angemessene Schutzausrüstung für das erhöhte Gefährdungspotenzial im Wertetransport.'}],
+    theme:{bg:'#3f4247', zoneFill:'#5c5240', zoneStroke:'#1c1e22', labelColor:'#f0ede0', wallColor:'#26282c', wallHighlight:'rgba(255,255,255,0.10)', flashlightAlpha:0.14},
+    vehicleMode:true, playerRadius:14, playerSpeed:3.4,
+    playerStart:{x:360,y:500},
+    walls:[...OUTER_WALLS,
+      {x:90,y:90,w:220,h:140},{x:410,y:90,w:220,h:140},
+      {x:90,y:330,w:220,h:140},{x:410,y:330,w:220,h:140}],
+    renderWalls:[...OUTER_WALLS],
+    roads:[
+      {x1:360,y1:20,x2:360,y2:540},
+      {x1:20,y1:280,x2:700,y2:280},
+      {x1:55,y1:20,x2:55,y2:540},
+      {x1:665,y1:20,x2:665,y2:540},
+      {x1:20,y1:55,x2:700,y2:55},
+      {x1:20,y1:505,x2:700,y2:505}
+    ],
+    zones:[
+      {x:90,y:90,w:220,h:140,label:'Bank',icon:'🏦',color:'#3a4a5c'},
+      {x:410,y:90,w:220,h:140,label:'Einkaufsladen',icon:'🏪',color:'#6b3a30'},
+      {x:90,y:330,w:220,h:140,label:'Wohnblock',icon:'🏘️',color:'#5c5240'},
+      {x:410,y:330,w:220,h:140,label:'Juwelier',icon:'💎',color:'#4a3a52'}
+    ],
+    npcStart:{x:150,y:280}, npcRoam:{minx:150,maxx:150,miny:280,maxy:280},
+    npcTargets:[{x:200,y:490},{x:520,y:280},{x:520,y:490}],
+    events:[
+      { kicker:'Ereignis — Geldübernahme an der Bank', title:'Was versteht man unter "Wahrnehmung"?',
+        marker:'stop',
+        desc:'Vor der Bank übernehmt ihr eine Geldkassette. Während der Übergabe schaut sich dein Kollege konzentriert in alle Richtungen um und erklärt, gute Wahrnehmung sei entscheidend für die Sicherheit beim Geld- und Wertetransport. Was versteht man darunter?',
+        options:[
+          {label:'Das bewusste, gezielte Beobachten und Erfassen der Umgebung (Personen, Fahrzeuge, Fluchtwege, Auffälligkeiten) über alle Sinne, um Gefahren frühzeitig zu erkennen.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Wahrnehmung im sicherheitsrelevanten Sinn bedeutet die bewusste, gezielte Beobachtung der Umgebung mit allen Sinnen, um Gefahren oder Auffälligkeiten frühzeitig zu erkennen – eine Kernkompetenz gerade beim Wertetransport.',
+            reviewOk:true, reviewText:'Wahrnehmung ist bewusste, gezielte Beobachtung mit allen Sinnen – keine zufällige Randnotiz.'},
+          {label:'Ausschließlich das, was man zufällig aus dem Augenwinkel wahrnimmt, ohne bewusste Konzentration.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Sicherheitsrelevante Wahrnehmung ist gerade die bewusste, konzentrierte Beobachtung, nicht bloß Zufälliges.',
+            reviewOk:false, reviewText:'Zufälliges Wahrnehmen ohne bewusste Konzentration genügt den Anforderungen nicht.'},
+          {label:'Die reine Erinnerung an Ereignisse, die man später im Bericht wiedergibt.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Das beschreibt Gedächtnis/Dokumentation im Nachhinein, nicht die Wahrnehmung selbst, die im Moment des Geschehens stattfindet.',
+            reviewOk:false, reviewText:'Erinnerung und Dokumentation setzen erst nach der eigentlichen Wahrnehmung an.'},
+          {label:'Ein rein technischer Vorgang, der ausschließlich durch Kameras erfolgt, nicht durch den Menschen selbst.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Wahrnehmung im Sicherheitskontext meint die menschliche Beobachtung durch den SMA selbst, Technik kann sie unterstützen, aber nicht ersetzen.',
+            reviewOk:false, reviewText:'Wahrnehmung ist eine menschliche Fähigkeit, die durch Technik unterstützt, aber nicht ersetzt wird.'}
+        ]
+      },
+      { kicker:'Ereignis — Kontrollpunkt auf der Route', title:'Welche Voraussetzungen gelten für den Geld- und Wertetransport?',
+        marker:'stop',
+        desc:'An einem Kontrollpunkt auf eurer Route fragt dich der Kollege, welche grundlegenden Voraussetzungen beim Geld- und Wertetransport laut Bewachungsverordnung (BewachV) zu beachten sind.',
+        options:[
+          {label:'Unter anderem: Durchführung grundsätzlich durch mindestens zwei besonders geschulte Personen, geeignete Fahrzeuge/Sicherungstechnik, wechselnde Routen und Zeiten zur Vermeidung von Vorhersehbarkeit sowie ständige Erreichbarkeit/Meldung an die Zentrale.', deesk:2, prof:14, score:15,
+            explain:'Korrekt: Die BewachV und einschlägige Richtlinien sehen u. a. mehrere besonders geschulte Personen, geeignete Fahrzeuge/Sicherungstechnik, wechselnde, nicht vorhersehbare Routen/Zeiten sowie ständige Kommunikationsanbindung an die Zentrale vor.',
+            reviewOk:true, reviewText:'Mehrere geschulte Personen, Sicherungstechnik, wechselnde Routen und ständige Erreichbarkeit sind zentrale Voraussetzungen.'},
+          {label:'Der Transport darf grundsätzlich von einer einzelnen Person ohne besondere Schulung durchgeführt werden.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Für den Geld- und Wertetransport sind grundsätzlich mehrere, besonders geschulte Personen vorgesehen.',
+            reviewOk:false, reviewText:'Eine einzelne, ungeschulte Person genügt den Anforderungen an den Wertetransport nicht.'},
+          {label:'Es genügt, immer dieselbe Route zur gleichen Uhrzeit zu fahren, damit sich alle Beteiligten daran gewöhnen.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Genau das Gegenteil ist richtig – feste, vorhersehbare Routen und Zeiten erhöhen das Überfallrisiko und sollen vermieden werden.',
+            reviewOk:false, reviewText:'Vorhersehbare, immer gleiche Routen/Zeiten widersprechen dem Sicherheitsgedanken.'},
+          {label:'Eine Meldung an die Zentrale ist nur bei Zwischenfällen erforderlich, ansonsten nicht vorgesehen.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine ständige Erreichbarkeit bzw. regelmäßige Meldung an die Zentrale gehört zum Standardablauf, nicht nur der Zwischenfall.',
+            reviewOk:false, reviewText:'Ständige Kommunikationsanbindung an die Zentrale ist Standard, nicht nur im Zwischenfall.'}
+        ]
+      },
+      { kicker:'Ereignis — Kunde bittet um Starthilfe', title:'Was sind Nebentätigkeiten im Dienst?',
+        marker:'stop',
+        desc:'Bei der Übergabe einer Geldkassette am Einkaufsladen spricht euch ein Kunde an und fragt, ob ihr seinem Auto mit Starthilfe aushelfen könnt, da die Batterie leer ist. Wie reagierst du?',
+        options:[
+          {label:'Höflich, aber bestimmt ablehnen: Starthilfe ist eine private Gefälligkeit und zählt zu unzulässigen Nebentätigkeiten im Dienst — Tätigkeiten außerhalb des eigentlichen Auftrags, die während eines zeitkritischen Werttransports aus Haftungs-, Versicherungs- und Sicherheitsgründen nicht ausgeführt werden dürfen.', deesk:6, prof:14, score:15,
+            explain:'Korrekt: Nebentätigkeiten im Dienst sind alle Tätigkeiten außerhalb des eigentlichen Auftrags. Bei einem sicherheitsrelevanten, zeitkritischen Einsatz wie dem Wertetransport dürfen solche Gefälligkeiten nicht erbracht werden – aus Haftungs-, Versicherungs- und Sicherheitsgründen.',
+            reviewOk:true, reviewText:'Starthilfe während eines Wertetransports ist eine unzulässige Nebentätigkeit — richtig ist eine höfliche Ablehnung mit Begründung.'},
+          {label:'Kurz aushelfen, da es nur wenige Minuten dauert und niemandem schadet.', deesk:-6, prof:-10, score:-6,
+            explain:'Nicht angemessen: Auch eine kurze Unterbrechung bindet Aufmerksamkeit und Zeit ab, die während eines sicherheitsrelevanten Transports voll dem Auftrag gelten muss.',
+            reviewOk:false, reviewText:'Auch "nur kurz" ist eine unzulässige Ablenkung vom eigentlichen, sicherheitskritischen Auftrag.'},
+          {label:'Die Geldkassette kurz unbeaufsichtigt im Fahrzeug lassen und beim Kunden mithelfen.', deesk:-10, prof:-14, score:-8,
+            explain:'Nicht angemessen: Das lässt die Wertsendung unbeaufsichtigt und schafft ein zusätzliches, vermeidbares Sicherheitsrisiko.',
+            reviewOk:false, reviewText:'Die Wertsendung unbeaufsichtigt zu lassen, ist ein gravierender Sicherheitsfehler.'},
+          {label:'Den Kunden wortlos ignorieren und einfach weiterfahren.', deesk:-4, prof:-6, score:-3,
+            explain:'Nicht ideal: Statt wortlos zu ignorieren, sollte die Anfrage kurz und freundlich mit einer Begründung abgelehnt werden – professionell, aber nicht unhöflich.',
+            reviewOk:false, reviewText:'Eine kurze, freundliche Erklärung ist professioneller als wortloses Ignorieren.'}
+        ]
+      },
+      { kicker:'Ereignis — Überfall', title:'Was ist Raub?',
+        marker:'stop',
+        desc:'Plötzlich versperren zwei maskierte Personen den Weg, eine bedroht deinen Kollegen mit einer Waffe und fordert die Geldkassette. Zurück in Sicherheit fragt dich ein Kollege, wie der Tatbestand des Raubes rechtlich definiert ist.',
+        options:[
+          {label:'Raub (§249 StGB) ist die Wegnahme einer fremden beweglichen Sache in Zueignungsabsicht unter Anwendung von Gewalt gegen eine Person oder unter Drohung mit gegenwärtiger Gefahr für Leib oder Leben.', deesk:2, prof:15, score:16,
+            explain:'Korrekt: Raub kombiniert den Diebstahlstatbestand (Wegnahme einer fremden beweglichen Sache in Zueignungsabsicht) mit einem Nötigungsmittel – Gewalt gegen eine Person oder Drohung mit gegenwärtiger Gefahr für Leib/Leben.',
+            reviewOk:true, reviewText:'Raub = Diebstahl + Gewalt gegen eine Person oder Drohung mit gegenwärtiger Gefahr für Leib/Leben.'},
+          {label:'Raub ist jede Wegnahme einer Sache, unabhängig davon, ob Gewalt oder Drohung eingesetzt wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Ohne Gewalt oder Drohung mit gegenwärtiger Gefahr handelt es sich um einfachen Diebstahl (§242 StGB), nicht um Raub.',
+            reviewOk:false, reviewText:'Ohne das Nötigungsmittel (Gewalt/Drohung) liegt lediglich Diebstahl vor, kein Raub.'},
+          {label:'Raub setzt voraus, dass die weggenommene Sache anschließend beschädigt wird.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Eine Beschädigung der Sache ist keine Voraussetzung des Raubtatbestands.',
+            reviewOk:false, reviewText:'Eine Beschädigung der Sache gehört nicht zu den Voraussetzungen des Raubes.'},
+          {label:'Raub ist nur eine besondere Form der Sachbeschädigung.', deesk:0, prof:-6, score:-5,
+            explain:'Nicht korrekt: Raub ist ein eigenständiges Delikt gegen das Vermögen bzw. Eigentum unter Einsatz von Gewalt/Drohung, keine Form der Sachbeschädigung.',
+            reviewOk:false, reviewText:'Raub und Sachbeschädigung schützen unterschiedliche Rechtsgüter und sind eigenständige Delikte.'}
+        ]
+      }
+    ]
+  }
+};
+
+/* ===================== SCREEN FLOW ===================== */
+function startBriefingScreen(){
+  S.name=document.getElementById('inName').value.trim()||'SMA';
+  S.call=document.getElementById('inCall').value.trim()||'SMA-1';
+  showScreen('screen-briefing');
+  renderMissionGrid();
+}
+function equipByKey(key){ return EQUIP.find(e=>e.key===key); }
+
+function renderMissionGrid(){
+  const grid=document.getElementById('missionGrid');
+  grid.innerHTML='';
+  Object.keys(MISSIONS).forEach(key=>{
+    const mis=MISSIONS[key];
+    const div=document.createElement('div');
+    div.className='mission-card';
+    let reqHtml='';
+    if(mis.requiredEquip && mis.requiredEquip.length){
+      const parts=mis.requiredEquip.map(r=>{ const it=equipByKey(r.key); return (it?it.icon+' ':'')+r.label; });
+      reqHtml='<span class="tag req">Erfordert: '+parts.join(', ')+'</span>';
+    }
+    div.innerHTML='<div class="m-title">'+mis.icon+' '+mis.title+'</div><div class="m-sub">'+mis.sub+'</div><span class="tag">Aktiver Einsatz</span>'+reqHtml;
+    div.onclick=()=>selectMission(key);
+    grid.appendChild(div);
+  });
+}
+
+function selectMission(key){
+  S.missionKey=key;
+  const mis=MISSIONS[key];
+  showScreen('screen-equip');
+  let reqHtml='';
+  if(mis.requiredEquip && mis.requiredEquip.length){
+    const parts=mis.requiredEquip.map(r=>{ const it=equipByKey(r.key); return (it?it.icon+' ':'')+r.label; });
+    reqHtml=' Für diesen Einsatz empfohlen: <b style="color:var(--amber);">'+parts.join(', ')+'</b>.';
+  }
+  document.getElementById('equipMissionInfo').innerHTML = 'Einsatz: <b style="color:var(--text);">'+mis.icon+' '+mis.title+'</b> — wähle deine Ausrüstung. Jeder Gegenstand prüft dein Fachwissen; nur bei richtiger Antwort wandert er ins Inventar.'+reqHtml;
+  renderEquip();
+}
+
+function backToBriefing(){
+  showScreen('screen-briefing');
+  renderMissionGrid();
+}
+
+function goToMission(){
+  startMission(S.missionKey);
+}
+
+function startMission(key){
+  showScreen('screen-mission');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('tbName').textContent=S.call;
+  S.startTime=Date.now();
+  clearInterval(S.timerInt);
+  S.timerInt=setInterval(()=>{
+    S.elapsedMs=Date.now()-S.startTime;
+    const s=Math.floor(S.elapsedMs/1000);
+    document.getElementById('tbTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  },500);
+  const mis=MISSIONS[key];
+  log('Einsatz "'+mis.title+'" gestartet. '+mis.briefing,'ev');
+  initCanvas(mis);
+  if(mis.introQuestion){
+    runIntroQuestion(mis.introQuestion);
+  }
+}
+
+function runIntroQuestion(iq){
+  pauseGame();
+  const m=document.getElementById('modal');
+  m.className='modal';
+  let html='<div class="kicker">'+iq.kicker+'</div><h3>'+iq.title+'</h3><p class="q">'+iq.desc+'</p><div id="optsWrapIntro"></div><div class="explain" id="exIntro"></div>';
+  m.innerHTML=html;
+  const wrap=m.querySelector('#optsWrapIntro');
+  const shuffled=shuffle(iq.options);
+  shuffled.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=opt.label;
+    b.onclick=()=>resolveIntroQuestion(iq, opt, b);
+    wrap.appendChild(b);
+  });
+  openModal();
+}
+
+function resolveIntroQuestion(iq, opt, btnEl){
+  const wrap=btnEl.parentElement;
+  wrap.querySelectorAll('.opt').forEach(o=>o.onclick=null);
+  btnEl.classList.add(opt.reviewOk?'correct':'wrong');
+  S.deescalation+=(opt.deesk||0); S.professionalism+=(opt.prof||0); S.score+=(opt.score||0);
+  const ex=document.getElementById('exIntro');
+  ex.innerHTML='<b>Bewertung:</b> '+opt.explain;
+  ex.classList.add('show');
+  S.reviewLog.push({q:iq.title, ok:opt.reviewOk, ex:opt.reviewText});
+  log(opt.reviewOk?'Einstiegsfrage korrekt beantwortet.':'Einstiegsfrage falsch beantwortet.', opt.reviewOk?'dec':'err');
+  const btn=document.createElement('button');
+  btn.className='btn'; btn.style.marginTop='14px'; btn.textContent='Streife beginnen';
+  btn.onclick=()=>{ closeModal(); resumeGame(); };
+  document.getElementById('modal').appendChild(btn);
+}
+
+/* ===================== TOP BAR UPDATES ===================== */
+function refreshTopbar(){
+  document.getElementById('tbScore').textContent=S.score;
+  document.getElementById('tbDeesk').style.width=Math.max(0,Math.min(100,S.deescalation))+'%';
+}
+
+/* ===================== MISSION MAP (top-down) ===================== */
+let ctx, canvas, player, npc, animId, CUR;
+const KEYS={};
+let listenersBound=false;
+let paused=false;
+
+function initCanvas(mis){
+  CUR=mis;
+  canvas=document.getElementById('canvas');
+  ctx=canvas.getContext('2d');
+  player={x:mis.playerStart.x,y:mis.playerStart.y,r:(mis.playerRadius||9),speed:(mis.playerSpeed||2.6),facing:Math.PI/2};
+  const firstEvHasMarker = !!(mis.events[0] && mis.events[0].marker);
+  npc={x:mis.npcStart.x,y:mis.npcStart.y,r:9,vx:firstEvHasMarker?0:0.5,vy:firstEvHasMarker?0:0.3,talked:false,state:firstEvHasMarker?'idle':'wander',eventIndex:0};
+  if(!listenersBound){
+    window.addEventListener('keydown',e=>KEYS[e.key.toLowerCase()]=true);
+    window.addEventListener('keyup',e=>KEYS[e.key.toLowerCase()]=false);
+    bindDpad();
+    listenersBound=true;
+  }
+  paused=false;
+  cancelAnimationFrame(animId);
+  loop();
+}
+
+function rectsOverlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function circleHitsWall(cx,cy,r){
+  for(const w of CUR.walls){ if(rectsOverlap({x:cx-r,y:cy-r,w:r*2,h:r*2},w)) return true; }
+  return false;
+}
+
+/* ===================== PIXEL SPRITES (Pokémon-style) ===================== */
+const PIXEL_SCALE=2.4;
+const SMA_GRID=[
+"..KKKK..",
+".KAAAAK.",
+".KFFFFK.",
+"..FFFF..",
+".UUUUUU.",
+".UBBBBU.",
+".UUUUUU.",
+".UU..UU.",
+"..PP.PP.",
+"..WW.WW."
+];
+const SMA_PALETTE={K:'#1c2733',A:'#f0a83c',F:'#e3b287',U:'#232f3d',B:'#f0a83c',P:'#12161c',W:'#0b0e12'};
+const NPC_GRID=[
+"........",
+"..HHHH..",
+".HFFFFH.",
+"..FFFF..",
+".RRRRRR.",
+".RRRRRR.",
+".RRRRRR.",
+".RR..RR.",
+"..PP.PP.",
+"..WW.WW."
+];
+const NPC_PALETTE={H:'#4a3222',F:'#e3b287',R:'#c94b42',P:'#3a4a5c',W:'#12161c'};
+
+function drawSprite(grid,palette,cx,cy,scale){
+  const cols=grid[0].length, rows=grid.length;
+  const w=cols*scale, h=rows*scale;
+  const startX=Math.round(cx-w/2), startY=Math.round(cy-h/2);
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const ch=grid[r][c];
+      if(ch==='.') continue;
+      ctx.fillStyle=palette[ch];
+      ctx.fillRect(startX+c*scale, startY+r*scale, scale+0.5, scale+0.5);
+    }
+  }
+}
+
+function drawFlashlight(){
+  const angle=player.facing;
+  const spread=Math.PI/6.5;
+  const radius=125;
+  const a=(CUR.theme.flashlightAlpha!==undefined)?CUR.theme.flashlightAlpha:0.32;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(player.x,player.y);
+  ctx.arc(player.x,player.y,radius,angle-spread,angle+spread);
+  ctx.closePath();
+  const grad=ctx.createRadialGradient(player.x,player.y,4,player.x,player.y,radius);
+  grad.addColorStop(0,'rgba(240,168,60,'+a+')');
+  grad.addColorStop(0.7,'rgba(240,168,60,'+(a*0.4).toFixed(2)+')');
+  grad.addColorStop(1,'rgba(240,168,60,0)');
+  ctx.fillStyle=grad;
+  ctx.fill();
+  ctx.restore();
+}
+
+/* per-mission floor texture, so each map reads visually distinct (Kaufhaus/Bahnhof/Baustelle) */
+function drawZoneTexture(z, theme){
+  if(theme.texture==='tile'){
+    ctx.strokeStyle=theme.gridColor; ctx.lineWidth=1;
+    for(let gx=Math.ceil(z.x/40)*40; gx<z.x+z.w; gx+=40){
+      ctx.beginPath(); ctx.moveTo(gx,z.y); ctx.lineTo(gx,z.y+z.h); ctx.stroke();
+    }
+    for(let gy=Math.ceil(z.y/40)*40; gy<z.y+z.h; gy+=40){
+      ctx.beginPath(); ctx.moveTo(z.x,gy); ctx.lineTo(z.x+z.w,gy); ctx.stroke();
+    }
+  } else if(theme.texture==='concrete'){
+    ctx.strokeStyle=theme.gridColor; ctx.lineWidth=1;
+    for(let gx=Math.ceil(z.x/70)*70; gx<z.x+z.w; gx+=70){
+      ctx.beginPath(); ctx.moveTo(gx,z.y); ctx.lineTo(gx,z.y+z.h); ctx.stroke();
+    }
+    for(let gy=Math.ceil(z.y/70)*70; gy<z.y+z.h; gy+=70){
+      ctx.beginPath(); ctx.moveTo(z.x,gy); ctx.lineTo(z.x+z.w,gy); ctx.stroke();
+    }
+  } else if(theme.texture==='dirt'){
+    const count=Math.floor((z.w*z.h)/900);
+    for(let i=0;i<count;i++){
+      const px=z.x + ((i*53+17)%Math.max(1,z.w-4))+2;
+      const py=z.y + ((i*97+31)%Math.max(1,z.h-4))+2;
+      ctx.fillStyle= i%3===0 ? theme.speckleLight : theme.speckleDark;
+      ctx.fillRect(px,py,2,2);
+    }
+  }
+}
+
+/* railway tracks along the edge of a platform zone */
+function drawTracks(z){
+  const trackW=34;
+  const tx=z.x+z.w-trackW;
+  ctx.fillStyle='#12171c';
+  ctx.fillRect(tx,z.y,trackW,z.h);
+  ctx.fillStyle='#3a2f22';
+  for(let ty=z.y+6; ty<z.y+z.h; ty+=16){
+    ctx.fillRect(tx+3,ty,trackW-6,4);
+  }
+  ctx.fillStyle='#8a95a3';
+  ctx.fillRect(tx+7,z.y,3,z.h);
+  ctx.fillRect(tx+trackW-10,z.y,3,z.h);
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.fillRect(tx+7,z.y,1,z.h);
+  ctx.fillRect(tx+trackW-10,z.y,1,z.h);
+}
+
+/* colorful concert stage: platform + hanging truss spotlights */
+const STAGE_LIGHT_COLORS=[[255,80,110],[80,200,255],[255,210,80],[130,255,80],[200,80,255],[255,140,60]];
+function drawStage(z){
+  const floorH=26;
+  const floorY=z.y+z.h-floorH-14;
+  const left=z.x+50, right=z.x+z.w-50;
+  ctx.fillStyle='#0c0c10';
+  ctx.fillRect(left,floorY,right-left,floorH);
+  ctx.strokeStyle='rgba(255,255,255,0.12)';
+  ctx.strokeRect(left,floorY,right-left,floorH);
+  ctx.fillStyle='#2a2a30';
+  ctx.fillRect(left,z.y+16,right-left,5);
+  const count=7;
+  const spacing=(right-left-20)/(count-1);
+  for(let i=0;i<count;i++){
+    const lx=left+10+i*spacing;
+    const ly=z.y+21;
+    const c=STAGE_LIGHT_COLORS[i%STAGE_LIGHT_COLORS.length];
+    const rgb='rgb('+c[0]+','+c[1]+','+c[2]+')';
+    ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+',0.16)';
+    ctx.beginPath();
+    ctx.moveTo(lx,ly);
+    ctx.lineTo(lx-24,floorY);
+    ctx.lineTo(lx+24,floorY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle=rgb;
+    ctx.beginPath(); ctx.arc(lx,ly,3,0,Math.PI*2); ctx.fill();
+  }
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.font='10px IBM Plex Mono';
+  ctx.fillText('BÜHNE', left+(right-left)/2-16, floorY+floorH/2+4);
+}
+
+/* twinkling festival lights strung along the perimeter */
+function drawFestivalLights(){
+  const t=Date.now()/650;
+  const pts=[];
+  for(let x=40;x<700;x+=44) pts.push({x,y:10});
+  for(let y=40;y<540;y+=44){ pts.push({x:10,y}); pts.push({x:710,y}); }
+  pts.forEach((p,i)=>{
+    const c=STAGE_LIGHT_COLORS[i%STAGE_LIGHT_COLORS.length];
+    const tw=0.5+0.5*Math.sin(t+i*0.7);
+    const grad=ctx.createRadialGradient(p.x,p.y,1,p.x,p.y,13);
+    grad.addColorStop(0,'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.75*tw).toFixed(2)+')');
+    grad.addColorStop(1,'rgba('+c[0]+','+c[1]+','+c[2]+',0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.arc(p.x,p.y,13,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgb('+c[0]+','+c[1]+','+c[2]+')';
+    ctx.beginPath(); ctx.arc(p.x,p.y,2.2,0,Math.PI*2); ctx.fill();
+  });
+}
+
+/* a red spray-painted graffiti tag on a wall (stationary event marker, no person shown) */
+function drawGraffiti(x,y){
+  ctx.save();
+  ctx.strokeStyle='rgba(224,82,74,0.85)';
+  ctx.lineWidth=4;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.arc(x,y,13,0.25,Math.PI*1.85);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x+9,y+11);
+  ctx.lineTo(x+9,y+21);
+  ctx.stroke();
+  ctx.fillStyle='rgba(224,82,74,0.85)';
+  ctx.beginPath(); ctx.arc(x+9,y+22,2,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+/* a pulsing red waypoint marker (stop) — used for vehicle-mission events at buildings */
+function drawStopMarker(x,y){
+  const t=Date.now()/500;
+  const pulse=3*Math.sin(t)+3;
+  ctx.save();
+  ctx.strokeStyle='rgba(224,82,74,0.9)';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.arc(x,y,14+pulse,0,Math.PI*2);
+  ctx.stroke();
+  ctx.fillStyle='rgba(224,82,74,0.22)';
+  ctx.beginPath();
+  ctx.arc(x,y,10,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='rgba(224,82,74,0.9)';
+  ctx.beginPath();
+  ctx.arc(x,y,4,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/* small top-down pixel vehicle, rotated to face the direction of travel */
+function drawVehicle(x,y,angle){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(angle+Math.PI/2);
+  const w=17,h=27;
+  ctx.fillStyle='#dfe1e3';
+  ctx.fillRect(-w/2,-h/2,w,h);
+  ctx.strokeStyle='#22262b';
+  ctx.lineWidth=1.5;
+  ctx.strokeRect(-w/2,-h/2,w,h);
+  ctx.fillStyle='#f0a83c';
+  ctx.fillRect(-w/2,-2,w,4);
+  ctx.fillStyle='#2a3038';
+  ctx.fillRect(-w/2+2,-h/2+3,w-4,6);
+  ctx.fillStyle='#111417';
+  ctx.fillRect(-w/2-2,-h/2+4,3,6);
+  ctx.fillRect(w/2-1,-h/2+4,3,6);
+  ctx.fillRect(-w/2-2,h/2-10,3,6);
+  ctx.fillRect(w/2-1,h/2-10,3,6);
+  ctx.restore();
+}
+
+/* warm streetlamp glow pools + lamppost silhouette along a street zone */
+const STREETLIGHT_FRACTIONS=[0.1,0.3,0.5,0.7,0.9];
+function drawStreetLights(z){
+  const y=z.y+z.h*0.55;
+  STREETLIGHT_FRACTIONS.forEach(f=>{
+    const x=z.x+z.w*f;
+    const grad=ctx.createRadialGradient(x,y,4,x,y,72);
+    grad.addColorStop(0,'rgba(255,205,120,0.22)');
+    grad.addColorStop(1,'rgba(255,205,120,0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.arc(x,y,72,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#1a1d24';
+    ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x,y-4); ctx.lineTo(x,y-38); ctx.stroke();
+    ctx.fillStyle='rgba(255,217,138,0.55)';
+    ctx.beginPath(); ctx.arc(x,y-40,8,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#ffd98a';
+    ctx.beginPath(); ctx.arc(x,y-40,3.5,0,Math.PI*2); ctx.fill();
+  });
+}
+
+/* a row of glowing shop-front windows for shopping-street zones */
+function drawShopfronts(z){
+  const count=8, w=46, h=32;
+  const gap=(z.w-count*w)/(count+1);
+  for(let i=0;i<count;i++){
+    const sx=z.x+gap+i*(w+gap);
+    const sy=z.y+z.h/2-h/2+6;
+    ctx.fillStyle='rgba(255,210,140,0.10)';
+    ctx.fillRect(sx-4,sy-4,w+8,h+8);
+    ctx.fillStyle='#1a1c24';
+    ctx.fillRect(sx,sy,w,h);
+    ctx.strokeStyle='rgba(255,210,140,0.35)';
+    ctx.lineWidth=2;
+    ctx.strokeRect(sx,sy,w,h);
+    ctx.fillStyle='rgba(255,215,150,0.16)';
+    ctx.fillRect(sx+4,sy+4,w-8,h-8);
+  }
+}
+
+/* retail shelving lining the top and bottom edges of a sales-room zone (blocks movement — see SHELF_MARGIN_X in mission walls) */
+const SHELF_MARGIN_X=44, SHELF_H=14, SHELF_MARGIN_TOP=30, SHELF_MARGIN_BOTTOM=14;
+function drawShelves(z){
+  const x=z.x+SHELF_MARGIN_X, w=z.w-SHELF_MARGIN_X*2;
+  const yTop=z.y+SHELF_MARGIN_TOP, yBottom=z.y+z.h-SHELF_MARGIN_BOTTOM-SHELF_H;
+  const productColors=['#c94b42','#4fb286','#5aa0d6','#f0a83c'];
+  [yTop,yBottom].forEach(y=>{
+    ctx.fillStyle='#a8916a';
+    ctx.fillRect(x,y,w,SHELF_H);
+    ctx.strokeStyle='#6b5836';
+    ctx.lineWidth=1;
+    ctx.strokeRect(x,y,w,SHELF_H);
+    const segments=Math.max(1,Math.floor((w-6)/14));
+    for(let i=0;i<segments;i++){
+      const px=x+4+i*14;
+      ctx.fillStyle=productColors[i%productColors.length];
+      ctx.fillRect(px,y+3,6,8);
+    }
+  });
+}
+
+/* checkout counter with a small till, for the Kasse/Ausgang zone */
+function drawCounter(z){
+  const w=150, h=42;
+  const cx=z.x+z.w/2-w/2, cy=z.y+z.h/2-h/2;
+  ctx.fillStyle='#3d372c';
+  ctx.fillRect(cx,cy,w,h);
+  ctx.strokeStyle='#6b6152';
+  ctx.lineWidth=2;
+  ctx.strokeRect(cx,cy,w,h);
+  ctx.fillStyle='#1c1a16';
+  ctx.fillRect(cx+w/2-20,cy-16,40,18);
+  ctx.fillStyle='#7fd4d8';
+  ctx.fillRect(cx+w/2-15,cy-13,30,9);
+  ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.font='10px IBM Plex Mono';
+  ctx.fillText('KASSE', cx+w/2-16, cy+h/2+4);
+}
+
+/* dashed street-lane centerlines for vehicle-mission road networks */
+function drawRoadMarkings(roads){
+  roads.forEach(r=>{
+    ctx.save();
+    ctx.strokeStyle='rgba(255,255,255,0.4)';
+    ctx.lineWidth=2;
+    ctx.setLineDash([14,10]);
+    ctx.beginPath();
+    ctx.moveTo(r.x1,r.y1);
+    ctx.lineTo(r.x2,r.y2);
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function loop(){
+  if(!paused) update();
+  draw();
+  animId=requestAnimationFrame(loop);
+}
+
+function update(){
+  let dx=0,dy=0;
+  if(KEYS['w']||KEYS['arrowup'])dy-=player.speed;
+  if(KEYS['s']||KEYS['arrowdown'])dy+=player.speed;
+  if(KEYS['a']||KEYS['arrowleft'])dx-=player.speed;
+  if(KEYS['d']||KEYS['arrowright'])dx+=player.speed;
+  if(dx!==0||dy!==0){ player.facing=Math.atan2(dy,dx); }
+  let nx=player.x+dx, ny=player.y+dy;
+  if(!circleHitsWall(nx,player.y,player.r)) player.x=nx;
+  if(!circleHitsWall(player.x,ny,player.r)) player.y=ny;
+
+  if(npc.state==='wander'){
+    npc.x+=npc.vx; npc.y+=npc.vy;
+    const r=CUR.npcRoam;
+    if(npc.x<r.minx||npc.x>r.maxx) npc.vx*=-1;
+    if(npc.y<r.miny||npc.y>r.maxy) npc.vy*=-1;
+  }
+
+  updateEgoScene();
+
+  const dist=Math.hypot(player.x-npc.x,player.y-npc.y);
+  if(dist<55 && npc.state!=='hidden' && !npc.talked){
+    npc.talked=true;
+    runEvent(npc.eventIndex);
+  }
+}
+
+function updateEgoScene(){
+  const scene=document.getElementById('egoScene');
+  const dist=Math.hypot(player.x-npc.x,player.y-npc.y);
+  let icon=CUR.icon;
+  for(const z of CUR.zones){ if(player.x>=z.x&&player.x<=z.x+z.w&&player.y>=z.y&&player.y<=z.y+z.h){ icon=z.icon; } }
+  if(dist<90 && npc.state!=='hidden'){
+    const curEv=CUR.events[npc.eventIndex];
+    if(curEv && curEv.marker==='graffiti') icon='🎨';
+    else if(curEv && curEv.marker==='stop') icon='📍';
+    else icon='🧍';
+  }
+  scene.textContent=icon;
+}
+
+function draw(){
+  const theme=CUR.theme;
+  ctx.fillStyle=theme.bg;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(CUR.roads) drawRoadMarkings(CUR.roads);
+  CUR.zones.forEach(z=>{
+    ctx.fillStyle=z.color||theme.zoneFill;
+    ctx.fillRect(z.x,z.y,z.w,z.h);
+    drawZoneTexture(z,theme);
+    if(z.feature==='tracks') drawTracks(z);
+    if(z.feature==='stage') drawStage(z);
+    if(z.feature==='streetlights') drawStreetLights(z);
+    if(z.feature==='shops') drawShopfronts(z);
+    if(z.feature==='shelves') drawShelves(z);
+    if(z.feature==='counter') drawCounter(z);
+    ctx.strokeStyle=theme.zoneStroke;
+    ctx.strokeRect(z.x,z.y,z.w,z.h);
+    ctx.fillStyle=theme.labelColor;
+    ctx.font='11px IBM Plex Mono';
+    ctx.fillText(z.label,z.x+8,z.y+16);
+  });
+  (CUR.renderWalls||CUR.walls).forEach(w=>{
+    ctx.fillStyle=theme.wallColor||'#333f4d';
+    ctx.fillRect(w.x,w.y,w.w,w.h);
+    ctx.fillStyle=theme.wallHighlight||'rgba(255,255,255,0.08)';
+    ctx.fillRect(w.x,w.y,w.w,2);
+  });
+  if(theme.decor==='lights') drawFestivalLights();
+  if(CUR.doors){
+    CUR.doors.forEach(d=>{
+      ctx.save();
+      ctx.strokeStyle='rgba(240,168,60,0.6)';
+      ctx.lineWidth=2;
+      ctx.setLineDash([6,4]);
+      ctx.beginPath();
+      if(d.w>=d.h){
+        const midY=d.y+d.h/2;
+        ctx.moveTo(d.x,midY); ctx.lineTo(d.x+d.w,midY);
+      } else {
+        const midX=d.x+d.w/2;
+        ctx.moveTo(midX,d.y); ctx.lineTo(midX,d.y+d.h);
+      }
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+  drawFlashlight();
+  if(npc.state!=='hidden'){
+    const curEv=CUR.events[npc.eventIndex];
+    if(curEv && curEv.marker==='graffiti'){
+      drawGraffiti(npc.x, npc.y);
+    } else if(curEv && curEv.marker==='stop'){
+      drawStopMarker(npc.x, npc.y);
+    } else {
+      drawSprite(NPC_GRID, NPC_PALETTE, npc.x, npc.y, PIXEL_SCALE);
+    }
+  }
+  if(CUR.vehicleMode){
+    drawVehicle(player.x, player.y, player.facing);
+  } else {
+    drawSprite(SMA_GRID, SMA_PALETTE, player.x, player.y, PIXEL_SCALE);
+  }
+}
+
+/* ===================== D-PAD (mouse/touch movement) ===================== */
+function bindDpad(){
+  document.querySelectorAll('.dpad-btn').forEach(btn=>{
+    const dir=btn.getAttribute('data-dir');
+    const press=(e)=>{ e.preventDefault(); KEYS[dir]=true; btn.classList.add('active'); };
+    const release=(e)=>{ if(e) e.preventDefault(); KEYS[dir]=false; btn.classList.remove('active'); };
+    btn.addEventListener('pointerdown',press);
+    btn.addEventListener('pointerup',release);
+    btn.addEventListener('pointerleave',release);
+    btn.addEventListener('pointercancel',release);
+    btn.addEventListener('contextmenu',e=>e.preventDefault());
+  });
+}
+
+/* ===================== GENERIC SCENARIO ENGINE ===================== */
+function pauseGame(){ paused=true; }
+function resumeGame(){ paused=false; }
+
+function runEvent(index){
+  pauseGame();
+  const ev=CUR.events[index];
+  log(ev.title+' — '+ev.desc,'ev');
+  const m=document.getElementById('modal');
+  m.className='modal';
+  let html='<div class="kicker">'+ev.kicker+'</div><h3>'+ev.title+'</h3><p class="q">'+ev.desc+'</p><div id="optsWrap2"></div><div class="explain" id="ex"></div>';
+  m.innerHTML=html;
+  const wrap=m.querySelector('#optsWrap2');
+  const shuffled=shuffle(ev.options);
+  shuffled.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=opt.label;
+    b.onclick=()=>resolveEvent(index, opt, b, shuffled);
+    wrap.appendChild(b);
+  });
+  openModal();
+}
+
+function resolveEvent(index, opt, btnEl, allOptions){
+  const m=document.getElementById('modal');
+  const wrap=m.querySelector('#optsWrap2');
+  wrap.querySelectorAll('.opt').forEach(o=>o.onclick=null);
+  btnEl.classList.add(opt.reviewOk?'correct':'wrong');
+  S.deescalation+=opt.deesk; S.professionalism+=opt.prof; S.score+=opt.score;
+  const ex=document.getElementById('ex');
+  ex.innerHTML='<b>Bewertung:</b> '+opt.explain;
+  ex.classList.add('show');
+  const ev=CUR.events[index];
+  S.reviewLog.push({q:ev.title, ok:opt.reviewOk, ex:opt.reviewText});
+  log(opt.reviewOk?'Entscheidung als angemessen bewertet.':'Entscheidung als verbesserungswürdig markiert.', opt.reviewOk?'dec':'err');
+  const btn=document.createElement('button');
+  btn.className='btn'; btn.style.marginTop='14px';
+  btn.textContent = opt.legal ? 'Weiter' : (index<CUR.events.length-1 ? 'Weiter' : 'Einsatzbericht ansehen');
+  btn.onclick=()=>{
+    closeModal();
+    if(opt.legal){ askLegal(opt.legal, ()=>afterEvent(index)); }
+    else { afterEvent(index); }
+  };
+  m.appendChild(btn);
+}
+
+function askLegal(legal, next){
+  const m=document.getElementById('modal');
+  m.className='modal legal';
+  let html='<div class="kicker">'+legal.kicker+'</div><h3>'+legal.title+'</h3><p class="q">'+legal.desc+'</p><div id="optsWrap3"></div><div class="explain" id="exl"></div>';
+  m.innerHTML=html;
+  const wrap=m.querySelector('#optsWrap3');
+  const shuffled=shuffle(legal.options);
+  shuffled.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=o.label;
+    b.onclick=()=>{
+      wrap.querySelectorAll('.opt').forEach(x=>x.onclick=null);
+      const chosenOk=o.correct;
+      b.classList.add(chosenOk?'correct':'wrong');
+      if(!chosenOk){
+        const correctBtn=[...wrap.querySelectorAll('.opt')].find((_,i)=>shuffled[i].correct);
+        if(correctBtn) correctBtn.classList.add('correct');
+        S.legalErrors++; S.score-=5;
+      } else { S.score+=15; }
+      const ex=document.getElementById('exl');
+      ex.innerHTML='<b>Erklärung:</b> '+legal.explain;
+      ex.classList.add('show');
+      S.reviewLog.push({q:legal.reviewQ, ok:chosenOk, ex:legal.reviewText});
+      const btn=document.createElement('button');
+      btn.className='btn'; btn.style.marginTop='14px'; btn.textContent='Weiter';
+      btn.onclick=()=>{ closeModal(); next(); };
+      m.appendChild(btn);
+    };
+    wrap.appendChild(b);
+  });
+  openModal();
+}
+
+function afterEvent(index){
+  resumeGame();
+  const isLast = index >= CUR.events.length-1;
+  if(!isLast){
+    npc.state='hidden';
+    log('Situation entwickelt sich weiter. Neue Meldung folgt in Kürze.','ev');
+    setTimeout(()=>{
+      const target=CUR.npcTargets[index];
+      npc.x=target.x; npc.y=target.y;
+      npc.vx=0; npc.vy=0;
+      npc.state='idle';
+      npc.talked=false;
+      npc.eventIndex=index+1;
+      log('Neue Person gesichtet — nähere dich, um einzugreifen.','ev');
+    },1000);
+  } else {
+    npc.state='hidden';
+    log('Einsatzabschnitt beendet. Meldung an Zentrale erfolgt.','ev');
+    setTimeout(endMission,900);
+  }
+}
+
+function applyEquipmentCheck(){
+  if(!CUR.requiredEquip || !CUR.requiredEquip.length) return;
+  CUR.requiredEquip.forEach(req=>{
+    const has=!!S.inventory[req.key];
+    if(!has){
+      S.score-=req.penalty;
+      log('Ausrüstungskontrolle: '+req.label+' fehlte im Einsatz — Punktabzug.','err');
+    } else {
+      log('Ausrüstungskontrolle: '+req.label+' war vorschriftsmäßig mitgeführt.','dec');
+    }
+    S.reviewLog.push({q:'Ausrüstungskontrolle: '+req.label, ok:has, ex: has?req.presentText:req.missingText});
+  });
+}
+
+function endMission(){
+  clearInterval(S.timerInt);
+  cancelAnimationFrame(animId);
+  applyEquipmentCheck();
+  showScreen('screen-report');
+  const seconds=Math.floor(S.elapsedMs/1000);
+  document.getElementById('repSub').textContent = S.call+' — Einsatz "'+CUR.title+'" abgeschlossen. Einsatzdauer: '+Math.floor(seconds/60)+' min '+(seconds%60)+' s.';
+  const stats=document.getElementById('repStats');
+  stats.innerHTML='';
+  const items=[
+    {v:S.score,l:'Gesamtpunktzahl',cls:S.score>=0?'good':'bad'},
+    {v:S.correctAnswers,l:'Richtige Antworten',cls:'good'},
+    {v:S.wrongAnswers,l:'Falsche Antworten',cls:S.wrongAnswers>0?'bad':''},
+    {v:S.legalErrors,l:'Rechtsfehler',cls:S.legalErrors>0?'bad':'good'},
+    {v:Math.max(0,Math.min(100,S.deescalation))+'%',l:'Deeskalationsbewertung',cls:S.deescalation>=60?'good':'bad'},
+    {v:Math.max(0,Math.min(100,S.professionalism))+'%',l:'Professionalität',cls:S.professionalism>=60?'good':'bad'}
+  ];
+  items.forEach(it=>{
+    const d=document.createElement('div');
+    d.className='rstat '+it.cls;
+    d.innerHTML='<div class="v">'+it.v+'</div><div class="l">'+it.l+'</div>';
+    stats.appendChild(d);
+  });
+  const rev=document.getElementById('repReview');
+  rev.innerHTML='<h3 class="stencil" style="font-size:18px;margin-top:10px;">Auswertung & Rechtsbezug</h3>';
+  S.reviewLog.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='review-item';
+    d.innerHTML='<div class="rq">'+r.q+'</div><span class="ra '+(r.ok?'ok':'no')+'">'+(r.ok?'Rechtlich/taktisch angemessen':'Verbesserungswürdig')+'</span><div class="rex">'+r.ex+'</div>';
+    rev.appendChild(d);
+  });
+}
+
+/* keep topbar synced */
+setInterval(refreshTopbar,300);
+
+</script>
+
+
+</body></html>
